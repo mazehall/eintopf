@@ -1,7 +1,13 @@
 var server = require('./app.js');
 
-var port;
-port = process.env.PORT || 3131;
-server.listen(port, function() {
-  console.log('server listen on port: ' + port);
+var port = process.env.PORT;
+
+
+process.on('message', function(m) {
+  if (m === 'app:startserver') {
+    server.listen(port, function() {
+      process.send({ port: port });
+      console.log('server listen on port: ' + port);
+    });
+  }
 });

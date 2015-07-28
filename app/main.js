@@ -4,15 +4,15 @@ var devHelper = require('./vendor/electron_boilerplate/dev_helper');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 
 var mainWindow;
-var env = process.env.NODE_ENV || "development";
+var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
+var port = process.env.PORT = process.env.PORT || 31313;
 // Preserver of the window size and position between app launches.
 var mainWindowState = windowStateKeeper('main', {
   width: 1000,
   height: 600
 });
 
-var port = 3131;
-var child = require('child_process').fork('server.js', {cwd: './app', env: {PORT: port}});
+var child = require('child_process').fork('server.js', {cwd: './app'});
 
 app.on('ready', function () {
 
@@ -27,7 +27,11 @@ app.on('ready', function () {
     mainWindow.maximize();
   }
 
-  mainWindow.loadUrl('http://localhost:' + port);
+  child.on('message', function(m) {
+    mainWindow.loadUrl('http://localhost:' + port);
+    console.log(m);
+  });
+  child.send('app:startserver');
 
   if (env === 'development') {
     devHelper.setDevMenu();
@@ -35,13 +39,18 @@ app.on('ready', function () {
   }
 
   mainWindow.on('close', function () {
+    child.kill('SIGKILL');
     mainWindowState.saveState(mainWindow);
   });
 
 
 });
 
+app.on('open-url', function(event, url) {
+  event.preventDefault();
+  console.log(url);
+});
+
 app.on('window-all-closed', function () {
-  child.kill();
   app.quit();
 });
