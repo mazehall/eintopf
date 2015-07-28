@@ -5,7 +5,7 @@
   "identifier": "com.mazehall.eintopf",
   "description": "Manage your development projects with docker.",
   "version": "0.1.0",
-  "author": "Jens Klose",
+  "author": "Jens Klose <jens.klose@mazehall.com>",
   "maintainers": [
     "jens klose <jens.klose@mazehall.com>",
     "marcel kilian <marcel.kilian@mazehall.com>"
@@ -19,7 +19,7 @@
     "coffee-script": "1.9.3",
     "express": "4.12.4",
     "kefir": "2.7.0",
-    "mazehall": "1.0.0",
+    "mazehall": "2.1.0",
     "pm2": "0.14.3",
     "serve-static": "1.9.2"
   },
