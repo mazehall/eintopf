@@ -1,7 +1,7 @@
 path = require "path"
 child = require 'child_process'
 
-process.env.DBOX_DIR = require('path').dirname(require.main.filename)
+process.env.EINTOPF_DIR = require('path').dirname(require.main.filename)
 process.env.DOCKER_HOST = 'tcp://127.0.0.1:2375'
 
 model = module.exports

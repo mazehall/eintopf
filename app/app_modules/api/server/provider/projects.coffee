@@ -13,12 +13,12 @@ loadProjects = (callback) ->
   packagesStream = directoryStream
   .flatMap mazehall.readPackageJson
   .filter (x) ->
-    x.pkg.mazehall && x.pkg.dbox && typeof x.pkg.dbox is "object"
+    x.pkg.mazehall && x.pkg.eintopf && typeof x.pkg.eintopf is "object"
 
   .onValue (val) ->
-    val.pkg.dbox['path'] = val.path
-    val.pkg.dbox['scripts'] = val.pkg.scripts
-    modules.push val.pkg.dbox
+    val.pkg.eintopf['path'] = val.path
+    val.pkg.eintopf['scripts'] = val.pkg.scripts
+    modules.push val.pkg.eintopf
   .onEnd () ->
     return callback null, modules
 
