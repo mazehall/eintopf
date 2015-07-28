@@ -1,0 +1,6 @@
+
+.zedstate
+node_modules
+.idea
+public/dist
+public/src/bower_components

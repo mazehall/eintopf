@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="dboxApp" class="ng-scope">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dbox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- build:libCss lib/css/vendor.min.css -->
+    <link rel="stylesheet" type="text/css" href="bower_components/furtive/css/furtive.min.css">
+    <!-- endbuild -->
+
+    <!-- build:customCss css/local.css -->
+    <link rel="stylesheet" type="text/css" href="./css/local.css"/>
+    <!-- endbuild -->
+</head>
+
+<body ng-controller="projectsController">
+
+    <div id="content" class="grd-row">
+        <div class="grd-row-col-1-6"></div>
+        <div class="grd-row-col-4-6">
+
+            <div class="grd-row-col-6-6">
+                <div class="grd-row">
+                    <div class="grd-row-col-2-6">
+                        <h1>DBox</h1>
+                    </div>
+                    <div class="grd-row-col-2-6 py2">
+                        <a href="index.html">
+                            Projects
+                        </a>
+                    </div>
+                    <div class="grd-row-col-2-6 py2">
+                        <a href="offeredProjects.html">
+                            Offered Projects
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Tabs -->
+            <div id="tabs" class="grd-row-col-6-6">
+                <div class="grd-row">
+                    <button class="grd-row-col-2-6 btn--green" ng-click="tab='projects'"
+                            ng-class="{'active': tab=='projects'}">
+                        Projects
+                    </button>
+                    <button class="grd-row-col-2-6 btn--green" ng-click="tab='services'"
+                            ng-class="{'active': tab=='services'}">
+                        Services
+                    </button>
+                    <button class="grd-row-col-2-6 btn--green" ng-click="tab='containers'"
+                            ng-class="{'active': tab=='containers'}">
+                        Containers
+                    </button>
+                </div>
+            </div>
+
+            <!-- projects list -->
+            <div id="projects" class="grd-row-col-6-6" ng-show="tab=='projects'">
+                <div class="grd-row py2">
+                    <div class="grd-row-col-1-6">
+                        Name
+                    </div>
+                    <div class="grd-row-col-3-6">
+                        Description
+                    </div>
+                    <div class="grd-row-col-2-6">
+                        Actions
+                    </div>
+                </div>
+
+                <div ng-repeat="(key, val) in projects" ng-class-even="'bg--off-white'">
+                    <div class="grd-row my1">
+                        <div class="grd-row-col-1-6">
+                            {{val.name}}
+                        </div>
+                        <div class="grd-row-col-3-6">
+                            {{val.description}}
+                        </div>
+                        <div class="grd-row-col-2-6">
+                            <button class="btn--blue w100--s mx1" ng-click="start(key)">
+                                start
+                            </button><button class="btn--blue w100--s mx1" ng-click="stop(key)">
+                                stop
+                            </button>
+
+                            <!-- action links -->
+                            <a ng-repeat="link in val.links" href="{{link.link}}" class="btn--link w100--s mx1"
+                               target="{{link.window ? '_blank' : '_self'}}">
+                                {{link.name}}
+                            </a>
+                            <!-- action buttons -->
+                            <button ng-repeat="action in service.actions" ng-if="!action.warning" class="btn--blue w100--s mx1"
+                                    ng-click="doAction(projectKey, action)">
+                                {{action.name}}
+                            </button>
+                            <button ng-repeat="action in service.actions" ng-if="action.warning" class="btn--red w100--s mx1"
+                                    ng-confirm-click="{{action.warning}}"
+                                    ng-click="doAction(projectKey, action)">
+                                {{action.name}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services -->
+            <div id="services" class="grd-row-col-6-6" ng-show="tab=='services'">
+                <div class="grd-row py2">
+                    <div class="grd-row-col-1-6">
+                        Name
+                    </div>
+                    <div class="grd-row-col-3-6">
+                        Description
+                    </div>
+                    <div class="grd-row-col-2-6">
+                        Actions
+                    </div>
+                </div>
+
+
+                <div ng-repeat="(projectKey, project) in projects">
+                    <div class="grd-row-col-6-6 my1">
+                        <b>
+                            Project: {{project.name}}
+                        </b>
+                    </div>
+
+                    <div ng-repeat="service in project.services" class="grd-row my1" ng-class-even="'bg--off-white'">
+                        <div class="grd-row-col-1-6">
+                            {{service.name}}
+                        </div>
+                        <div class="grd-row-col-3-6">
+                            {{service.description}}
+                        </div>
+
+                        <div class="grd-row-col-2-6">
+                            <!-- action links -->
+                            <a ng-repeat="link in service.links" href="{{link.link}}" class="btn--link w100--s mx1"
+                               target="{{link.window ? '_blank' : '_self'}}">
+                                {{link.name}}
+                            </a>
+                            <!-- action buttons -->
+                            <button ng-repeat="action in service.actions" ng-if="!action.warning" class="btn--blue w100--s mx1"
+                                    ng-click="doAction(projectKey, action)">
+                                {{action.name}}
+                            </button>
+                            <button ng-repeat="action in service.actions" ng-if="action.warning" class="btn--red w100--s mx1"
+                                    ng-confirm-click="{{action.warning}}"
+                                    ng-click="doAction(projectKey, action)">
+                                {{action.name}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Containers -->
+            <div id="containers" class="grd-row-col-6-6" ng-show="tab=='containers'">
+                <div class="grd-row py2">
+                    <div class="grd-row-col-1-6">
+                        Name
+                    </div>
+                    <div class="grd-row-col-3-6">
+                        Image
+                    </div>
+                    <div class="grd-row-col-2-6">
+                        Actions
+                    </div>
+                </div>
+
+                <div ng-repeat="(projectKey, project) in projects">
+                    <div class="grd-row-col-6-6 my1">
+                        <b>
+                            Project: {{project.name}}
+                        </b>
+                    </div>
+
+                    <div ng-repeat="container in project.containers" class="grd-row my1" ng-class-even="'bg--off-white'">
+                        <div class="grd-row-col-1-6">
+                            {{container.name}}
+                        </div>
+                        <div class="grd-row-col-3-6">
+                            {{container.image}}
+                        </div>
+                        <div class="grd-row-col-2-6">
+                            <!-- action links -->
+                            <a ng-repeat="link in container.links" href="{{link.link}}" class="btn--link w100--s mx1"
+                               target="{{link.window ? '_blank' : '_self'}}">
+                                {{link.name}}
+                            </a>
+                            <!-- action buttons -->
+                            <button ng-repeat="action in service.actions" ng-if="!action.warning" class="btn--blue w100--s mx1"
+                                    ng-click="doAction(projectKey, action)">
+                                {{action.name}}
+                            </button>
+                            <button ng-repeat="action in service.actions" ng-if="action.warning" class="btn--red w100--s mx1"
+                                    ng-confirm-click="{{action.warning}}"
+                                    ng-click="doAction(projectKey, action)">
+                                {{action.name}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="grd-row-col-1-6"></div>
+    </div>
+
+
+
+
+
+</body>
+
+<!-- build:libJs lib/js/min.js -->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/angular/angular.min.js"></script>
+<script src="js/local.js"></script>
+<!-- endbuild -->
+
+</html>

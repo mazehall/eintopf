@@ -1,0 +1,17 @@
+{
+  "name": "gui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "module",
+  "main": "index.js",
+  "mazehall": true,
+  "components": [
+    "gui"
+  ],
+  "author": "Mazehall Generator",
+  "contributors": [
+    {
+      "name": "#"
+    }
+  ]
+}

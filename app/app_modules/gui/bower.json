@@ -1,0 +1,15 @@
+{
+  "name": "gui",
+  "version": "0.1.0",
+  "private": true,
+  "authors": [
+    "Mazehall Generator"
+  ],
+  "description": "example for the mazehall framework",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "2.1.4",
+    "furtive": "2.2.1",
+    "angular": "1.4.1"
+  }
+}

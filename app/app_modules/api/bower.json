@@ -1,0 +1,10 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "authors": [
+    "Mazehall Generator"
+  ],
+  "description": "example for the mazehall framework",
+  "license": "MIT"
+}

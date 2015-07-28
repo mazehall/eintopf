@@ -1,0 +1,17 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "module",
+  "main": "index.js",
+  "mazehall": true,
+  "components": [
+    "ui"
+  ],
+  "author": "Mazehall Generator",
+  "contributors": [
+    {
+      "name": "#"
+    }
+  ]
+}
