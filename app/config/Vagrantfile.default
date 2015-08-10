@@ -2,7 +2,7 @@ Vagrant.require_version ">= 1.7.0"
 
 
 project = "eintopf"
-projectDir = Dir.home + "/" +
+projectDir = Dir.home + "/" + project
 
 Dir.mkdir(projectDir) unless Dir.exist?(projectDir)
 
