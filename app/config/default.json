@@ -1,0 +1,7 @@
+{
+  "app": {
+    "defaultName": "default",
+    "configPath": "~/.eintopf",
+    "projectsPath": "~/eintopf"
+  }
+}

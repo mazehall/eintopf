@@ -17,6 +17,7 @@
   "dependencies": {
     "body-parser": "1.13.1",
     "coffee-script": "1.9.3",
+    "config": "^1.15.0",
     "express": "4.12.4",
     "fs-jetpack": "^0.7.0",
     "kefir": "2.7.0",

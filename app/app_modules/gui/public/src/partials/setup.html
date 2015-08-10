@@ -3,8 +3,8 @@
     <p class="h4">Ingredients for your Eintopf</p>
     <div class="grd-row my2">
       <div class="grd-row-col-1-6">
-        <i ng-show="true" class="fa fa-check-circle-o fa-2x"></i>
-        <div ng-show="false" class="la-ball-spin-clockwise la-dark">
+        <i ng-show="states.vagrantFile" class="fa fa-check-circle-o fa-2x"></i>
+        <div ng-show="!states.vagrantFile" class="la-ball-spin-clockwise la-dark">
           <div></div>
           <div></div>
           <div></div>
@@ -20,8 +20,9 @@
     </div>
     <div class="grd-row my2">
       <div class="grd-row-col-1-6">
-        <i ng-show="false" class="fa fa-check-circle-o fa-2x"></i>
-        <div class="la-ball-spin-clockwise la-dark">
+
+        <i ng-show="states.vagrantRun" class="fa fa-check-circle-o fa-2x"></i>
+        <div ng-show="!states.vagrantRun" class="la-ball-spin-clockwise la-dark">
           <div></div>
           <div></div>
           <div></div>
@@ -36,8 +37,23 @@
         Docker host
       </div>
     </div>
+
+    <div class="grd-row my2">
+      <div ng-show="states.failed">
+        <span class="bg--red">
+          jo big error
+        </span>
+        <a class=".btn--blue">
+          try again
+        </a>
+      </div>
+    </div>
+
+
   </div>
 
-  {{test}}
+
+
+  {{states}}
 
 </div>

@@ -7,7 +7,7 @@ angular.module('eintopf')
             console.log('in controller');
 
             setupLiveResponse.onValue(function(val) {
-                $scope.test = val;
+                $scope.states = val;
                 $scope.$apply();
             });
         }
