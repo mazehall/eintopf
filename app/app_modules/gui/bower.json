@@ -8,8 +8,10 @@
   "description": "example for the mazehall framework",
   "license": "MIT",
   "dependencies": {
-    "jquery": "2.1.4",
-    "furtive": "2.2.1",
-    "angular": "1.4.1"
+    "angular": "~1.4.3",
+    "angular-ui-router": "~0.2.15",
+    "furtive": "~2.2.3",
+    "load-awesome": "~1.1.0",
+    "font-awesome": "~4.4.0"
   }
 }

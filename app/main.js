@@ -46,10 +46,6 @@ app.on('ready', function () {
 
 });
 
-app.on('open-url', function(event, url) {
-  event.preventDefault();
-  console.log(url);
-});
 
 app.on('window-all-closed', function () {
   app.quit();

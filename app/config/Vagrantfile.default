@@ -1,0 +1,76 @@
+Vagrant.require_version ">= 1.7.0"
+
+
+project = "eintopf"
+projectDir = Dir.home + "/" +
+
+Dir.mkdir(projectDir) unless Dir.exist?(projectDir)
+
+Vagrant.configure("2") do |config|
+  config.vm.box_check_update = false
+  config.vm.define project
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = project
+
+  host = RbConfig::CONFIG['host_os']
+  config.vm.provider :virtualbox do |vb|
+    if host =~ /darwin/
+      vmCpus = `sysctl -n hw.ncpu`.to_i
+      # sysctl returns Bytes and we need to convert to MB
+      mem = `sysctl -n hw.memsize`.to_i / 1024 / 1024 / 4
+
+    elsif host =~ /linux/
+      vmCpus = `nproc`.to_i
+      # meminfo shows KB and we need to convert to MB
+      mem = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 / 4
+
+    else # sorry Windows folks, I can't help you
+      vmCpus = 4
+      mem = 2048
+    end
+
+    vb.name = project
+    vb.memory = mem
+    vb.cpus = vmCpus
+  end
+
+  if host =~ /darwin/ or host =~ /linux/
+    config.vm.network "private_network", type: "dhcp"
+    config.vm.synced_folder ".", "/vagrant", type: "nfs"
+    config.vm.synced_folder projectDir, "/projects", type: "nfs"
+  end
+
+  # docker provisioning fails without first update
+  config.vm.provision :shell, inline: "if [ -z \"`which docker`\" ]; then apt-get update; fi"
+
+  config.vm.provision "docker"
+
+  # Provisioning script goes in here.
+  config.vm.provision :shell, inline: <<-SHELL
+    # set custom docker options @todo better grep
+    if [ -z "`cat /etc/default/docker | grep '^DOCKER_OPTS=.*~DOCKER_OPTS=\"-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock\"'`" ]; then
+        echo "update docker config";
+        sed -i 's~DOCKER_OPTS=.*~DOCKER_OPTS="-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"~g' /etc/default/docker;
+        initctl restart docker;
+    fi
+    # install docker-compose
+    if [ -z "`which docker-compose`" ]; then
+        echo "install docker-compose";
+        curl -L https://github.com/docker/compose/releases/download/1.3.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose;
+    fi
+  SHELL
+
+  config.vm.provision "docker" do |d|
+    d.run "proxy",
+      image: "mkodockx/docker-nginx-proxy",
+      args: "-d -p 80:80 -p 443:443 --restart=always -e GLOB_DEFAULT_HOST='" + project + ".dev' -v /vagrant/config/vhosts/:/etc/nginx/vhost.d:ro -v /var/run/docker.sock:/tmp/docker.sock:ro"
+  end
+
+  config.vm.network "forwarded_port", guest: 2375, host: 2375
+  config.vm.network "forwarded_port", guest: 80,   host: 4480
+  config.vm.network "forwarded_port", guest: 443,  host: 4443
+  config.vm.network "forwarded_port", guest: 3306, host: 44306
+  config.vm.network "forwarded_port", guest: 27017, host: 44017
+
+end
