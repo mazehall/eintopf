@@ -1,38 +1,43 @@
-<div  class="measure p2">
-  <p class="h4">Ingredients for your Eintopf</p>
-  <div class="grd-row my2">
-    <div class="grd-row-col-1-6">
-      <i ng-show="true" class="fa fa-check-circle-o fa-2x"></i>
-      <div ng-show="false" class="la-ball-spin-clockwise la-dark">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>    </div>
-    <div class="grd-row-col-5-6">
-      Vagrantfile
-    </div>
-  </div>
-  <div class="grd-row my2">
-    <div class="grd-row-col-1-6">
-      <i ng-show="false" class="fa fa-check-circle-o fa-2x"></i>
-      <div class="la-ball-spin-clockwise la-dark">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
+<div ng-controller="setupCtrl">
+  <div  class="measure p2">
+    <p class="h4">Ingredients for your Eintopf</p>
+    <div class="grd-row my2">
+      <div class="grd-row-col-1-6">
+        <i ng-show="true" class="fa fa-check-circle-o fa-2x"></i>
+        <div ng-show="false" class="la-ball-spin-clockwise la-dark">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>    </div>
+      <div class="grd-row-col-5-6">
+        Vagrantfile
       </div>
     </div>
-    <div class="grd-row-col-5-6">
-      Docker host
+    <div class="grd-row my2">
+      <div class="grd-row-col-1-6">
+        <i ng-show="false" class="fa fa-check-circle-o fa-2x"></i>
+        <div class="la-ball-spin-clockwise la-dark">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+      <div class="grd-row-col-5-6">
+        Docker host
+      </div>
     </div>
   </div>
+
+  {{test}}
+
 </div>

@@ -1,0 +1,32 @@
+{
+  "name": "angular-kefir",
+  "version": "1.0.0",
+  "homepage": "https://github.com/mazelab/angular-kefir",
+  "authors": [
+    "jens.klose <jens.klose@googlemail.com>"
+  ],
+  "description": "Angular module to handle more reactive with streams from Kefir.js",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "Angular",
+    "Kefir",
+    "reactive",
+    "stream",
+    "rx"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "gulpfile.js",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "kefir": "<2.0",
+    "angular": "<2.0"
+  }
+}

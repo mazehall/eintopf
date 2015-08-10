@@ -1,7 +1,14 @@
 _r = require 'kefir'
 
-setup = (connections_, rawSocket) ->
+mockResponse = {
+  message: "setup..."
+}
 
-  return
+setup = (connections_, rawSocket) ->
+  _r.fromPoll 1000 * 5, () ->
+    mockResponse.datetime = new Date()
+    mockResponse
+  .onValue (res) ->
+    rawSocket.emit 'setup:live', res
 
 module.exports = setup

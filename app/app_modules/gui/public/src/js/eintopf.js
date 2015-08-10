@@ -1,8 +1,9 @@
-var eintopfApp = angular.module('eintopfApp', [
-  'ui.router'
+var eintopf = angular.module('eintopf', [
+  'ui.router',
+  'eintopf.services.socket.setup'
 ]);
 
-eintopfApp.config(function($stateProvider, $urlRouterProvider) {
+eintopf.config(function($stateProvider, $urlRouterProvider) {
   //
   // For any unmatched url, redirect to /state1
   $urlRouterProvider.otherwise("/setup");

@@ -1,3 +1,4 @@
+//@todo delete when not used
 var myApp = angular.module('eintopfApp',[]);
 
 myApp.controller('offeredProjectsController', ['$scope', '$http', function($scope, $http) {

@@ -1,7 +1,6 @@
 .idea/
 .editorconfig
 node_modules
-bower_components
 *.log
 .DS_Store
 Thumbs.db
