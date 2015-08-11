@@ -30,7 +30,7 @@ var copyRuntime = function () {
 var packageBuiltApp = function () {
     var deferred = Q.defer();
 
-    asar.createPackage(projectDir.path('build'), readyAppDir.path('resources/app.asar'), function() {
+    asar.createPackage(projectDir.path('app'), readyAppDir.path('resources/app.asar'), function() {
         deferred.resolve();
     });
 
@@ -48,7 +48,7 @@ var finalize = function () {
         'icon': projectDir.path('resources/windows/icon.ico'),
         'version-string': {
             'ProductName': manifest.productName,
-            'FileDescription': manifest.description,
+            'FileDescription': manifest.description
         }
     }, function (err) {
         if (!err) {
@@ -72,7 +72,7 @@ var createInstaller = function () {
         dest: releasesDir.path(finalPackageName),
         icon: readyAppDir.path('icon.ico'),
         setupIcon: projectDir.path('resources/windows/setup-icon.ico'),
-        banner: projectDir.path('resources/windows/setup-banner.bmp'),
+        banner: projectDir.path('resources/windows/setup-banner.bmp')
     });
     tmpDir.write('installer.nsi', installScript);
 
