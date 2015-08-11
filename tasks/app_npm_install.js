@@ -41,11 +41,11 @@ if (argv._.length > 0) {
 
 var installCommand = null;
 
-if (process.platform === 'win32') {
-  installCommand = 'npm.cmd'
-} else {
+//if (process.platform === 'win32') {
+//  installCommand = 'npm.cmd'
+//} else {
   installCommand = 'npm'
-}
+//}
 
 var install = childProcess.spawn(installCommand, params, {
     cwd: __dirname + '/../app',

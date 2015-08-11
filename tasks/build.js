@@ -1,9 +1,31 @@
-var gulp = require('gulp');
-var gulpGulp = require('gulp-gulp');
+var Q = require('q');
+var pathUtil = require('path');
+var childProcess = require('child_process');
+var utils = require('./utils');
 
-gulp.task('build', function () {
-    return gulp.src('app/app_modules/*//gulpfile.js')
-        .pipe(gulpGulp());
-});
+var gulpPath = pathUtil.resolve('./node_modules/.bin/gulp');
+if (process.platform === 'win32') {
+  gulpPath += '.cmd';
+}
 
-gulp.task('default', ['build']);
+var buildGui = function () {
+  var deferred = Q.defer();
+  var build = childProcess.spawn(gulpPath, [
+    'build',
+    '--env=' + utils.getEnvName(),
+    '--color'
+  ], {
+    cwd: './app/app_modules/gui',
+    stdio: 'inherit'
+  });
+  build.on('close', function (code) {
+    deferred.resolve();
+  });
+
+  return deferred.promise;
+};
+
+
+return Q.all([
+  buildGui()
+]);
