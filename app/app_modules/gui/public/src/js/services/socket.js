@@ -9,3 +9,11 @@ angular.module('eintopf.services.socket.setup', [])
     return Kefir.fromEvent(socket, 'setup:live').toProperty();
   }])
 
+  .factory('setupRestart', ['socket', function (socket) {
+    return {
+      emit: function (data) {
+        socket.emit('setup:restart', data);
+      }
+    }
+  }])
+

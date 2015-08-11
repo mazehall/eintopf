@@ -13,4 +13,10 @@ setup = (connections_, rawSocket) ->
   connections_.onValue (socket) ->
     socket.emit 'setup:live', modelSetup.getState()
 
+    _r.fromEvents socket, 'setup:restart'
+    .onValue () ->
+      modelSetup.restart()
+      rawSocket.emit 'setup:live', modelSetup.getState()
+
+
 module.exports = setup

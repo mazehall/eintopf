@@ -9,7 +9,7 @@ getHomePath = () ->
   return process.env.USERPROFILE if process.platform == 'win32'
   return process.env.HOME
 
-getResolvedHomePath = (fsPath) ->
+getPathResolvedWithRelativeHome = (fsPath) ->
   if typeof fsPath == "string" && fsPath.match(/^~/)
     homePath = getHomePath()
     return null if ! homePath?
@@ -20,12 +20,12 @@ model = {}
 model.getConfigPath = () ->
   configPath = appConfig.configPath
   return null if ! configPath
-  return getResolvedHomePath appConfig.configPath
+  return getPathResolvedWithRelativeHome appConfig.configPath
 
 model.getProjectsPath = () ->
   projectPath = appConfig.projectsPath
   return null if ! projectPath
-  return getResolvedHomePath projectPath
+  return getPathResolvedWithRelativeHome projectPath
 
 model.getConfigModulePath = () ->
   configPath = model.getConfigPath()
