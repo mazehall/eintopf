@@ -1,29 +1,54 @@
 config = require 'config'
 vagrant = require 'node-vagrant'
 _r = require 'kefir'
+fs = require 'fs'
 
 fsModel = require './fs.coffee'
 
-getVagrantMachine = () ->
+getVagrantMachine = (callback) ->
   configModulePath = fsModel.getConfigModulePath()
-  return null if ! configModulePath?
-  return vagrant.create {cwd: configModulePath}
+  return callback new Error '' if ! configModulePath?
+
+  _r.fromNodeCallback (cb) ->
+    fs.stat configModulePath, (err) ->
+      cb new Error 'Can´t start vagrant without dedicated vagrant folder ' + configModulePath if err
+      cb null, true
+  .flatMap () ->
+    _r.fromNodeCallback (cb) ->
+      try
+        machine = vagrant.create {cwd: configModulePath}
+        cb null, machine
+      catch err
+        cb err
+  .onValue (val) ->
+    callback null, val
+  .onError callback
 
 model = {}
 model.getVersion = (cb) ->
   vagrant.version cb
 
-model.getStatus = (cb) ->
-  machine = getVagrantMachine()
-  return cb new Error 'get vagrant machine failed' if ! machine?
-  machine.status (err, result) ->
-    return cb new Error err if err
-    return cb(null, i.status) for own d, i of result
+model.getStatus = (callback) ->
+  _r.fromNodeCallback (cb) ->
+    getVagrantMachine cb
+  .flatMap (machine) ->
+    _r.fromNodeCallback (cb) ->
+      machine.status (err, result) ->
+        return cb new Error err if err
+        return cb(null, i.status) for own d, i of result
+  .onValue (val) ->
+    callback null, val
+  .onError callback
 
-model.up = (cb) ->
-  machine = getVagrantMachine()
-  return cb new Error 'get vagrant machine failed' if ! machine?
-  machine.up cb
+model.up = (callback) ->
+  _r.fromNodeCallback (cb) ->
+    getVagrantMachine cb
+  .flatMap (machine) ->
+    _r.fromNodeCallback (cb) ->
+      machine.up cb
+  .onValue (val) ->
+    callback null, val
+  .onError callback
 
 model.run = (callback) ->
   runningMessage = 'is_runnning'

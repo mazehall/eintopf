@@ -42,7 +42,6 @@ model.run = () ->
     states.vagrantFile = true
     return _r
     .fromNodeCallback (cb) ->
-      return cb 'test'
       vagrantRunModel.run cb
   .onValue () ->
     states.vagrantRun = true
