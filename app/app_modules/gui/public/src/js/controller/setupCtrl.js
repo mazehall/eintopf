@@ -6,10 +6,7 @@ angular.module('eintopf')
         function($scope, setupLiveResponse, setupRestart) {
             console.log('in controller');
 
-            setupLiveResponse.onValue(function(val) {
-                $scope.states = val;
-                $scope.$apply();
-            });
+            setupLiveResponse.$assignProperty($scope, 'states');
 
             $scope.setupRestart = function() {
                 setupRestart.emit();

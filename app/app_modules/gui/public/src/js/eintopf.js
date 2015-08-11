@@ -1,5 +1,6 @@
 var eintopf = angular.module('eintopf', [
   'ui.router',
+  'angular-kefir',
   'eintopf.services.socket.setup'
 ]);
 
