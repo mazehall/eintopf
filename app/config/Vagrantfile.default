@@ -2,7 +2,7 @@ Vagrant.require_version ">= 1.7.0"
 
 
 project = "eintopf"
-projectDir = Dir.home + "/" + project
+projectDir = Dir.home + "/eintopf"
 
 Dir.mkdir(projectDir) unless Dir.exist?(projectDir)
 
@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
         initctl restart docker;
     fi
     # install docker-compose
-    if [ -z "`which docker-compose`" ]; then
+    if [ -n "`docker-compose --version | grep 1.3.2`" ]; then
         echo "install docker-compose";
         curl -L https://github.com/docker/compose/releases/download/1.3.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
         chmod +x /usr/local/bin/docker-compose;
