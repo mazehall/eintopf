@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <title>Eintopf</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <!-- build:libCss lib/css/vendor.min.css -->
   <link rel="stylesheet" type="text/css" href="bower_components/furtive/css/furtive.min.css"/>
   <link rel="stylesheet" type="text/css" href="bower_components/load-awesome/css/ball-spin-clockwise.min.css"/>
@@ -17,9 +18,11 @@
 
 <body>
 
-
-  <div id="layout" ui-view></div>
-
+  <div class="grd grd-row grd-row-col cssBgGreen">
+    <img class="py1" src="img/logo.png" alt="einTOPF"/>
+  </div>
+  <div class="grd grd-row grd-row-col" id="layout" ui-view></div>
+  <footer class="grd grd-row grd-row-col cssBgGreen">footer</footer>
   <!-- build:libJs lib/js/min.js -->
   <script src="bower_components/kefir/dist/kefir.js"></script>
   <script src="bower_components/angular/angular.min.js"></script>
