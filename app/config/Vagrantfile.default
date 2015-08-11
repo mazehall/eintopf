@@ -46,20 +46,24 @@ Vagrant.configure("2") do |config|
   config.vm.provision "docker"
 
   # Provisioning script goes in here.
-  config.vm.provision :shell, inline: <<-SHELL
-    # set custom docker options @todo better grep
-    if [ -z "`cat /etc/default/docker | grep '^DOCKER_OPTS=.*~DOCKER_OPTS=\"-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock\"'`" ]; then
-        echo "update docker config";
-        sed -i 's~DOCKER_OPTS=.*~DOCKER_OPTS="-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"~g' /etc/default/docker;
-        initctl restart docker;
-    fi
-    # install docker-compose
-    if [ -n "`docker-compose --version | grep 1.3.2`" ]; then
-        echo "install docker-compose";
-        curl -L https://github.com/docker/compose/releases/download/1.3.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-        chmod +x /usr/local/bin/docker-compose;
-    fi
-  SHELL
+    config.vm.provision :shell, inline: <<-SHELL
+      # set custom docker options @todo better grep
+      if [ -z "`cat /etc/default/docker | grep '^DOCKER_OPTS=.*~DOCKER_OPTS=\"-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock\"'`" ]; then
+          echo "update docker config";
+          sed -i 's~DOCKER_OPTS=.*~DOCKER_OPTS="-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"~g' /etc/default/docker;
+          initctl restart docker;
+      fi
+      # install docker-compose
+      COMPOSE_VERSION="1.3.2"
+      if [ -z "`which docker-compose`" ]; then
+          echo "install docker-compose";
+          curl -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose;
+      fi
+      docker-compose --version | grep $COMPOSE_VERSION >> /dev/null \
+      || curl -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose \
+      && chmod +x /usr/local/bin/docker-compose
+    SHELL
 
   config.vm.provision "docker" do |d|
     d.run "proxy",
