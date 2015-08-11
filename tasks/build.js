@@ -25,7 +25,8 @@ var buildGui = function () {
   return deferred.promise;
 };
 
-
-return Q.all([
-  buildGui()
-]);
+module.exports = function () {
+  return Q.all([
+    buildGui()
+  ]);
+};

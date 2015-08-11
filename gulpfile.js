@@ -9,7 +9,7 @@ var releaseForOs = {
 };
 
 gulp.task('build', function() {
-  return require('./tasks/build.js')
+  return require('./tasks/build.js')();
 });
 
 gulp.task('release', ['build'], function () {
