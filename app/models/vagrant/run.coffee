@@ -2,8 +2,11 @@ config = require 'config'
 vagrant = require 'node-vagrant'
 _r = require 'kefir'
 fs = require 'fs'
+child_process = require 'child_process'
 
 fsModel = require './fs.coffee'
+
+vagrantInstalled = false
 
 getVagrantMachine = (callback) ->
   configModulePath = fsModel.getConfigModulePath()
@@ -13,6 +16,15 @@ getVagrantMachine = (callback) ->
     fs.stat configModulePath, (err) ->
       cb new Error 'Can´t start vagrant without dedicated vagrant folder ' + configModulePath if err
       cb null, true
+  .flatMap () ->
+    _r.fromNodeCallback (cb) ->
+      return cb null, true if vagrantInstalled == true
+      child_process.spawn 'vagrant', ['version']
+      .on 'close', () ->
+        vagrantInstalled = true;
+        cb null, true
+      .on 'error', () ->
+        cb new Error 'vagrant does not seems to be installed'
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       try
