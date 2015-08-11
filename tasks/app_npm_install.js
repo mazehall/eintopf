@@ -14,7 +14,7 @@ var utils = require('./utils');
 
 var electronVersion = utils.getElectronVersion();
 
-var nodeModulesDir = jetpack.cwd(__dirname + '/../app/node_modules')
+var nodeModulesDir = jetpack.cwd(__dirname + '/../app/node_modules');
 var dependenciesCompiledAgainst = nodeModulesDir.read('electron_version');
 
 // When you raised version of Electron used in your project, the safest
@@ -41,11 +41,11 @@ if (argv._.length > 0) {
 
 var installCommand = null;
 
-//if (process.platform === 'win32') {
-//  installCommand = 'npm.cmd'
-//} else {
+if (process.platform === 'win32') {
+  installCommand = 'npm.cmd'
+} else {
   installCommand = 'npm'
-//}
+}
 
 var install = childProcess.spawn(installCommand, params, {
     cwd: __dirname + '/../app',
