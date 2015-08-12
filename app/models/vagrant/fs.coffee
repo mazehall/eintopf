@@ -26,20 +26,20 @@ model.getConfigModulePath = () ->
   return null if ! (configPath = model.getConfigPath())? || ! appConfig.defaultNamespace
   return jetpack.cwd(configPath).path appConfig.defaultNamespace
 
-model.copyVagrantFile = (cb) ->
+model.copyVagrantFile = (callback) ->
   configModulePath = model.getConfigModulePath()
   pathDefaultVagrantFile = appConfig.pathDefaultVagrantFile
   return cb new Error 'copy failed due to misconfiguration' if ! configModulePath? || ! pathDefaultVagrantFile?
 
-  jetpack.readAsync pathDefaultVagrantFile
-  .fail cb
-  .then (data) ->
-    jetpack.dirAsync configModulePath
-    .fail cb
-    .then (dir) ->
-      dir.fileAsync 'Vagrantfile', {content: data}
-      .fail cb
-      .then () ->
-        return cb null, true
+  src = jetpack.cwd(appConfig.pathDefaultVagrantFile).path()
+
+  jetpack.dirAsync configModulePath
+  .then (dir) ->
+    jetpack.copyAsync src, dir.path("Vagrantfile"), {overwrite: false}
+  .then () ->
+    callback null, true
+  .fail (err) -> # ignore already exists error
+    return callback null, true if typeof err == "object" && err.message.match /^Destination path already exists/
+    callback err
 
 module.exports = model;
