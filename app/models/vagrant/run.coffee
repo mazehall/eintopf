@@ -1,77 +1,46 @@
 config = require 'config'
-vagrant = require 'node-vagrant'
 _r = require 'kefir'
-fs = require 'fs'
-child_process = require 'child_process'
+vagrant = require 'node-vagrant'
 
 fsModel = require './fs.coffee'
 
-vagrantInstalled = false
+isVagrantInstalled = (callback) ->
+  return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
+
+  child = machine._run ['version']
+  child.on 'close', () ->
+    callback null, true
+  child.on 'error', (err) ->
+    callback new Error 'vagrant is apparently not installed'
 
 getVagrantMachine = (callback) ->
-  configModulePath = fsModel.getConfigModulePath()
-  return callback new Error '' if ! configModulePath?
-
-  _r.fromNodeCallback (cb) ->
-    fs.stat configModulePath, (err) ->
-      cb new Error 'Can´t start vagrant without dedicated vagrant folder ' + configModulePath if err
-      cb null, true
-  .flatMap () ->
-    _r.fromNodeCallback (cb) ->
-      return cb null, true if vagrantInstalled == true
-      child_process.spawn 'vagrant', ['version']
-      .on 'close', () ->
-        vagrantInstalled = true;
-        cb null, true
-      .on 'error', () ->
-        cb new Error 'vagrant does not seems to be installed'
-  .flatMap () ->
-    _r.fromNodeCallback (cb) ->
-      try
-        machine = vagrant.create {cwd: configModulePath}
-        cb null, machine
-      catch err
-        cb err
-  .onValue (val) ->
-    callback null, val
-  .onError callback
+  return callback new Error '' if ! (configModulePath = fsModel.getConfigModulePath())?
+  return machine = vagrant.create {cwd: configModulePath}
 
 model = {}
-model.getVersion = (cb) ->
-  vagrant.version cb
-
 model.getStatus = (callback) ->
-  _r.fromNodeCallback (cb) ->
-    getVagrantMachine cb
-  .flatMap (machine) ->
-    _r.fromNodeCallback (cb) ->
-      machine.status (err, result) ->
-        return cb new Error err if err
-        return cb(null, i.status) for own d, i of result
-  .onValue (val) ->
-    callback null, val
-  .onError callback
+  return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
+  machine.status (err, result) ->
+    return callback new Error err if err
+    return callback(null, i.status) for own d, i of result
 
 model.up = (callback) ->
-  _r.fromNodeCallback (cb) ->
-    getVagrantMachine cb
-  .flatMap (machine) ->
-    _r.fromNodeCallback (cb) ->
-      machine.up cb
-  .onValue (val) ->
-    callback null, val
-  .onError callback
+  return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
+  machine.up callback
 
 model.run = (callback) ->
   runningMessage = 'is_runnning'
 
   _r.fromNodeCallback (cb) ->
     setTimeout () ->
+      isVagrantInstalled cb
+    , 1
+  .flatMap () ->
+    _r.fromNodeCallback (cb) ->
       model.getStatus (err, status) ->
         return cb new Error err if err
         return cb runningMessage if status == 'running'
         cb null, true
-    , 1
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       model.up cb
