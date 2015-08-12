@@ -1,7 +1,5 @@
 config = require 'config'
-path = require 'path'
-fse = require 'fs-extra'
-_r = require 'kefir'
+jetpack = require 'fs-jetpack'
 
 appConfig = config.get 'app'
 
@@ -10,45 +8,38 @@ getHomePath = () ->
   return process.env.HOME
 
 getPathResolvedWithRelativeHome = (fsPath) ->
-  if typeof fsPath == "string" && fsPath.match(/^~/)
-    homePath = getHomePath()
-    return null if ! homePath?
-    fsPath = path.join homePath, fsPath.substr 1
+  return null if typeof fsPath != "string"
+  homePath = getHomePath()
+  fsPath = fsPath.replace /^(~|~\/)/, homePath if homePath?
   return fsPath
 
 model = {}
 model.getConfigPath = () ->
-  configPath = appConfig.configPath
-  return null if ! configPath
+  return null if ! (configPath = appConfig.configPath)?
   return getPathResolvedWithRelativeHome appConfig.configPath
 
 model.getProjectsPath = () ->
-  projectPath = appConfig.projectsPath
-  return null if ! projectPath
+  return null if ! (projectPath = appConfig.projectsPath)?
   return getPathResolvedWithRelativeHome projectPath
 
 model.getConfigModulePath = () ->
-  configPath = model.getConfigPath()
-  return null if ! configPath? || ! appConfig.defaultNamespace
-  return path.join configPath, appConfig.defaultNamespace
+  return null if ! (configPath = model.getConfigPath())? || ! appConfig.defaultNamespace
+  return jetpack.cwd(configPath).path appConfig.defaultNamespace
 
-
-model.copyVagrantFile = (callback) ->
+model.copyVagrantFile = (cb) ->
   configModulePath = model.getConfigModulePath()
-  return callback new Error 'copy failed' if ! configModulePath?
+  pathDefaultVagrantFile = appConfig.pathDefaultVagrantFile
+  return cb new Error 'copy failed due to misconfiguration' if ! configModulePath? || ! pathDefaultVagrantFile?
 
-  src = path.join process.cwd(), appConfig.pathDefaultVagrantFile
-  dst = path.join configModulePath, 'Vagrantfile'
-
-  _r.fromNodeCallback (cb) ->
-    fse.ensureDir configModulePath, cb
-  .flatMap () ->
-    _r.fromNodeCallback (cb) ->
-      fse.copy src, dst, cb
-  .onValue (val) ->
-    return callback null, val
-  .onError (err) ->
-    return callback new Error err
-
+  jetpack.readAsync pathDefaultVagrantFile
+  .fail cb
+  .then (data) ->
+    jetpack.dirAsync configModulePath
+    .fail cb
+    .then (dir) ->
+      dir.fileAsync 'Vagrantfile', {content: data}
+      .fail cb
+      .then () ->
+        return cb null, true
 
 module.exports = model;
