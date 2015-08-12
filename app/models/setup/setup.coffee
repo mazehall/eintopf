@@ -3,7 +3,7 @@ config = require 'config'
 
 appConfig = config.get 'app'
 
-vagrantFileModel = require '../vagrant/file.coffee'
+vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
 
 defaultStates =
@@ -37,7 +37,7 @@ model.run = () ->
 
   return _r
   .fromNodeCallback (cb) ->
-    vagrantFileModel.install cb
+    vagrantFsModel.copyVagrantFile cb
   .flatMap () ->
     states.vagrantFile = true
     return _r
