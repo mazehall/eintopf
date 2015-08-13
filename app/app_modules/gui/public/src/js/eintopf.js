@@ -18,6 +18,18 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
     })
     .state('cooking', {
       url: "/cooking",
-      templateUrl: "partials/cooking.html"
+      templateUrl: 'partials/cooking.html',
+      controller: 'cookingCtrl'
+    })
+    .state('cooking.recipe', {
+      url: "/cooking/recipe/{id:[1-9a-zA-Z]}",
+      controller: "recipeCtrl",
+      templateUrl: "partials/cooking.recipe.html"
+    })
+    .state('cooking.createProject', {
+      url: "/cooking/createProject",
+      controller: "createProjectCtrl",
+      templateUrl: "partials/cooking.createProject.html"
     });
+
 });
