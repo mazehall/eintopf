@@ -25,6 +25,15 @@ model.getStatus = (callback) ->
     return callback(null, i.status) for own d, i of result
 
 model.up = (callback) ->
+  if process.platform != 'win32'
+    errorMessage = 'Your OS is currently not supported for automatic vagrant start'
+    errorMessage += '\nPlease start vagrant manually:'
+    errorMessage += '\n - open a shell'
+    errorMessage += '\n - cd ' + fsModel.getConfigModulePath()
+    errorMessage += '\n - vagrant up'
+    errorMessage += '\n - press try again button'
+    return callback errorMessage
+
   return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
   machine.up callback
 
@@ -43,7 +52,9 @@ model.run = (callback) ->
         cb null, true
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      model.up cb
+      setTimeout () ->
+        model.up cb
+      ,1
   .onValue (val) ->
     callback null, val
   .onError (err) ->
