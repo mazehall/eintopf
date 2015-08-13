@@ -7,10 +7,14 @@ angular.module('eintopf')
             console.log('in controller');
 
             setupLiveResponse.$assignProperty($scope, 'states');
-            setupLiveResponse.onValue(function(val) {
-                if(val.state == "cooking") {
-                    $state.go('cooking');
-                }
+
+            $scope.$fromWatch('states')
+            .filter(function (val) {
+                if (val.newValue && val.newValue.state == 'cooking') return true;
+                return null;
+            })
+            .onValue(function() {
+                $state.go('cooking');
             });
 
             $scope.setupRestart = function() {
