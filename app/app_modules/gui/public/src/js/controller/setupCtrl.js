@@ -28,10 +28,6 @@ angular.module('eintopf')
             console.log('in controller cooking');
 
             resProjectsList.$assignProperty($scope, 'projects');
-
-            setTimeout(function() {
-                reqProjectsList.emit();
-            }, 100);
         }
     ])
     .controller('recipeCtrl',
