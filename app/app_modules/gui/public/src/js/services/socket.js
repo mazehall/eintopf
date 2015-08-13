@@ -16,7 +16,3 @@ angular.module('eintopf.services.socket.states', [])
       }
     }
   }])
-
-  .factory('statesLiveResponse', ['socket', function (socket) {
-    return Kefir.fromEvent(socket, 'states:live').toProperty();
-  }])

@@ -7,7 +7,7 @@ var eintopf = angular.module('eintopf', [
 eintopf.config(function($stateProvider, $urlRouterProvider) {
   //
   //// For any unmatched url, redirect to /state1
-  //$urlRouterProvider.otherwise("/setup");
+  $urlRouterProvider.otherwise("/setup");
   //
   // Now set up the states
   $stateProvider
@@ -20,12 +20,4 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       url: "/cooking",
       templateUrl: "partials/cooking.html"
     });
-});
-
-eintopf.run(function($state, statesLiveResponse) {
-  statesLiveResponse.onValue(function (states) {
-    if(states.state) {
-      $state.go(states.state);
-    }
-  });
 });
