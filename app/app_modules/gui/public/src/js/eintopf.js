@@ -1,13 +1,13 @@
 var eintopf = angular.module('eintopf', [
   'ui.router',
   'angular-kefir',
-  'eintopf.services.socket.setup'
+  'eintopf.services.socket.states'
 ]);
 
 eintopf.config(function($stateProvider, $urlRouterProvider) {
   //
-  // For any unmatched url, redirect to /state1
-  $urlRouterProvider.otherwise("/setup");
+  //// For any unmatched url, redirect to /state1
+  //$urlRouterProvider.otherwise("/setup");
   //
   // Now set up the states
   $stateProvider
@@ -19,12 +19,13 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
     .state('cooking', {
       url: "/cooking",
       templateUrl: "partials/cooking.html"
-    })
-    .state('cooking.projects', {
-      url: "/projects",
-      templateUrl: "partials/state2.list.html",
-      controller: function($scope) {
-        $scope.things = ["A", "Set", "Of", "Things"];
-      }
     });
+});
+
+eintopf.run(function($state, statesLiveResponse) {
+  statesLiveResponse.onValue(function (states) {
+    if(states.state) {
+      $state.go(states.state);
+    }
+  });
 });

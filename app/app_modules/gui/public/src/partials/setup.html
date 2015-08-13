@@ -5,7 +5,7 @@
       <div class="grd-row-col-1-6">
         <i ng-show="states.vagrantFile == true" class="fa fa-check-circle-o fa-2x fnt--mid-gray"></i>
         <i ng-show="states.vagrantFile == 'failed'" class="fa fa-exclamation-triangle fa-2x fnt--red"></i>
-        <div ng-show="states.vagrantFile == false" class="la-ball-spin-clockwise la-dark">
+        <div ng-show="!states.vagrantFile" class="la-ball-spin-clockwise la-dark">
           <div></div>
           <div></div>
           <div></div>
@@ -23,7 +23,7 @@
       <div class="grd-row-col-1-6">
         <i ng-show="states.vagrantRun == true" class="fa fa-check-circle-o fa-2x fnt--mid-gray"></i>
         <i ng-show="states.vagrantRun == 'failed'" class="fa fa-exclamation-triangle fa-2x fnt--red"></i>
-        <div ng-show="states.vagrantRun == false" class="la-ball-spin-clockwise la-dark">
+        <div ng-show="!states.vagrantRun" class="la-ball-spin-clockwise la-dark">
           <div></div>
           <div></div>
           <div></div>

@@ -52,9 +52,7 @@ model.run = (callback) ->
         cb null, true
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      setTimeout () ->
         model.up cb
-      ,1
   .onValue (val) ->
     callback null, val
   .onError (err) ->

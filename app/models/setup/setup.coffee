@@ -12,7 +12,9 @@ defaultStates =
   running: false
   failed: false
   errorMessage: null
-  state: null
+  state: 'setup'
+
+inSetup = false
 
 states = JSON.parse(JSON.stringify(defaultStates));
 
@@ -24,7 +26,7 @@ model.getState = () ->
 # 1 reset states
 # 2 run setup again
 model.restart = () ->
-  return false if states.state == "running"
+  return false if inSetup
   states = JSON.parse(JSON.stringify(defaultStates));
   model.run()
 
@@ -32,8 +34,8 @@ model.restart = () ->
 # 2 start and monitor vagrant
 # 3 profit
 model.run = () ->
-  return false if states.state == "running"
-  states.state = "running"
+  return false if inSetup
+  inSetup = true
 
   return _r
   .fromNodeCallback (cb) ->
@@ -46,12 +48,13 @@ model.run = () ->
   .onValue () ->
     states.vagrantRun = true
     states.running = true
+    states.state = "cooking"
   .onError (err) ->
     states.vagrantFile = "failed" if states.vagrantFile == false
     states.vagrantRun = "failed" if states.vagrantRun == false
     states.errorMessage = err.message
     states.failed = true
   .onEnd () ->
-    states.state = "done"
+    inSetup = false
 
 module.exports = model;
