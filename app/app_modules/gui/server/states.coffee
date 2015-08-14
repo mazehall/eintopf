@@ -4,6 +4,7 @@ modelSetup = require '../../../models/setup/setup.coffee'
 modelProjects = require '../../../models/projects/list.coffee'
 
 modelSetup.run()
+modelProjects.loadProjects()
 
 states = (connections_, rawSocket) ->
   _r.fromPoll 1000 * 5, () ->
