@@ -1,3 +1,7 @@
+git  = require 'gift'
+jetpack = require 'fs-jetpack'
+
+vagrantFsModel = require '../vagrant/fs.coffee'
 
 projects = [
   {
@@ -42,9 +46,26 @@ projects = [
   }
 ]
 
+getProjectNameFromGitUrl = (gitUrl) ->
+  return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)[\/]?$/))?
+  return projectName[1]
+
 model = {};
 model.getList = () ->
   return projects
 
+model.installProjectList = (gitUrl, callback) ->
+  return callback new Error 'could not resolve config path' if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
+  return callback new Error 'invalid or unsupported git url' if !(projectName = getProjectNameFromGitUrl(gitUrl))?
+
+  jetpack.dirAsync configModulePath
+  .then (dir) ->
+    dir.dirAsync 'configs'
+    .then (dir) ->
+      git.clone gitUrl, dir.path(projectName), (err, result) ->
+        return callback new Error err.message if err
+        callback null, true
+  .fail (err) ->
+    callback err
 
 module.exports = model;

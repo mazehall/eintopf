@@ -23,5 +23,15 @@ states = (connections_, rawSocket) ->
     .onValue () ->
       socket.emit 'res:projects:list', modelProjects.getList()
 
+    _r.fromEvents socket, 'projects:install'
+    .filter()
+    .onValue (val) ->
+      modelProjects.installProjectList val, (err, result) ->
+        res = {}
+        res.errorMessage = err.message if err? && typeof err == 'object'
+        res.status = if err then 'error' else 'success'
+
+        socket.emit 'res:projects:install', res
+
 
 module.exports = states

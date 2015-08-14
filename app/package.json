@@ -20,6 +20,7 @@
     "config": "^1.15.0",
     "express": "4.12.4",
     "fs-jetpack": "^0.7.0",
+    "gift": "^0.6.1",
     "kefir": "2.7.0",
     "mazehall": "2.1.0",
     "node-vagrant": "^1.0.6",
