@@ -78,4 +78,18 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
+  .factory('reqAppsList', ['socket', function (socket) {
+    return {
+      emit: function (data) {
+        socket.emit('apps:list', data);
+      }
+    }
+  }])
+
+  .factory('resAppsList', ['socket', 'reqAppsList', function (socket, reqAppsList) {
+    reqAppsList.emit();
+    return Kefir.fromEvent(socket, 'res:apps:list').toProperty();
+  }])
+
+
 ;

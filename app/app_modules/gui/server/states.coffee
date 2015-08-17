@@ -2,9 +2,11 @@ _r = require 'kefir'
 
 setupModel = require '../../../models/setup/setup.coffee'
 projectsModel = require '../../../models/projects/list.coffee'
+dockerModel = require '../../../models/docker/list.coffee'
 
 setupModel.run()
 projectsModel.loadProjects()
+dockerModel.loadContainers()
 
 states = (connections_, rawSocket) ->
   _r.fromPoll 1000 * 5, () ->
@@ -51,5 +53,9 @@ states = (connections_, rawSocket) ->
     .onValue (project) ->
       projectsModel.stopProject project, (err, result) ->
         socket.emit 'res:project:stop', {"error": err, "output": result}
+
+    _r.fromEvents socket, 'apps:list'
+    .onValue () ->
+      socket.emit 'res:apps:list', dockerModel.getContainerList()
 
 module.exports = states

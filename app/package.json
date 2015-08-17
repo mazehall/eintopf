@@ -18,6 +18,8 @@
     "body-parser": "1.13.1",
     "coffee-script": "1.9.3",
     "config": "^1.15.0",
+    "docker-events": "0.0.2",
+    "dockerode": "^2.2.2",
     "express": "4.12.4",
     "fs-jetpack": "^0.7.0",
     "gift": "^0.6.1",
