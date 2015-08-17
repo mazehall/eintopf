@@ -68,7 +68,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "docker" do |d|
     d.run "proxy",
       image: "mkodockx/docker-nginx-proxy",
-      args: "-d -p 4480:80 -p 8443:443 --restart=always -e GLOB_DEFAULT_HOST='" + project + ".dev' -v /vagrant/config/vhosts/:/etc/nginx/vhost.d:ro -v /var/run/docker.sock:/tmp/docker.sock:ro"
+      args: "-d -p 4480:80 -p 8443:443 --restart=always -e GLOB_DEFAULT_HOST='" + project + ".dev' -v /vagrant/proxy/vhosts/:/etc/nginx/vhost.d:ro -v /var/run/docker.sock:/tmp/docker.sock:ro"
   end
 
   config.vm.network "forwarded_port", guest: 2375, host: 2375
