@@ -95,6 +95,8 @@ model.loadProjects = () ->
   foundProjects = dummyProjects
 
   _r.stream dirEmitter jetpack.cwd(configModulePath, 'configs').path()
+  .onError () -> #@todo remove in release - this is only for dev
+    projects = foundProjects
   .flatMap mazehall.readPackageJson
   .filter (x) ->
     x.pkg.mazehall && x.pkg.eintopf && typeof x.pkg.eintopf is "object"
