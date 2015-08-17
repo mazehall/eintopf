@@ -8,6 +8,26 @@ child = require 'child_process'
 vagrantFsModel = require '../vagrant/fs.coffee'
 
 projects = []
+dummyProjects = [
+  {
+    id: "dummy1",
+    name: "Project frisch"
+    description: "Ein sehr kurzer Beschreibungstext, worum es sich hier überhaupt handelt.  Es sollten maximal 3 Zeilen sein."
+    state: null
+  },
+  {
+    id: "dummy2",
+    name: "Project installiert aber aus"
+    description: "Ein sehr kurzer Beschreibungstext, worum es sich hier überhaupt handelt.  Es sollten maximal 3 Zeilen sein."
+    state: "installed"
+  },
+  {
+    id: "dummy3",
+    name: "Project installiert und läuft"
+    description: "Ein sehr kurzer Beschreibungstext, worum es sich hier überhaupt handelt.  Es sollten maximal 3 Zeilen sein."
+    state: "running"
+  }
+]
 
 getProjectNameFromGitUrl = (gitUrl) ->
   return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)[\/]?$/))?
@@ -72,7 +92,7 @@ model.loadProject = (projectDir, callback) ->
 
 model.loadProjects = () ->
   return false if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
-  foundProjects = []
+  foundProjects = dummyProjects
 
   _r.stream dirEmitter jetpack.cwd(configModulePath, 'configs').path()
   .flatMap mazehall.readPackageJson
@@ -86,6 +106,7 @@ model.loadProjects = () ->
   .onEnd () ->
     projects = foundProjects
 
+#@todo add running state and emit
 model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 

@@ -6,10 +6,10 @@
     <div class="grd-row-col-5-6--md  ">
       <ul class="list--unstyled flt--right  m0 p0">
         <li class="flt--left">
-          <a href="#" class="btn--link">APPS</a>
+          <a ui-sref="apps" class="btn--link">APPS</a>
         </li>
         <li class="flt--left active">
-          <a href="#" class="btn--link ">PROJECTS</a>
+          <a ui-sref="cooking" class="btn--link ">PROJECTS</a>
         </li>
       </ul>
     </div>
@@ -24,142 +24,40 @@
   <div class="grd-row cssHeightFull">
     <div class="cssSidebar cssHeightFull">
       <div class="txt--center my2">
-        <a href="#" class=" py1 m0 btn--red">
+        <a ui-sref="cooking.createProject" class=" py1 m0 btn--red">
           <i class=" fa  fa-plus-circle"></i>
           <span class="">Create Project</span>
         </a>
       </div>
       <div class="cssMenu cssHeightFull">
       <ul class=" list--unstyled  p0 m0">
-        <li class="m0 grd-row txt--left ">
-          <a href="#" class="grd-row-col-6 py2 btn--link txt--left">
+
+        <li ng-repeat="(key, value) in projects" class="m0 grd-row txt--left ">
+          <a class="grd-row-col-6 py2 btn--link txt--left"
+             ui-sref="cooking.recipe({id: '{{value.id}}'})" ui-sref-active='active'>
             <div class="media">
               <div class="media-figure m0">
-                <i class="fa fa-circle fnt--light-gray"></i>
+                <i ng-class="{'fa-cog fa-spin fnt--green': value.state == 'running', 'fa-cog fnt--light-gray': value.state == 'installed', 'fa-circle fnt--light-gray': !value.state}"
+                   class="fa"></i>
               </div>
               <div class="media-body txt--left">
-                <h6 class="m0 p0">Project frisch</h6>
+                <h6 class="m0 p0">
+                  {{value.name}}
+                </h6>
               </div>
             </div>
           </a>
         </li>
-        <li class="m0 grd-row txt--left ">
-          <a href="#" class="grd-row-col-6 py2 btn--link txt--left">
-            <div class="media">
-              <div class="media-figure m0">
-                <i class="fa fa-cog fnt--light-gray"></i>
-              </div>
-              <div class="media-body txt--left">
-                <h6 class="m0 p0">Project installiert aber aus</h6>
-              </div>
-            </div>
-          </a>
-        </li>
-        <li class="m0 grd-row txt--left ">
-          <a href="#" class="grd-row-col-6 py2 btn--link txt--left active">
-            <div class="media">
-              <div class="media-figure m0">
-                <i class="fa fa-cog fa-spin fnt--green"></i>
-              </div>
-              <div class="media-body txt--left">
-                <h6 class="m0 p0">Project installiert und läuft</h6>
-              </div>
-            </div>
-          </a>
-        </li>
+
         </ul>
       </div>
     </div>
+
     <div class="clearfix"></div>
-    <div class="grd-row-col-6 ">
-        <div class="grd-row">
-          <div class="grd-row-col-6 m1 cssToolbar">
-            <a href="#" class="btn--green small active">
-              <i class="fa fa fa-cog fnt--green"></i>
-              <span>run</span>
-            </a>
-            <a href="#" class="btn small">
-              <i class="fa fa-ban fnt--mid-gray"></i>
-              <span>stop</span>
-            </a>
-            <a href="#" class="btn  small">
-              <i class="fa fa-download fnt--orange"></i>
-              <span>install</span>
-            </a>
-            <a href="#" class="btn small">
-              <i class="fa fa-refresh fnt--blue small"></i>
-              <span class="fnt--blue ">update</span>
-            </a>
-            <a href="#" class="btn  small">
-              <i class="fa fa-trash-o fnt--red"></i>
-              <span class="fnt--red ">delete</span>
-            </a>
-
-          </div>
-          </div>
-        <div class="grd-row">
-          <div class="grd-row-col-6">
-              <div class="grd-row p1">
-                <div class="grd-row-col-6">
-                  <div class="media mx1">
-                    <div class="media-figure m0">
-                      <img src="img/dummy_project1.png" alt="project"/>
-                    </div>
-                    <div class="media-body txt--left">
-                      <h6 class="m0 p0">Project installiert und läuft</h6>
-                      <small class="m0 p0">Ein sehr kurzer Beschreibungstext, worum es sich hier überhaupt handelt.  Es sollten maximal 3 Zeilen sein. </small>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-
-
-          </div>
-        </div>
-        <div class="grd-row m1">
-          <div class="grd-row-col-2-6">
-            <ul class=" list--unstyled txt--left p0 m0">
-              <li class="m0 grd-row txt--left ">
-                <a href="#" class="grd-row-col-6 p0 btn--link txt--left">
-
-
-
-                      <h6 class="m0 p0">MongoDB</h6>
-
-
-                </a>
-              </li>
-              <li class="m0 grd-row txt--left ">
-                <a href="#" class="grd-row-col-6 p0 btn--link txt--left">
-
-
-
-                      <h6 class="m0 p0">WebApp</h6>
-
-
-                </a>
-              </li>
-              <li class="m0 grd-row txt--left active">
-                <a href="#" class="grd-row-col-6 p0 btn--link txt--left ">
-
-
-
-                      <h6 class="m0 p0">FulFill</h6>
-
-
-                </a>
-              </li>
-                          </ul>
-          </div>
-          <div class="grd-row-col-4-6 bg--off-white mx1">
-            Platz für andere Anzeigen usw
-          </div>
-        </div>
-      <ul>
-        <li ng-repeat="item in items">{{ item }}</li>
-      </ul>
+    <div class="grd-row-col-6" ui-view>
+      <div class="m1">
+        Select a recipe or create a new project
+      </div>
     </div>
   </div>
 
