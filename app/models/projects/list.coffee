@@ -92,7 +92,7 @@ model.loadProject = (projectDir, callback) ->
 
 model.loadProjects = () ->
   return false if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
-  foundProjects = dummyProjects
+  foundProjects = []
 
   _r.stream dirEmitter jetpack.cwd(configModulePath, 'configs').path()
   .onError () -> #@todo remove in release - this is only for dev

@@ -6,10 +6,10 @@
     <div class="grd-row-col-5-6--md  ">
       <ul class="list--unstyled flt--right  m0 p0">
         <li class="flt--left">
-          <a ui-sref="apps" class="btn--link">APPS</a>
+          <a ui-sref="cooking.apps" class="btn--link">Container</a>
         </li>
         <li class="flt--left active">
-          <a ui-sref="cooking" class="btn--link ">PROJECTS</a>
+          <a ui-sref="cooking.projects" class="btn--link ">Projects</a>
         </li>
       </ul>
     </div>
@@ -17,49 +17,4 @@
 </div>
 <div class="clearfix"></div>
 
-
-
-
-<div class="grd p0 m0 cssHeightFull ">
-  <div class="grd-row cssHeightFull">
-    <div class="cssSidebar cssHeightFull">
-      <div class="txt--center my2">
-        <a ui-sref="cooking.createProject" class=" py1 m0 btn--red">
-          <i class=" fa  fa-plus-circle"></i>
-          <span class="">Create Project</span>
-        </a>
-      </div>
-      <div class="cssMenu cssHeightFull">
-      <ul class=" list--unstyled  p0 m0">
-
-        <li ng-repeat="(key, value) in projects" class="m0 grd-row txt--left ">
-          <a class="grd-row-col-6 py2 btn--link txt--left"
-             ui-sref="cooking.recipe({id: '{{value.id}}'})" ui-sref-active='active'>
-            <div class="media">
-              <div class="media-figure m0">
-                <i ng-class="{'fa-cog fa-spin fnt--green': value.state == 'running', 'fa-cog fnt--light-gray': value.state == 'installed', 'fa-circle fnt--light-gray': !value.state}"
-                   class="fa"></i>
-              </div>
-              <div class="media-body txt--left">
-                <h6 class="m0 p0">
-                  {{value.name}}
-                </h6>
-              </div>
-            </div>
-          </a>
-        </li>
-
-        </ul>
-      </div>
-    </div>
-
-    <div class="clearfix"></div>
-    <div class="grd-row-col-6" ui-view>
-      <div class="m1">
-        Select a recipe or create a new project
-      </div>
-    </div>
-  </div>
-
-</div>
-
+<div id="content" ui-view class="cssHeightFull"></div>

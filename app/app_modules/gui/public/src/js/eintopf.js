@@ -16,22 +16,28 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: "partials/setup.html",
       controller: "setupCtrl"
     })
+
     .state('cooking', {
+      abstract: true,
       url: "/cooking",
       templateUrl: 'partials/cooking.html',
+    })
+    .state('cooking.projects', {
+      url: "/projects",
+      templateUrl: "partials/cooking.projects.html",
       controller: 'cookingCtrl'
     })
-    .state('cooking.recipe', {
-      url: "/cooking/recipe/{id}",
+    .state('cooking.projects.recipe', {
+      url: "/recipe/{id}",
       controller: "recipeCtrl",
-      templateUrl: "partials/cooking.recipe.html"
+      templateUrl: "partials/cooking.projects.recipe.html"
     })
-    .state('cooking.createProject', {
-      url: "/cooking/createProject",
+    .state('cooking.projects.create', {
+      url: "/create",
       controller: "createProjectCtrl",
-      templateUrl: "partials/cooking.createProject.html"
+      templateUrl: "partials/cooking.projects.create.html"
     })
-    .state('apps', {
+    .state('cooking.apps', {
       url: "/apps",
       controller: "appsCtrl",
       templateUrl: "partials/apps.html"

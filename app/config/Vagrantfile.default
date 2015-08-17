@@ -71,10 +71,10 @@ Vagrant.configure("2") do |config|
       args: "-d -p 4480:80 -p 8443:443 --restart=always -e GLOB_DEFAULT_HOST='" + project + ".dev' -v /vagrant/proxy/vhosts/:/etc/nginx/vhost.d:ro -v /var/run/docker.sock:/tmp/docker.sock:ro"
   end
 
-  config.vm.network "forwarded_port", guest: 2375, host: 2375
-  config.vm.network "forwarded_port", guest: 4480,   host: 4480
-  config.vm.network "forwarded_port", guest: 4443,  host: 4443
-  config.vm.network "forwarded_port", guest: 3306, host: 44306
-  config.vm.network "forwarded_port", guest: 27017, host: 44017
+  config.vm.network "forwarded_port", guest: 2375,  host: 2375    # Docker
+  config.vm.network "forwarded_port", guest: 4480,  host: 4480    # Proxy public
+  config.vm.network "forwarded_port", guest: 4443,  host: 4443    # Proxy SSL
+  config.vm.network "forwarded_port", guest: 3306,  host: 44306   # MySQL
+  config.vm.network "forwarded_port", guest: 27017, host: 44017   # MongoDB
 
 end

@@ -12,7 +12,7 @@ angular.module('eintopf')
                 return null;
             })
             .onValue(function() {
-                $state.go('cooking');
+                $state.go('cooking.projects');
             });
 
             $scope.setupRestart = function() {
