@@ -40,7 +40,42 @@ angular.module('eintopf.services.socket.states', [])
 
   .factory('resProjectsInstall', ['socket', function (socket) {
     return Kefir.fromEvent(socket, 'res:projects:install').toProperty();
-  }]);
+  }])
 
+  .factory('resProjectDetail', ['socket', function (socket) {
+    return Kefir.fromEvent(socket, 'res:project:detail').toProperty();
+  }])
 
+  .factory('reqProjectDetail', ['socket', function (socket) {
+    return {
+      emit: function (data) {
+        socket.emit('project:detail', data);
+      }
+    }
+  }])
 
+  .factory('resProjectStart', ['socket', function (socket) {
+    return Kefir.fromEvent(socket, 'res:project:start').toProperty();
+  }])
+
+  .factory('reqProjectStart', ['socket', function (socket) {
+    return {
+      emit: function (data) {
+        socket.emit('project:start', data);
+      }
+    }
+  }])
+
+  .factory('resProjectStop', ['socket', function (socket) {
+    return Kefir.fromEvent(socket, 'res:project:stop').toProperty();
+  }])
+
+  .factory('reqProjectStop', ['socket', function (socket) {
+    return {
+      emit: function (data) {
+        socket.emit('project:stop', data);
+      }
+    }
+  }])
+
+;

@@ -1,1 +1,57 @@
-recipe {{id}}
+<div class="grd-row-col-6">
+
+    <div class="grd-row-col-3-6">
+        <h4>
+            recipe {{project.name}}
+        </h4>
+    </div>
+
+    <div class="grd-row-col-3-6">
+        {{project.description}}
+    </div>
+
+    <div class="grd-row-col-3-6">
+        <button class="btn--blue" ng-click="startProject(project)" ng-disabled="loading">
+            <div ng-show="loading" class="la-ball-spin-clockwise la-dark">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            start
+        </button>
+
+        <button class="btn--blue" ng-click="stopProject(project)" ng-disabled="loading">
+            <div ng-show="loading" class="la-ball-spin-clockwise la-dark">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            stop
+        </button>
+    </div>
+
+    <div ng-show="result.output" class="grd-row-col-6-6 py1">
+        <h4>
+            {{result.error? "error":"success";}}:
+        </h4>
+
+        <pre>
+            {{result.output.stdout}}
+        </pre>
+
+        <pre ng-show="result.error">
+            {{result.output.stderr}}
+        </pre>
+    </div>
+
+</div>

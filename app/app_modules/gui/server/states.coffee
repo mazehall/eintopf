@@ -1,39 +1,55 @@
 _r = require 'kefir'
 
-modelSetup = require '../../../models/setup/setup.coffee'
-modelProjects = require '../../../models/projects/list.coffee'
+setupModel = require '../../../models/setup/setup.coffee'
+projectsModel = require '../../../models/projects/list.coffee'
 
-modelSetup.run()
-modelProjects.loadProjects()
+setupModel.run()
+projectsModel.loadProjects()
 
 states = (connections_, rawSocket) ->
   _r.fromPoll 1000 * 5, () ->
-    modelSetup.getState()
+    setupModel.getState()
   .onValue (res) ->
     rawSocket.emit 'states:live', res
 
   connections_.onValue (socket) ->
-    socket.emit 'states:live', modelSetup.getState()
+    socket.emit 'states:live', setupModel.getState()
 
     _r.fromEvents socket, 'states:restart'
     .onValue () ->
-      modelSetup.restart()
-      rawSocket.emit 'states:live', modelSetup.getState()
+      setupModel.restart()
+      rawSocket.emit 'states:live', setupModel.getState()
 
     _r.fromEvents socket, 'projects:list'
     .onValue () ->
-      socket.emit 'res:projects:list', modelProjects.getList()
+      socket.emit 'res:projects:list', projectsModel.getList()
 
     _r.fromEvents socket, 'projects:install'
     .filter()
     .onValue (val) ->
-      modelProjects.installProjectList val, (err, result) ->
+      projectsModel.installProjectList val, (err, result) ->
         res = {}
         res.errorMessage = err.message if err? && typeof err == 'object'
         res.status = if err then 'error' else 'success'
 
         socket.emit 'res:projects:install', res
-        rawSocket.emit 'res:projects:list', modelProjects.getList() if result == true #emit updated project list
+        rawSocket.emit 'res:projects:list', projectsModel.getList() if result == true #emit updated project list
 
+    _r.fromEvents socket, 'project:detail'
+    .filter()
+    .onValue (id) ->
+      socket.emit 'res:project:detail', projectsModel.getProject id
+
+    _r.fromEvents socket, 'project:start'
+    .filter()
+    .onValue (project) ->
+      projectsModel.startProject project, (err, result) ->
+        socket.emit 'res:project:start', {"error": err, "output": result}
+
+    _r.fromEvents socket, 'project:stop'
+    .filter()
+    .onValue (project) ->
+      projectsModel.stopProject project, (err, result) ->
+        socket.emit 'res:project:stop', {"error": err, "output": result}
 
 module.exports = states

@@ -3,6 +3,7 @@ git  = require 'gift'
 jetpack = require 'fs-jetpack'
 mazehall = require 'mazehall/lib/modules'
 fs = require 'fs'
+child = require 'child_process'
 
 vagrantFsModel = require '../vagrant/fs.coffee'
 
@@ -29,6 +30,11 @@ dirEmitter = (path) ->
 model = {};
 model.getList = () ->
   return projects
+
+model.getProject = (id) ->
+  for own d, i of projects
+    return i if i.id == id
+  return null
 
 model.installProjectList = (gitUrl, callback) ->
   return callback new Error 'could not resolve config path' if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
@@ -79,5 +85,22 @@ model.loadProjects = () ->
     foundProjects.push val.pkg.eintopf
   .onEnd () ->
     projects = foundProjects
+
+model.startProject = (project, callback) ->
+  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+
+  child.exec 'cd ' + project.path + ' && npm start', (err, stdout, stderr) ->
+    output = {stderr: stderr, stdout: stdout}
+    return callback err, output if err
+    return callback null, output
+
+model.stopProject = (project, callback) ->
+  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+
+  child.exec 'cd ' + project.path + ' && npm stop', (err, stdout, stderr) ->
+    output = {stderr: stderr, stdout: stdout}
+    return callback err, output if err
+    return callback null, output
+
 
 module.exports = model;

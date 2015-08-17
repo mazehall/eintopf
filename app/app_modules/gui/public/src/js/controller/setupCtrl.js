@@ -27,9 +27,36 @@ angular.module('eintopf')
         }
     ])
     .controller('recipeCtrl',
-    [ '$scope', '$stateParams',
-        function($scope, $stateParams) {
-            $scope.id = $stateParams.id;
+    [ '$scope', '$stateParams', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop',
+        function($scope, $stateParams, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop) {
+            $scope.project = {
+                id: $stateParams.id
+            };
+            $scope.loading = false;
+
+            resProjectStart.$assignProperty($scope, 'result');
+            resProjectStop.$assignProperty($scope, 'result');
+            resProjectDetail.$assignProperty($scope, 'project');
+            reqProjectDetail.emit($stateParams.id);
+
+            $scope.$fromWatch('result')
+            .filter(function(val) {
+                if (val.newValue && val.newValue.output) return true;
+            })
+            .onValue(function() {
+                $scope.loading = false;
+            });
+
+            $scope.startProject = function(project) {
+                $scope.loading = true;
+                $scope.result = {};
+                reqProjectStart.emit(project);
+            };
+            $scope.stopProject = function(project) {
+                $scope.loading = true;
+                $scope.result = {};
+                reqProjectStop.emit(project);
+            };
         }
     ])
     .controller('createProjectCtrl',
@@ -40,7 +67,7 @@ angular.module('eintopf')
             .filter(function(val) {
                 if (typeof val.newValue == "object" && val.newValue.status) return true;
             })
-            .onValue(function(test) {
+            .onValue(function() {
                 $scope.loading = false;
             });
 
