@@ -1,63 +1,40 @@
-
-  <div  class="measure p2">
-    <p class="h4">Ingredients</p>
-    <div class="grd-row my2">
-      <div class="grd-row-col-1-6">
-        <i ng-show="states.vagrantFile == true" class="fa fa-check-circle-o fa-2x fnt--mid-gray"></i>
-        <i ng-show="states.vagrantFile == 'failed'" class="fa fa-exclamation-triangle fa-2x fnt--red"></i>
-        <div ng-show="!states.vagrantFile" class="la-ball-spin-clockwise la-dark">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>    </div>
-      <div class="grd-row-col-5-6">
-        Vagrantfile
-      </div>
-    </div>
-    <div class="grd-row my2">
-      <div class="grd-row-col-1-6">
-        <i ng-show="states.vagrantRun == true" class="fa fa-check-circle-o fa-2x fnt--mid-gray"></i>
-        <i ng-show="states.vagrantRun == 'failed'" class="fa fa-exclamation-triangle fa-2x fnt--red"></i>
-        <div ng-show="!states.vagrantRun" class="la-ball-spin-clockwise la-dark">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
+  <div class="measure">
+    <div class="grd-row">
+      <div class="grd-row-col-6">
+        <img src="img/setup.png" class="py2"/>
+        <p class="muted p0 m0">Ingredients:</p>
+        <div class="grd-row">
+          <div class="grd-row-col-6 py05">
+            <span class="h4 p0 m0 cssSetup">
+              <i ng-show="states.vagrantFile == true" class="fa fa-check-circle   fnt-eintopf-green"></i>
+              <i ng-show="states.vagrantFile == 'failed'" class="fa fa-exclamation-circle fnt--red"></i>
+              <i ng-show="!states.vagrantFile" class="fa fa-spinner fa-pulse"></i>
+              Vagrantfile
+            </span>
+          </div>
         </div>
-      </div>
-      <div class="grd-row-col-5-6">
-        Docker host
-      </div>
-    </div>
-
-    <div class="grd-row my2">
-      <div ng-show="states.failed">
-        <h4 class="grd-row-col-6">
-          error:
-        </h4>
-
-        <div class="p1 brdr--light-gray">
-          <pre>{{states.errorMessage}}</pre>
+        <div class="grd-row">
+          <div class="grd-row-col-6 py05">
+            <span class="h4 p0 m0 cssSetup">
+              <i ng-show="states.vagrantRun == true" class="fa fa-check-circle   fnt-eintopf-green"></i>
+              <i ng-show="states.vagrantRun == 'failed'" class="fa fa-exclamation-circle fnt--red"></i>
+              <i ng-show="!states.vagrantRun" class="fa fa-spinner fa-pulse"></i>
+              Start VirtualBox
+          </span>
+          </div>
         </div>
-
-        <div>
-          <a class="w100--s my1 btn--green btn--s" ng-click="setupRestart()">
-            try again
-          </a>
+        <div class="grd-row">
+          <div class="grd-row-col-6">
+            <div ng-show="states.failed" class="p0 m0">
+              <pre class="bg--dark-gray p1 my2 fnt--off-white ">{{states.errorMessage}}</pre>
+              <a class=" btn" ng-click="setupRestart()">
+                try again
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-
   </div>
 
 

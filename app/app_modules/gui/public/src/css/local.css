@@ -35,7 +35,6 @@ html, body{
 }
 .cssHeader ul li:hover, .cssHeader ul li.active{
     border-bottom:2px solid #f2695e;
-
 }
 .cssHeader ul li{
     min-height:60px;
@@ -50,5 +49,11 @@ html, body{
     padding: .5rem;
     margin: 0 0 0 .5rem;
  }
+.fnt-eintopf-green{
+    color:rgba(180,199,186,1.0);
+}
+.cssSetup i{
+    width:50px;
+}
 
 
