@@ -7,48 +7,6 @@ fs = require 'fs'
 vagrantFsModel = require '../vagrant/fs.coffee'
 
 projects = []
-dummyProjects = [
-  {
-    id: '1',
-    name: "Projectproject Item 1",
-    desc: "extra beschreibung"
-  },
-  {
-    id: '2',
-    name: "Projectproject Item 2",
-    desc: "extra beschreibung"
-  },
-  {
-    id: '3',
-    name: "Projectproject Item 3",
-    desc: "extra beschreibung"
-  },
-  {
-    id: '4',
-    name: "Projectproject Item 4",
-    desc: "extra beschreibung"
-  },
-  {
-    id: '5',
-    name: "Projectproject Item 5",
-    desc: "extra beschreibung"
-  },
-  {
-    id: '6',
-    name: "Projectproject Item 6",
-    desc: "extra beschreibung"
-  },
-  {
-    id: '7',
-    name: "Projectproject Item 7",
-    desc: "extra beschreibung"
-  },
-  {
-    id: '8',
-    name: "Projectproject Item 8",
-    desc: "extra beschreibung"
-  }
-]
 
 getProjectNameFromGitUrl = (gitUrl) ->
   return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)[\/]?$/))?
@@ -74,35 +32,51 @@ model.getList = () ->
 
 model.installProjectList = (gitUrl, callback) ->
   return callback new Error 'could not resolve config path' if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
-  return callback new Error 'invalid or unsupported git url' if !(projectName = getProjectNameFromGitUrl(gitUrl))?
+  return callback new Error 'invalid or unsupported git url' if !(projectDir = getProjectNameFromGitUrl(gitUrl))?
 
   jetpack.dirAsync configModulePath
   .then (dir) ->
     dir.dirAsync 'configs'
     .then (dir) ->
-      git.clone gitUrl, dir.path(projectName), (err, result) ->
-        model.loadProjects()
+      git.clone gitUrl, dir.path(projectDir), (err) ->
         return callback new Error err.message if err
-        callback null, true
+        model.loadProject projectDir, (err) ->
+          return callback err if err
+          callback null, true
   .fail (err) ->
     callback err
 
-model.loadProjects = () ->
+model.loadProject = (projectDir, callback) ->
+  return callback new Error 'invalid project dir given' if ! projectDir?
   return callback new Error 'could not resolve config path' if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
-  foundProjects = dummyProjects
 
-  #@todo emit project changes to all connections
-  #@todo renaming dbox property to eintopf
-  #@todo generate project id (md5?)
-  directoryStream = _r.stream dirEmitter jetpack.cwd(configModulePath, 'configs').path()
-  packagesStream = directoryStream
+  dst = jetpack.cwd configModulePath, 'configs', projectDir
+  dst.readAsync 'package.json', 'json'
+  .then (config) ->
+    return callback new Error 'package does not seem to be a eintopf project' if ! config.eintopf?
+
+    project = config.eintopf
+    project['path'] = dst.path()
+    project['scripts'] = config.scripts if config.scripts
+    project['id'] = config.name
+
+    projects.push project
+    callback null, project
+  .fail callback
+
+model.loadProjects = () ->
+  return false if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
+  foundProjects = []
+
+  _r.stream dirEmitter jetpack.cwd(configModulePath, 'configs').path()
   .flatMap mazehall.readPackageJson
   .filter (x) ->
-    x.pkg.mazehall && x.pkg.dbox && typeof x.pkg.dbox is "object"
+    x.pkg.mazehall && x.pkg.eintopf && typeof x.pkg.eintopf is "object"
   .onValue (val) ->
-    val.pkg.dbox['path'] = val.path
-    val.pkg.dbox['scripts'] = val.pkg.scripts
-    foundProjects.push val.pkg.dbox
+    val.pkg.eintopf['path'] = val.path
+    val.pkg.eintopf['scripts'] = val.pkg.scripts
+    val.pkg.eintopf['id'] = val.pkg.name
+    foundProjects.push val.pkg.eintopf
   .onEnd () ->
     projects = foundProjects
 

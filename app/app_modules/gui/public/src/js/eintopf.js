@@ -22,7 +22,7 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       controller: 'cookingCtrl'
     })
     .state('cooking.recipe', {
-      url: "/cooking/recipe/{id:[1-9a-zA-Z]}",
+      url: "/cooking/recipe/{id}",
       controller: "recipeCtrl",
       templateUrl: "partials/cooking.recipe.html"
     })

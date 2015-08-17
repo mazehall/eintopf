@@ -33,6 +33,7 @@ states = (connections_, rawSocket) ->
         res.status = if err then 'error' else 'success'
 
         socket.emit 'res:projects:install', res
+        rawSocket.emit 'res:projects:list', modelProjects.getList() if result == true #emit updated project list
 
 
 module.exports = states
