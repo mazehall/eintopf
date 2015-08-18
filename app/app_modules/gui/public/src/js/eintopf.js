@@ -11,6 +11,11 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
   //
   // Now set up the states
   $stateProvider
+    .state('first', {
+      url: "/first",
+      templateUrl: "partials/first.html",
+      controller: "firstCtrl"
+    })
     .state('setup', {
       url: "/setup",
       templateUrl: "partials/setup.html",
