@@ -4,9 +4,9 @@ var app = require('app');
 var Menu = require('menu');
 var BrowserWindow = require('browser-window');
 
-module.exports.setDevMenu = function () {
-    var devMenu = Menu.buildFromTemplate([{
-        label: 'Development',
+module.exports.setMenu = function () {
+    var appMenu = Menu.buildFromTemplate([{
+        label: 'Eintopf',
         submenu: [{
             label: 'Reload',
             accelerator: 'CmdOrCtrl+R',
@@ -27,5 +27,5 @@ module.exports.setDevMenu = function () {
             }
         }]
     }]);
-    Menu.setApplicationMenu(devMenu);
+    Menu.setApplicationMenu(appMenu);
 };

@@ -1,6 +1,6 @@
 var app = require('app');
 var BrowserWindow = require('browser-window');
-var devHelper = require('./vendor/electron_boilerplate/dev_helper');
+var menuEntries = require('./config/app-menu');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 var server = require('./server.js');
 
@@ -31,10 +31,7 @@ app.on('ready', function () {
   });
   process.emit('app:startserver', port);
 
-  if (env === 'development') {
-    devHelper.setDevMenu();
-    mainWindow.openDevTools();
-  }
+  menuEntries.setMenu();
 
   mainWindow.on('close', function () {
     mainWindowState.saveState(mainWindow);
