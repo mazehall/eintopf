@@ -52,8 +52,9 @@ html, body{
 .fnt-eintopf-green{
     color:rgba(180,199,186,1.0);
 }
-.cssSetup i{
-    width:50px;
+.cssSetup ul li p.h4{
+    margin:0;
 }
+
 
 
