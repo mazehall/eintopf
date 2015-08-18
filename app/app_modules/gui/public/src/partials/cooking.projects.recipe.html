@@ -44,34 +44,19 @@
                 </div>
 
             </div>
-
-
-
         </div>
     </div>
-
-    <ul>
-        <li ng-repeat="item in items">{{ item }}</li>
-    </ul>
 </div>
 
-
-<!-- @todo remove for release -->
-<div class="grd-row-col-6">
+<div class="grd-row-col-6" ng-show="log">
     <div class="grd-row">
         <div class="grd-row-col-6 m1">
-            <div ng-show="result.output" class="grd-row-col-6-6">
-                <h4>
-                    {{result.error? "error":"success";}}:
-                </h4>
+            <h4 class="grd-row-col-6">
+                output:
+            </h4>
 
-                <pre>
-                    {{result.output.stdout}}
-                </pre>
-
-                <pre ng-show="result.error">
-                    {{result.output.stderr}}
-                </pre>
+            <div class="grd-row-col-6" ng-repeat="value in log track by $index">
+                {{value}}
             </div>
         </div>
     </div>

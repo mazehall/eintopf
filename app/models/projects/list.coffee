@@ -6,6 +6,7 @@ fs = require 'fs'
 child = require 'child_process'
 
 vagrantFsModel = require '../vagrant/fs.coffee'
+logsModel = require '../stores/log.coffee'
 
 projects = []
 dummyProjects = [
@@ -109,21 +110,16 @@ model.loadProjects = () ->
     projects = foundProjects
 
 #@todo add running state and emit
+#@todo stream output
 model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 
-  child.exec 'cd ' + project.path + ' && npm start', (err, stdout, stderr) ->
-    output = {stderr: stderr, stdout: stdout}
-    return callback err, output if err
-    return callback null, output
+  logsModel.fromChildProcess project, child.exec('npm start', {cwd: project.path, env: process.env}), callback
 
 model.stopProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 
-  child.exec 'cd ' + project.path + ' && npm stop', (err, stdout, stderr) ->
-    output = {stderr: stderr, stdout: stdout}
-    return callback err, output if err
-    return callback null, output
+  logsModel.fromChildProcess project, child.exec('npm stop', {cwd: project.path, env: process.env}), callback
 
 
 module.exports = model;

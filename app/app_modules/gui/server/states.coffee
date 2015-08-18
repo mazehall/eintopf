@@ -45,14 +45,24 @@ states = (connections_, rawSocket) ->
     _r.fromEvents socket, 'project:start'
     .filter()
     .onValue (project) ->
-      projectsModel.startProject project, (err, result) ->
-        socket.emit 'res:project:start', {"error": err, "output": result}
+      projectsModel.startProject project, (err, logStream) ->
+        logStream
+        .slidingWindow 300
+        .throttle 300
+        .onValue (val) ->
+          console.log val
+          socket.emit 'res:project:start:' + project.id, val
 
     _r.fromEvents socket, 'project:stop'
     .filter()
     .onValue (project) ->
-      projectsModel.stopProject project, (err, result) ->
-        socket.emit 'res:project:stop', {"error": err, "output": result}
+      projectsModel.stopProject project, (err, logStream) ->
+        logStream
+        .slidingWindow 300
+        .throttle 300
+        .onValue (val) ->
+          console.log val
+          socket.emit 'res:project:stop:' + project.id, val
 
     _r.fromEvents socket, 'apps:list'
     .onValue () ->

@@ -55,7 +55,11 @@ angular.module('eintopf.services.socket.states', [])
   }])
 
   .factory('resProjectStart', ['socket', function (socket) {
-    return Kefir.fromEvent(socket, 'res:project:start').toProperty();
+    return {
+      fromProject: function (project) {
+        return Kefir.fromEvent(socket, 'res:project:start:' + project ).toProperty();
+      }
+    }
   }])
 
   .factory('reqProjectStart', ['socket', function (socket) {
@@ -67,7 +71,11 @@ angular.module('eintopf.services.socket.states', [])
   }])
 
   .factory('resProjectStop', ['socket', function (socket) {
-    return Kefir.fromEvent(socket, 'res:project:stop').toProperty();
+    return {
+      fromProject: function (project) {
+        return Kefir.fromEvent(socket, 'res:project:stop:' + project ).toProperty();
+      }
+    }
   }])
 
   .factory('reqProjectStop', ['socket', function (socket) {

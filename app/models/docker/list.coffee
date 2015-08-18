@@ -8,7 +8,7 @@ containers = []
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 
 # triggers reloading of container list
-#@todo don't call loadContainers multipleTimes in a row
+#@todo don't call loadContainers multiple times in a row
 initDockerEvents = () ->
   emitter = new DockerEvents {docker: docker}
   emitter.start();

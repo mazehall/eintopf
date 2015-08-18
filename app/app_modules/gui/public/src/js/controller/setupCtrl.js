@@ -40,18 +40,10 @@ angular.module('eintopf')
             };
             $scope.loading = false;
 
-            resProjectStart.$assignProperty($scope, 'result');
-            resProjectStop.$assignProperty($scope, 'result');
+            resProjectStart.fromProject($stateParams.id).$assignProperty($scope, 'log');
+            resProjectStop.fromProject($stateParams.id).$assignProperty($scope, 'log');
             resProjectDetail.$assignProperty($scope, 'project');
             reqProjectDetail.emit($stateParams.id);
-
-            $scope.$fromWatch('result')
-            .filter(function(val) {
-                if (val.newValue && val.newValue.output) return true;
-            })
-            .onValue(function() {
-                $scope.loading = false;
-            });
 
             $scope.startProject = function(project) {
                 $scope.loading = true;
