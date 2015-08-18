@@ -8,7 +8,6 @@
     "gulp-concat": "^2.5.2",
     "gulp-gulp": "0.0.5",
     "gulp-less": "^3.0.3",
-    "gulp-less": "^3.0.3",
     "gulp-minify-css": "^1.1.1",
     "gulp-rename": "^1.2.2",
     "gulp-rev": "^3.0.1",
