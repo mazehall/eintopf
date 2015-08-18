@@ -1,41 +1,33 @@
-  <div class="measure">
-    <div class="grd-row">
-      <div class="grd-row-col-6">
-        <img src="img/setup.png" class="py2"/>
-        <p class="muted p0 m0">Ingredients:</p>
-        <div class="grd-row">
-          <div class="grd-row-col-6 py05">
-            <span class="h4 p0 m0 cssSetup">
-              <i ng-show="states.vagrantFile == true" class="fa fa-check-circle   fnt-eintopf-green"></i>
-              <i ng-show="states.vagrantFile == 'failed'" class="fa fa-exclamation-circle fnt--red"></i>
-              <i ng-show="!states.vagrantFile" class="fa fa-spinner fa-pulse"></i>
-              Vagrantfile
-            </span>
-          </div>
-        </div>
-        <div class="grd-row">
-          <div class="grd-row-col-6 py05">
-            <span class="h4 p0 m0 cssSetup">
-              <i ng-show="states.vagrantRun == true" class="fa fa-check-circle   fnt-eintopf-green"></i>
-              <i ng-show="states.vagrantRun == 'failed'" class="fa fa-exclamation-circle fnt--red"></i>
-              <i ng-show="!states.vagrantRun" class="fa fa-spinner fa-pulse"></i>
-              Start VirtualBox
-          </span>
-          </div>
-        </div>
-        <div class="grd-row">
-          <div class="grd-row-col-6">
-            <div ng-show="states.failed" class="p0 m0">
-              <pre class="bg--dark-gray p1 my2 fnt--off-white ">{{states.errorMessage}}</pre>
-              <a class=" btn" ng-click="setupRestart()">
-                try again
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="measure">
+  <div class="grd cssSetup">
+    <img src="img/setup.png" class="my1"/>
+    <p class="muted m0 py05">Ingredients:</p>
+    <ul class="list--unstyled p0 m0">
+      <li>
+        <p class="h4 p0 m0">
+          <i ng-show="states.vagrantFile == true" class="fa fa-check-circle fnt-eintopf-green"></i>
+          <i ng-show="states.vagrantFile == 'failed'" class="fa fa-exclamation-circle fnt--red"></i>
+          <i ng-show="!states.vagrantFile" class="fa fa-spinner fa-pulse"></i>
+          Vagrantfile
+        </p>
+      </li>
+      <li>
+        <p class="h4 p0 m0">
+          <i ng-show="states.vagrantRun == true" class="fa fa-check-circle fnt-eintopf-green"></i>
+          <i ng-show="states.vagrantRun == 'failed'" class="fa fa-exclamation-circle fnt--red"></i>
+          <i ng-show="!states.vagrantRun" class="fa fa-spinner fa-pulse"></i>
+          Start VirtualBox
+        </p>
+      </li>
+    </ul>
+    <div ng-show="states.failed" class="">
+        <pre class="bg--dark-gray my2 p1 fnt--off-white ">{{states.errorMessage}}</pre>
+        <a class="btn flt--left" ng-click="setupRestart()">
+          try again
+        </a>
     </div>
   </div>
+</div>
 
 
 
