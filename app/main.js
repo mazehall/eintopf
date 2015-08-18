@@ -1,6 +1,6 @@
 var app = require('app');
 var BrowserWindow = require('browser-window');
-var menuEntries = require('./config/app-menu');
+var menuEntries = require('./app_modules/gui/public/src/js/services/app-menu');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 var server = require('./server.js');
 
@@ -31,7 +31,7 @@ app.on('ready', function () {
   });
   process.emit('app:startserver', port);
 
-  menuEntries.setMenu();
+  //menuEntries.setMenu();
 
   mainWindow.on('close', function () {
     mainWindowState.saveState(mainWindow);
