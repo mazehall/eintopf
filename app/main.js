@@ -2,6 +2,7 @@ var app = require('app');
 var BrowserWindow = require('browser-window');
 var devHelper = require('./vendor/electron_boilerplate/dev_helper');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
+var server = require('./server.js');
 
 var mainWindow;
 var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
@@ -11,8 +12,6 @@ var mainWindowState = windowStateKeeper('main', {
   width: 1000,
   height: 600
 });
-
-var child = require('child_process').fork('server.js', {cwd: './app'});
 
 app.on('ready', function () {
 
@@ -27,11 +26,10 @@ app.on('ready', function () {
     mainWindow.maximize();
   }
 
-  child.on('message', function(m) {
+  process.on('app:serverstarted', function() {
     mainWindow.loadUrl('http://localhost:' + port);
-    console.log(m);
   });
-  child.send('app:startserver');
+  process.emit('app:startserver', port);
 
   if (env === 'development') {
     devHelper.setDevMenu();
@@ -39,7 +37,6 @@ app.on('ready', function () {
   }
 
   mainWindow.on('close', function () {
-    child.kill('SIGKILL');
     mainWindowState.saveState(mainWindow);
   });
 

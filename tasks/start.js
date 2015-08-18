@@ -13,8 +13,10 @@ if (process.platform === 'win32') {
 
 var runApp = function () {
   var deferred = Q.defer();
-  var app = childProcess.spawn(electron, ['./app'], {
-    stdio: 'inherit'
+
+  var app = childProcess.spawn(electron, ['.'], {
+    stdio: 'inherit',
+    cwd: 'app'
   });
 
   app.on('close', function (code) {
