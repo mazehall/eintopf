@@ -1,37 +1,33 @@
-<div class="grd">
-    hello, you are in apps right now...
+    <ul class="grd list--unstyled">
+        <li class="grd-row muted">
+            <span class="mx1 grd-row-col-1-6">
+                Name
+            </span>
+            <span class="mx1 grd-row-col-1-6">
+                Virtual Host
+            </span>
+            <span class="mx1 grd-row-col-1-6">
+                Status
+            </span>
+            <span class="mx1 grd-row-col-3-6">
 
-    <div class="grd-row-col-6-6 py2">
-        <ul class="grd list--unstyled  p0 m0">
-            <div class="bg--green">
-                <li class="m0 grd-row txt--left ">
-                    <span class="grd-row-col-2-6">
-                        Name
-                    </span>
-                    <span class="grd-row-col-2-6">
-                        Virtual Host
-                    </span>
-                    <span class="grd-row-col-2-6">
-                        Status
-                    </span>
-                </li>
+            </span>
+        </li>
+        <li class="grd-row py1" ng-repeat="(key, value) in apps" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+            <div class="mx1 grd-row-col-1-6">
+                <p class="m0 p0"> {{value.name}}</p>
             </div>
-
-            <div ng-repeat="(key, value) in apps">
-                <li class="m0 grd-row txt--left" ng-class-even="'bg--light-gray'" ng-class-odd="'bg--orange'">
-                    <span class="grd-row-col-2-6">
-                        {{value.name}}
-                    </span>
-                    <span class="grd-row-col-2-6">
-                        {{value.virtualHost}}
-                    </span>
-                    <span class="grd-row-col-2-6">
-                        {{value.status}}
-                    </span>
-                </li>
+            <div class="mx1 grd-row-col-1-6">
+                <p class="m0 p0">{{value.virtualHost}}</p>
             </div>
-        </ul>
-    </div>
-
-</div>
+            <div class="mx1 grd-row-col-1-6">
+                <p class="m0 p0"> {{value.status}}</p>
+            </div>
+            <div class="mx1 txt--right grd-row-col-3-6">
+                <a href="#"class="btn small"><i class="fa fa-play-circle fnt--green  "></i><span> start</span></a>
+                <a href="#"class="btn small"><i class="fa fa-ban fnt--dark-gray"></i><span> stop</span></a>
+                <a href="#"class="btn small"><i class="fa fa-minus-circle fnt--red"></i><span> remove</span></a>
+            </div>
+        </li>
+    </ul>
 
