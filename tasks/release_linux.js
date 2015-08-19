@@ -99,6 +99,10 @@ var packToDebFile = function () {
     return deferred.promise;
 };
 
+var renameApp = function() {
+    return projectDir.moveAsync(readyAppDir.path('electron'), readyAppDir.path(manifest.name));
+};
+
 var cleanClutter = function () {
     return tmpDir.removeAsync('.');
 };
@@ -108,6 +112,7 @@ module.exports = function () {
     .then(copyRuntime)
     .then(packageBuiltApp)
     .then(finalize)
+    .then(renameApp)
     .then(packToDebFile)
     .then(cleanClutter);
 };
