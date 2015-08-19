@@ -13,6 +13,9 @@ var mainWindowState = windowStateKeeper('main', {
   height: 600
 });
 
+// Change the current working directory
+process.chdir(app.getAppPath() + (app.getAppPath().indexOf(".asar") > 0 ? ".unpacked/" : ""));
+
 app.on('ready', function () {
 
   mainWindow = new BrowserWindow({
