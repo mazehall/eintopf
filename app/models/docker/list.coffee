@@ -3,12 +3,15 @@ Dockerrode = require 'dockerode'
 docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
 DockerEvents = require 'docker-events'
 
+watcherModel = require '../stores/watcher.coffee'
+
 containers = []
 
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 
-# triggers reloading of container list
+
 #@todo don't call loadContainers multiple times in a row
+# triggers reloading of container list
 initDockerEvents = () ->
   emitter = new DockerEvents {docker: docker}
   emitter.start();
@@ -18,16 +21,13 @@ initDockerEvents = () ->
     model.loadContainers()
   emitter.on "disconnect", () ->
     #@todo implement reconnect (kefir? try till reconnect)
-    console.log("disconnected to docker api; reconnecting");
+    console.log("disconnected to docker api; reconnecting...");
     emitter.start();
   emitter.on "create", (message) ->
-    console.log("container created: %j", message);
     model.loadContainers()
   emitter.on "start", (message) ->
-    console.log("container started: %j", message);
     model.loadContainers()
   emitter.on "die", (message) -> # calls all stop sates
-    console.log("container died: %j", message);
     model.loadContainers()
   emitter.on "error", (err) ->
     console.log 'err', err
@@ -37,7 +37,6 @@ model = {}
 model.getContainerList = () ->
   return containers;
 
-#@todo emit changes
 model.loadContainers = () ->
   foundContainers = [];
 
@@ -65,6 +64,6 @@ model.loadContainers = () ->
     foundContainers.push push
   .onEnd () ->
     containers = foundContainers
-    console.log containers
+    watcherModel.set 'containers:list', containers
 
 module.exports = model;

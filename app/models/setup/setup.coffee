@@ -5,6 +5,7 @@ appConfig = config.get 'app'
 
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
+watcherModel = require '../stores/watcher.coffee'
 
 defaultStates =
   vagrantFile: false
@@ -42,6 +43,7 @@ model.run = () ->
     vagrantFsModel.copyVagrantFile cb
   .flatMap () ->
     states.vagrantFile = true
+    watcherModel.set 'states:live', states
     return _r
     .fromNodeCallback (cb) ->
       vagrantRunModel.run cb
@@ -49,11 +51,13 @@ model.run = () ->
     states.vagrantRun = true
     states.running = true
     states.state = "cooking"
+    watcherModel.set 'states:live', states
   .onError (err) ->
     states.vagrantFile = "failed" if states.vagrantFile == false
     states.vagrantRun = "failed" if states.vagrantRun == false
     states.errorMessage = err.message
     states.failed = true
+    watcherModel.set 'states:live', states
   .onEnd () ->
     inSetup = false
 
