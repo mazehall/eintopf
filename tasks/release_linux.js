@@ -99,6 +99,13 @@ var packToDebFile = function () {
     return deferred.promise;
 };
 
+var debianConfig = function() {
+    return projectDir.file(readyAppDir.path("../../DEBIAN/postinst"), {
+        mode: "755",
+        content: "ln -fs /opt/%n/%n /usr/bin/%n".replace(/%n/g, manifest.name)
+    });
+};
+
 var renameApp = function() {
     return projectDir.moveAsync(readyAppDir.path('electron'), readyAppDir.path(manifest.name));
 };
@@ -113,6 +120,7 @@ module.exports = function () {
     .then(packageBuiltApp)
     .then(finalize)
     .then(renameApp)
+    .then(debianConfig)
     .then(packToDebFile)
     .then(cleanClutter);
 };
