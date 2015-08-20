@@ -35,10 +35,10 @@ angular.module('eintopf')
       resProjectsList.$assignProperty($scope, 'projects');
     }
   ])
-  .controller('appsCtrl',
-  ['$scope', 'resAppsList',
-    function ($scope, resAppsList) {
-      resAppsList.$assignProperty($scope, 'apps');
+  .controller('containersCtrl',
+  ['$scope', 'resContainersList',
+    function ($scope, resContainersList) {
+      resContainersList.$assignProperty($scope, 'containers');
     }
   ])
   .controller('recipeCtrl',

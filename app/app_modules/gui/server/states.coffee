@@ -29,7 +29,7 @@ states = (connections_, rawSocket) ->
   watcherModel.propertyToKefir 'containers:list'
   .throttle 500
   .onValue (val) ->
-    rawSocket.emit 'res:apps:list', val.newValue
+    rawSocket.emit 'res:containers:list', val.newValue
 
   #@todo emit project detail changes ????
 #  watcherModel.propertyToKefir 'projects:list'
@@ -65,9 +65,9 @@ states = (connections_, rawSocket) ->
     .onValue () ->
       setupModel.restart()
 
-    _r.fromEvents socket, 'apps:list'
+    _r.fromEvents socket, 'containers:list'
     .onValue () ->
-      socket.emit 'res:apps:list', watcherModel.get 'containers:list'
+      socket.emit 'res:containers:list', watcherModel.get 'containers:list'
 
     _r.fromEvents socket, 'projects:install'
     .filter()
