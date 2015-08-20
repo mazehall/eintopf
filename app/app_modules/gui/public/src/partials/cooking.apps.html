@@ -1,0 +1,17 @@
+<div class="grd">
+    hello, you are in apps right now...
+
+    <div class="grd-row-col-6 py2">
+        <div ng-repeat="(key, value) in apps">
+            <li class="m0 grd-row txt--left">
+                <span class="grd-row-col-2-6">
+                    <a href="http://{{value.virtualHost}}:4480">
+                        http://{{value.virtualHost}}:4480
+                    </a>
+                </span>
+            </li>
+        </div>
+    </div>
+
+</div>
+

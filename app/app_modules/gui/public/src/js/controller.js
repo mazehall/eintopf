@@ -41,6 +41,12 @@ angular.module('eintopf')
       resContainersList.$assignProperty($scope, 'containers');
     }
   ])
+  .controller('appsCtrl',
+  ['$scope', 'resAppsList',
+    function ($scope, resAppsList) {
+      resAppsList.$assignProperty($scope, 'apps');
+    }
+  ])
   .controller('recipeCtrl',
   ['$scope', '$stateParams', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop',
     function ($scope, $stateParams, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop) {
