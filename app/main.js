@@ -27,7 +27,7 @@ app.on('ready', function () {
   }
 
   process.on('app:serverstarted', function() {
-    mainWindow.loadUrl('http://localhost:' + port);
+    mainWindow.loadUrl('http://localhost:' + port, {userAgent: "electron"});
   });
   process.emit('app:startserver', port);
 
