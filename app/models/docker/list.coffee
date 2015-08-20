@@ -16,13 +16,6 @@ initDockerEvents = () ->
   emitter = new DockerEvents {docker: docker}
   emitter.start();
 
-  emitter.on "connect", () ->
-    console.log("connected to docker api");
-    model.loadContainers()
-  emitter.on "disconnect", () ->
-    #@todo implement reconnect (kefir? try till reconnect)
-    console.log("disconnected to docker api; reconnecting...");
-    emitter.start();
   emitter.on "create", (message) ->
     model.loadContainers()
   emitter.on "start", (message) ->
@@ -30,7 +23,12 @@ initDockerEvents = () ->
   emitter.on "die", (message) -> # calls all stop sates
     model.loadContainers()
   emitter.on "error", (err) ->
-    console.log 'err', err
+    if err.code == "ECONNRESET" #try to reconnect after timeout
+      setTimeout () ->
+        emitter.stop()
+        emitter.start()
+        model.loadContainers() # connect event is not reliable so reload has to triggered manually
+      , 10000
 
 initDockerEvents()
 model = {}
