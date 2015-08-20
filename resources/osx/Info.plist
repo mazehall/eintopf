@@ -5,7 +5,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>{{productName}}</string>
 	<key>CFBundleExecutable</key>
-	<string>{{productName}}</string>s
+	<string>{{productName}}</string>
 	<key>CFBundleIconFile</key>
 	<string>icon.icns</string>
 	<key>CFBundleIdentifier</key>

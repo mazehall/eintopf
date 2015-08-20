@@ -35,7 +35,7 @@ var packageBuiltApp = function () {
     var deferred = Q.defer();
 
     asar.createPackageWithOptions(projectDir.path('build'), readyAppDir.path('resources/app.asar'), {
-        unpack: "{main.js,*.*}"
+        unpack: "!**/node_modules/**"
     }, function() {
         deferred.resolve();
     });
