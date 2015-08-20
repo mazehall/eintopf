@@ -1,52 +1,19 @@
-<div class="grd-row-col-6 m1">
-    <div class="grd-row">
-        <div class="grd-row-col-6">
-            <form id="formCreateProject">
-                <label for="projectName">
-                    Enter git URL
-                </label>
-
-                <input type="text" name="projectName" id="projectName" ng-model="newProject">
-                <button class="grd-row-col-4 btn--blue" ng-click="install(newProject)" ng-disabled="loading">
-                    <div ng-show="loading" class="la-ball-spin-clockwise la-dark">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-
-                    install
-                </button>
-            </form>
-        </div>
+<div class="grd m1">
+    <form id="formCreateProject">
+        <label class="muted" for="projectName">
+            Please enter the URL of your Project Description (Git Repo)
+        </labelclass>
+        <input type="text" name="projectName" id="projectName" ng-model="newProject">
+        <a href="#" class="grd-row-col-4 btn" ng-click="install(newProject)" ng-disabled="loading">
+            <i ng-show="loading" class="fa fa-spinner fa-pulse"></i>
+            install
+        </a>
+    </form>
+    <div ng-show="result.errorMessage">
+        <p class="fnt--red m0 py05">Error:</p>
+        <pre class="bg--dark-gray m0 p1 fnt--off-white ">{{result.errorMessage}}</pre>
     </div>
-
-    <div class="grd-row">
-        <div class="grd-row-col-6">
-            <div ng-show="result.errorMessage">
-                <h4 class="grd-row-col-6">
-                    error:
-                </h4>
-
-                <div class="p1 brdr--light-gray">
-                    <pre>{{result.errorMessage}}</pre>
-                </div>
-            </div>
-        </div>
+    <div ng-show="result.status == 'success'">
+        <p class="muted m0 py05">Success</p>
     </div>
-
-    <div class="grd-row">
-        <div class="grd-row-col-6">
-            <div ng-show="result.status == 'success'">
-                <h4 class="grd-row-col-6">
-                    success
-                </h4>
-            </div>
-        </div>
-    </div>
-
 </div>

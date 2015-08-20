@@ -34,7 +34,9 @@ var copyRuntime = function () {
 var packageBuiltApp = function () {
     var deferred = Q.defer();
 
-    asar.createPackage(projectDir.path('app'), readyAppDir.path('resources/app.asar'), function() {
+    asar.createPackageWithOptions(projectDir.path('build'), readyAppDir.path('resources/app.asar'), {
+        unpack: "{main.js,*.*}"
+    }, function() {
         deferred.resolve();
     });
 
@@ -97,6 +99,17 @@ var packToDebFile = function () {
     return deferred.promise;
 };
 
+var debianConfig = function() {
+    return projectDir.file(readyAppDir.path("../../DEBIAN/postinst"), {
+        mode: "755",
+        content: "ln -fs /opt/%n/%n /usr/bin/%n".replace(/%n/g, manifest.name)
+    });
+};
+
+var renameApp = function() {
+    return projectDir.moveAsync(readyAppDir.path('electron'), readyAppDir.path(manifest.name));
+};
+
 var cleanClutter = function () {
     return tmpDir.removeAsync('.');
 };
@@ -106,6 +119,8 @@ module.exports = function () {
     .then(copyRuntime)
     .then(packageBuiltApp)
     .then(finalize)
+    .then(renameApp)
+    .then(debianConfig)
     .then(packToDebFile)
     .then(cleanClutter);
 };
