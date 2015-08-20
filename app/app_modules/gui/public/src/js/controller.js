@@ -35,9 +35,20 @@ angular.module('eintopf')
       resProjectsList.$assignProperty($scope, 'projects');
     }
   ])
+  .controller('containersCtrl',
+  ['$scope', 'resContainersList',
+    function ($scope, resContainersList) {
+      resContainersList.$assignProperty($scope, 'containers');
+    }
+  ])
   .controller('appsCtrl',
   ['$scope', 'resAppsList',
     function ($scope, resAppsList) {
+      if (navigator.userAgent && navigator.userAgent.match(/^electron/)) {
+        $scope.renderLinks = false
+      } else {
+        $scope.renderLinks = true
+      }
       resAppsList.$assignProperty($scope, 'apps');
     }
   ])

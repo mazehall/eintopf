@@ -4,68 +4,106 @@ setupModel = require '../../../models/setup/setup.coffee'
 projectsModel = require '../../../models/projects/list.coffee'
 dockerModel = require '../../../models/docker/list.coffee'
 
+watcherModel =require '../../../models/stores/watcher.coffee'
+
+
 setupModel.run()
 projectsModel.loadProjects()
 dockerModel.loadContainers()
 
+typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
+
 states = (connections_, rawSocket) ->
-  _r.fromPoll 1000 * 5, () ->
-    setupModel.getState()
-  .onValue (res) ->
-    rawSocket.emit 'states:live', res
+
+  # emit changes in project list
+  watcherModel.propertyToKefir 'projects:list'
+  .onValue (val) ->
+    rawSocket.emit 'res:projects:list', val.newValue
+
+  # emit changes in live states
+  watcherModel.propertyToKefir 'states:live'
+  .onValue (val) ->
+    rawSocket.emit 'states:live', val.newValue
+
+  # emit changes in docker container list
+  watcherModel.propertyToKefir 'containers:list'
+  .throttle 500
+  .onValue (val) ->
+    rawSocket.emit 'res:containers:list', val.newValue
+
+  #@todo emit project detail changes ????
+#  watcherModel.propertyToKefir 'projects:list'
+#  .onValue (val) ->
+#    console.log val
+
+  watcherModel.propertyToKefir 'res:projects:install'
+  .onValue (val) ->
+    rawSocket.emit 'res:projects:install', val.newValue
+
+  watcherModel.toKefir()
+  .filter (x) ->
+    x if x.name.match /^res:project:start:/
+  .throttle 500
+  .onValue (val) ->
+    rawSocket.emit val.name, val.newValue
+
+  watcherModel.toKefir()
+  .filter (x) ->
+    x if x.name.match /^res:project:stop:/
+  .throttle 500
+  .onValue (val) ->
+    rawSocket.emit val.name, val.newValue
+
+  # emit apps changes in live states
+  watcherModel.propertyToKefir 'apps:list'
+  .onValue (val) ->
+    rawSocket.emit 'apps:list', val.newValue
 
   connections_.onValue (socket) ->
-    socket.emit 'states:live', setupModel.getState()
+    socket.emit 'states:live', watcherModel.get 'states:live'
+
+    _r.fromEvents socket, 'projects:list'
+      .onValue () ->
+        socket.emit 'res:projects:list', watcherModel.get 'projects:list'
 
     _r.fromEvents socket, 'states:restart'
     .onValue () ->
       setupModel.restart()
-      rawSocket.emit 'states:live', setupModel.getState()
 
-    _r.fromEvents socket, 'projects:list'
+    _r.fromEvents socket, 'containers:list'
     .onValue () ->
-      socket.emit 'res:projects:list', projectsModel.getList()
+      socket.emit 'res:containers:list', watcherModel.get 'containers:list'
+
+    _r.fromEvents socket, 'apps:list'
+    .onValue () ->
+      socket.emit 'res:apps:list', watcherModel.get 'apps:list'
 
     _r.fromEvents socket, 'projects:install'
     .filter()
     .onValue (val) ->
-      projectsModel.installProjectList val, (err, result) ->
-        res = {}
-        res.errorMessage = err.message if err? && typeof err == 'object'
-        res.status = if err then 'error' else 'success'
-
-        socket.emit 'res:projects:install', res
-        rawSocket.emit 'res:projects:list', projectsModel.getList() if result == true #emit updated project list
+      watcherModel.set 'res:projects:install', null
+      projectsModel.installProject val
 
     _r.fromEvents socket, 'project:detail'
     .filter()
     .onValue (id) ->
-      socket.emit 'res:project:detail', projectsModel.getProject id
+      projects = watcherModel.get 'projects:list'
+      project = {}
+      if typeIsArray projects
+        for x,i in projects
+          project = x if x.id == id
+      socket.emit 'res:project:detail', project
 
     _r.fromEvents socket, 'project:start'
-    .filter()
+    .filter (x) ->
+      x if x.id?
     .onValue (project) ->
-      projectsModel.startProject project, (err, logStream) ->
-        logStream
-        .slidingWindow 300
-        .throttle 300
-        .onValue (val) ->
-          console.log val
-          socket.emit 'res:project:start:' + project.id, val
+      projectsModel.startProject project
 
     _r.fromEvents socket, 'project:stop'
-    .filter()
+    .filter (x) ->
+      x if x.id?
     .onValue (project) ->
-      projectsModel.stopProject project, (err, logStream) ->
-        logStream
-        .slidingWindow 300
-        .throttle 300
-        .onValue (val) ->
-          console.log val
-          socket.emit 'res:project:stop:' + project.id, val
-
-    _r.fromEvents socket, 'apps:list'
-    .onValue () ->
-      socket.emit 'res:apps:list', dockerModel.getContainerList()
+      projectsModel.stopProject project
 
 module.exports = states

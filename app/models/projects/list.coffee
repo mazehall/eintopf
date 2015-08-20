@@ -6,32 +6,12 @@ fs = require 'fs'
 child = require 'child_process'
 
 vagrantFsModel = require '../vagrant/fs.coffee'
-logsModel = require '../stores/log.coffee'
+watcherModel = require '../stores/watcher.coffee'
 
 projects = []
-dummyProjects = [
-  {
-    id: "dummy1",
-    name: "Project frisch"
-    description: "Ein sehr kurzer Beschreibungstext, worum es sich hier überhaupt handelt.  Es sollten maximal 3 Zeilen sein."
-    state: null
-  },
-  {
-    id: "dummy2",
-    name: "Project installiert aber aus"
-    description: "Ein sehr kurzer Beschreibungstext, worum es sich hier überhaupt handelt.  Es sollten maximal 3 Zeilen sein."
-    state: "installed"
-  },
-  {
-    id: "dummy3",
-    name: "Project installiert und läuft"
-    description: "Ein sehr kurzer Beschreibungstext, worum es sich hier überhaupt handelt.  Es sollten maximal 3 Zeilen sein."
-    state: "running"
-  }
-]
 
 getProjectNameFromGitUrl = (gitUrl) ->
-  return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)[\/]?$/))?
+  return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)?[\/]?$/))?
   return projectName[1]
 
 # emit subdirectory content through emitter
@@ -57,7 +37,14 @@ model.getProject = (id) ->
     return i if i.id == id
   return null
 
-model.installProjectList = (gitUrl, callback) ->
+model.installProject = (gitUrl, callback) ->
+  if ! callback?
+    callback = (err, result) ->
+      res = {}
+      res.errorMessage = err.message if err? && typeof err == 'object'
+      res.status = if err then 'error' else 'success'
+      watcherModel.set 'res:projects:install', res
+
   return callback new Error 'could not resolve config path' if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
   return callback new Error 'invalid or unsupported git url' if !(projectDir = getProjectNameFromGitUrl(gitUrl))?
 
@@ -67,9 +54,7 @@ model.installProjectList = (gitUrl, callback) ->
     .then (dir) ->
       git.clone gitUrl, dir.path(projectDir), (err) ->
         return callback new Error err.message if err
-        model.loadProject projectDir, (err) ->
-          return callback err if err
-          callback null, true
+        model.loadProject projectDir, callback
   .fail (err) ->
     callback err
 
@@ -88,6 +73,7 @@ model.loadProject = (projectDir, callback) ->
     project['id'] = config.name
 
     projects.push project
+    watcherModel.set 'projects:list', projects
     callback null, project
   .fail callback
 
@@ -108,18 +94,27 @@ model.loadProjects = () ->
     foundProjects.push val.pkg.eintopf
   .onEnd () ->
     projects = foundProjects
+    watcherModel.set 'projects:list', projects
 
-#@todo add running state and emit
-#@todo stream output
+#@todo add project running state
 model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 
-  logsModel.fromChildProcess project, child.exec('npm start', {cwd: project.path, env: process.env}), callback
+  process = child.exec 'npm start', {cwd: project.path}
+  process.stdout.on 'data',(chunk) ->
+    watcherModel.log 'res:project:start:' + project.id, chunk
+  process.stderr.on 'data',(chunk) ->
+    watcherModel.log 'res:project:start:' + project.id, chunk
+
 
 model.stopProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 
-  logsModel.fromChildProcess project, child.exec('npm stop', {cwd: project.path, env: process.env}), callback
+  process = child.exec 'npm stop', {cwd: project.path}
+  process.stdout.on 'data',(chunk) ->
+    watcherModel.log 'res:project:stop:' + project.id, chunk
+  process.stderr.on 'data',(chunk) ->
+    watcherModel.log 'res:project:stop:' + project.id, chunk
 
 
 module.exports = model;

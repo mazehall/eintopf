@@ -3,41 +3,49 @@ Dockerrode = require 'dockerode'
 docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
 DockerEvents = require 'docker-events'
 
-containers = []
+watcherModel = require '../stores/watcher.coffee'
 
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 
-# triggers reloading of container list
+
 #@todo don't call loadContainers multiple times in a row
+# triggers reloading of container list
 initDockerEvents = () ->
   emitter = new DockerEvents {docker: docker}
   emitter.start();
 
-  emitter.on "connect", () ->
-    console.log("connected to docker api");
-    model.loadContainers()
-  emitter.on "disconnect", () ->
-    #@todo implement reconnect (kefir? try till reconnect)
-    console.log("disconnected to docker api; reconnecting");
-    emitter.start();
   emitter.on "create", (message) ->
-    console.log("container created: %j", message);
     model.loadContainers()
   emitter.on "start", (message) ->
-    console.log("container started: %j", message);
     model.loadContainers()
   emitter.on "die", (message) -> # calls all stop sates
-    console.log("container died: %j", message);
     model.loadContainers()
   emitter.on "error", (err) ->
-    console.log 'err', err
+    if err.code == "ECONNRESET" #try to reconnect after timeout
+      setTimeout () ->
+        emitter.stop()
+        emitter.start()
+        model.loadContainers() # connect event is not reliable so reload has to triggered manually
+      , 10000
+
+loadApps = () ->
+  containers = watcherModel.get 'containers:list'
+  foundApps = []
+
+  if typeIsArray containers
+    containers.forEach (container) ->
+      return false if ! container.virtualHost?
+      virtualHosts = container.virtualHost.split(",")
+      virtualHosts.forEach (virtualHost) ->
+        return false if virtualHost.match /^\*/ # ignore wildcards
+        container.virtualHost = virtualHost
+        foundApps.push container
+
+  watcherModel.set 'apps:list', foundApps
 
 initDockerEvents()
 model = {}
-model.getContainerList = () ->
-  return containers;
 
-#@todo emit changes
 model.loadContainers = () ->
   foundContainers = [];
 
@@ -64,7 +72,7 @@ model.loadContainers = () ->
 
     foundContainers.push push
   .onEnd () ->
-    containers = foundContainers
-    console.log containers
+    watcherModel.set 'containers:list', foundContainers
+    loadApps()
 
 module.exports = model;
