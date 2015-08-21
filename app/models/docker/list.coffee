@@ -21,7 +21,7 @@ initDockerEvents = () ->
   emitter.on "die", (message) -> # calls all stop sates
     model.loadContainers()
   emitter.on "error", (err) ->
-    if err.code == "ECONNRESET" #try to reconnect after timeout
+    if err.code == "ECONNRESET" || err.code == "ECONNREFUSED" #try to reconnect after timeout
       setTimeout () ->
         emitter.stop()
         emitter.start()

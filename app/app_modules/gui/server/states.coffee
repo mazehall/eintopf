@@ -54,10 +54,10 @@ states = (connections_, rawSocket) ->
   .onValue (val) ->
     rawSocket.emit val.name, val.newValue
 
-  # emit apps changes in live states
+  # emit apps changes
   watcherModel.propertyToKefir 'apps:list'
   .onValue (val) ->
-    rawSocket.emit 'apps:list', val.newValue
+    rawSocket.emit 'res:apps:list', val.newValue
 
   connections_.onValue (socket) ->
     socket.emit 'states:live', watcherModel.get 'states:live'
