@@ -1,20 +1,26 @@
-<div class="grd">
-    hello, you are in apps right now...
+<ul class="grd list--unstyled cssContainer">
+    <li class="grd-row muted">
+            <span class="mx1 grd-row-col-1-6">
+                running apps
+            </span>
 
-    <div class="grd-row-col-6 py2">
-        <div ng-repeat="(key, value) in apps">
-            <li class="m0 grd-row txt--left">
-                <span class="grd-row-col-2-6">
-                    <a ng-if="renderLinks" href="http://{{value.virtualHost}}:4480" target="_blank">
-                        http://{{value.virtualHost}}:4480
-                    </a>
+            <span class="mx1 grd-row-col-3-6">
+
+            </span>
+    </li>
+    <li class="grd-row py1" ng-repeat="(key, value) in apps" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+
+        <div class="mx1 grd-row-col-3-6">
+
+            <a ng-if="renderLinks" href="http://{{value.virtualHost}}:4480" target="_blank">
+                http://{{value.virtualHost}}:4480
+            </a>
                     <span ng-if="!renderLinks">
                         http://{{value.virtualHost}}:4480
                     </span>
-                </span>
-            </li>
         </div>
-    </div>
-
-</div>
-
+        <div class="mx1 txt--right grd-row-col-3-6">
+           <!--<a href="#"class="btn small"><i class="fa fa-file-text-o fnt&#45;&#45;dark-gray"></i><span>  show log</span></a>-->
+        </div>
+    </li>
+</ul>
