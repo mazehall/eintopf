@@ -50,9 +50,9 @@ Vagrant.configure("2") do |config|
   # Provisioning script goes in here.
     config.vm.provision :shell, inline: <<-SHELL
       # set custom docker options @todo better grep
-      if [ -z "`cat /etc/default/docker | grep '^DOCKER_OPTS=.*~DOCKER_OPTS=\"-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock\"'`" ]; then
+      if [ -z "`cat /etc/default/docker | grep '^DOCKER_OPTS="-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"'`" ]; then
           echo "update docker config";
-          sed -i 's~DOCKER_OPTS=.*~DOCKER_OPTS="-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"~g' /etc/default/docker;
+          echo 'DOCKER_OPTS="-r=true -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"' >> /etc/default/docker;
           initctl restart docker;
       fi
       # install docker-compose

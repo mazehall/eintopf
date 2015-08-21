@@ -1,4 +1,4 @@
-<div class="grd-row-col-6 ">
+<div class="grd-row-col-6 px2 cssContainer">
     <div class="grd-row">
         <ul class="grd-row-col-6 m1 p0 cssToolbar list--unstyled">
             <li class="flt--left">
@@ -53,12 +53,9 @@
     <div class="grd-row" ng-show="log">
         <div class="grd-row-col-6 p2">
             <p class="muted">output:</p>
-            <div class="bg--dark-gray p1">
-                <pre class="fnt--off-white" ng-repeat="value in log track by $index">
-                    {{value}}
-                </pre>
+            <div class="scroll bg--dark-gray p1">
+                <pre id="jsScrollToBottom" class="fnt--off-white">{{log}}</pre>
             </div>
         </div>
     </div>
 </div>
-

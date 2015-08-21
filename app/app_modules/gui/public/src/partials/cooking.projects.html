@@ -1,25 +1,25 @@
 <div id="container">
   <div class="grd-row-col-1-6--lg  grd-row-col-2-6--sm cssSidebar">
-    <div class="txt--center m2">
-      <a ui-sref="cooking.projects.create" class="m0 btn--red">
-        <i class="fa fa-plus-circle"></i>
-        <span class="">Create Project</span>
+    <div class="bg--off-white p1 m0 fnt--blue cssNewProject">
+      <span class="h4">Projects</span>
+      <a ui-sref="cooking.projects.create" class="m0">
+        <i class="fa fa-2x fa-plus-circle flt--right"></i>
       </a>
     </div>
     <div class="cssMenu">
-      <ul class=" list--unstyled  p0 m0">
-        <li ng-repeat="(key, value) in projects" class="m0 grd-row txt--left ">
+      <ul class="list--unstyled  p0 m0">
+        <li ng-repeat="(key, value) in projects" class="m0 grd-row txt--left">
           <a class="grd-row-col-6 py2 btn--link txt--left"
              ui-sref="cooking.projects.recipe({id: '{{value.id}}'})" ui-sref-active='active'>
             <div class="media">
+              <div class="media-body txt--left">
+                <p class="m0 p0">
+                  {{value.name}}
+                </p>
+              </div>
               <div class="media-figure m0">
                 <i ng-class="{'fa-cog fa-spin fnt--green': value.state == 'running', 'fa-cog fnt--light-gray': value.state == 'installed', 'fa-circle fnt--light-gray': !value.state}"
                    class="fa"></i>
-              </div>
-              <div class="media-body txt--left">
-                <h6 class="m0 p0">
-                  {{value.name}}
-                </h6>
               </div>
             </div>
           </a>
@@ -28,7 +28,7 @@
     </div>
   </div>
   <div class="grd-row-col-5-6--lg grd-row-col-4-6--sm" ui-view>
-    <div class="grd m1">
+    <div class="grd m1 px2">
       <p class="muted m0 py05">
       Select a recipe or create a new project.
       </p>
