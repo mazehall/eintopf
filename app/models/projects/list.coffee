@@ -12,6 +12,7 @@ projects = []
 
 getProjectNameFromGitUrl = (gitUrl) ->
   return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)?[\/]?$/))?
+  return projectName[1].substr(0, projectName[1].length-4) if projectName[1].indexOf ".git"
   return projectName[1]
 
 # emit subdirectory content through emitter
