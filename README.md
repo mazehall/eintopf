@@ -30,7 +30,7 @@ Please use the Git clone way to participate.
 
 # How does it work?
 
-## Paths under Eintopf controll
+## Paths under Eintopf control
 
 * ```$HOME/.eintopf/default``` mapped inBox to ```/vagrant```
   * The home of your Vagrantfile 
