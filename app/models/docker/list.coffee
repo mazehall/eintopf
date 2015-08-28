@@ -18,6 +18,10 @@ initDockerEvents = () ->
     model.loadContainers()
   emitter.on "start", (message) ->
     model.loadContainers()
+  emitter.on "stop", (message) ->
+    model.loadContainers()
+  emitter.on "destroy", (message) ->
+    model.loadContainers()
   emitter.on "die", (message) -> # calls all stop sates
     model.loadContainers()
   emitter.on "error", (err) ->
@@ -28,23 +32,24 @@ initDockerEvents = () ->
         model.loadContainers() # connect event is not reliable so reload has to triggered manually
       , 10000
 
+
 loadApps = () ->
   containers = watcherModel.get 'containers:list'
   foundApps = []
 
   if typeIsArray containers
     containers.forEach (container) ->
-      return false if ! container.virtualHost?
-      virtualHosts = container.virtualHost.split(",")
-      virtualHosts.forEach (virtualHost) ->
-        return false if virtualHost.match /^\*/ # ignore wildcards
-        container.virtualHost = virtualHost
-        foundApps.push container
-
+      if container.virtualHost? and container.status.match /^Up /
+        virtualHosts = container.virtualHost.split(",")
+        virtualHosts.forEach (virtualHost) ->
+          return false if virtualHost.match /^\*/ # ignore wildcards
+          foundApps.push virtualHost
   watcherModel.set 'apps:list', foundApps
+
 
 initDockerEvents()
 model = {}
+
 
 model.loadContainers = () ->
   foundContainers = [];
@@ -69,9 +74,10 @@ model.loadContainers = () ->
     if typeIsArray val.inspect.Config.Env
       val.inspect.Config.Env.forEach (env) ->
         push.virtualHost = match[1] if (match = env.match /^VIRTUAL_HOST=(.*)/)?
-
     foundContainers.push push
   .onEnd () ->
+    foundContainers.sort (a, b) ->
+      a.name > b.name ? -1 : 0
     watcherModel.set 'containers:list', foundContainers
     loadApps()
 

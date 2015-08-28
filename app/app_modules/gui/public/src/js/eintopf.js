@@ -25,7 +25,7 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
     .state('cooking', {
       abstract: true,
       url: "/cooking",
-      templateUrl: 'partials/cooking.html',
+      templateUrl: 'partials/cooking.html'
     })
     .state('cooking.projects', {
       url: "/projects",

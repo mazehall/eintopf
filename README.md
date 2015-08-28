@@ -1,18 +1,57 @@
 Eintopf
 ==============
 
-# Quick start
-The only development dependency of this project is [Node.js](https://nodejs.org). So just make sure you have it installed.
-Then type few commands known to every Node developer...
-```
-git clone https://github.com/...tbd
-cd eintopf
-npm install
-npm start
-```
-... and boom! You have running desktop application on your screen.
+A pot with the mixture of the smart development tools Docker, Vagrant and VirtualBox. Made to ease the chore of the
+daily project works.
 
-# Structure of the project
+# Installation
+
+Currently the project is in an very early state and under heavy development. There are release scripts for 
+MacOS, Linux and Windows to build the native application.
+
+Please use the Git clone way to participate.
+
+
+## Prerequisites
+
+* VirtualBox
+* Vagrant >= 1.7
+* Git
+* (currently) NodeJS 
+
+
+```
+    git clone https://github.com/mazehall/eintopf.git
+    cd eintopf
+    npm install
+    npm start
+```
+
+
+# How does it work?
+
+## Paths under Eintopf controll
+
+* ```$HOME/.eintopf/default``` mapped inBox to ```/vagrant```
+  * The home of your Vagrantfile 
+  
+* ```$HOME/.eintopf/default/configs/*``` mapped inBox to ```/vagrant/configs```
+  * The home of your project descriptions with all docker configurations 
+  
+* ```HOME/eintopf/*``` mapped inBox to ```/projects```
+  * The home of your project sources
+
+## Ports and Proxy
+
+* __4480__  -> Proxy that provides all docker container with exposed port __80__ 
+* __31313__  -> Eintopf http GUI
+
+
+
+
+# Development
+
+## Structure of the project
 
 There are **two** `package.json` files:  
 
@@ -38,16 +77,16 @@ Sits on path: `eintopf/app/package.json`. This is **real** manifest of your appl
 - `tasks` - build and development environment scripts.
 
 
-# Development
 
-#### Installation
+## Installation
 
 ```
 npm install
 ```
 It will also download Electron runtime, and install dependencies for second `package.json` file inside `app` folder.
 
-#### Starting the app
+
+## Starting the app
 
 ```
 npm start

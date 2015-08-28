@@ -27,7 +27,6 @@ states = (connections_, rawSocket) ->
 
   # emit changes in docker container list
   watcherModel.propertyToKefir 'containers:list'
-  .throttle 500
   .onValue (val) ->
     rawSocket.emit 'res:containers:list', val.newValue
 
@@ -42,15 +41,13 @@ states = (connections_, rawSocket) ->
 
   watcherModel.toKefir()
   .filter (x) ->
-    x if x.name.match /^res:project:start:/
-  .throttle 500
+    x.name.match /^res:project:start:/
   .onValue (val) ->
     rawSocket.emit val.name, val.newValue
 
   watcherModel.toKefir()
   .filter (x) ->
-    x if x.name.match /^res:project:stop:/
-  .throttle 500
+    x.name.match /^res:project:stop:/
   .onValue (val) ->
     rawSocket.emit val.name, val.newValue
 
@@ -72,10 +69,12 @@ states = (connections_, rawSocket) ->
 
     _r.fromEvents socket, 'containers:list'
     .onValue () ->
+      dockerModel.loadContainers()
       socket.emit 'res:containers:list', watcherModel.get 'containers:list'
 
     _r.fromEvents socket, 'apps:list'
     .onValue () ->
+      dockerModel.loadContainers()
       socket.emit 'res:apps:list', watcherModel.get 'apps:list'
 
     _r.fromEvents socket, 'projects:install'

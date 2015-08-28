@@ -54,6 +54,6 @@ model.prototype.toKefir = () ->
 model.prototype.propertyToKefir = (propertyName) ->
   _r.fromEvents this, 'change'
   .filter (x) ->
-    x if x.name? && x.name == propertyName
+    x.name? && x.name == propertyName
 
 module.exports = new model()
