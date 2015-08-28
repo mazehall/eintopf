@@ -33,6 +33,9 @@ angular.module('eintopf')
   ['$scope', 'reqProjectList', 'resProjectsList',
     function ($scope, reqProjectsList, resProjectsList) {
       resProjectsList.$assignProperty($scope, 'projects');
+      if($scope.$root.lastProjectId){
+          $state.go("cooking.projects.recipe", {id: $scope.$root.lastProjectId});
+      }
     }
   ])
   .controller('containersCtrl',
@@ -75,6 +78,7 @@ angular.module('eintopf')
         $scope.result = {};
         reqProjectStop.emit(project);
       };
+      $scope.$root.lastProjectId = $stateParams.id
     }
   ])
   .controller('createProjectCtrl',
