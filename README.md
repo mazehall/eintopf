@@ -6,7 +6,7 @@ daily project works.
 
 # Installation
 
-Currently the project is in an very early state and under heavy development. There are release scripts for 
+Currently the project is in a very early stage and in heavy development. There are release scripts for
 MacOS, Linux and Windows to build the native application.
 
 Please use the Git clone way to participate.
@@ -17,7 +17,7 @@ Please use the Git clone way to participate.
 * VirtualBox
 * Vagrant >= 1.7
 * Git
-* (currently) NodeJS 
+* (currently) NodeJS
 
 
 ```
@@ -33,18 +33,21 @@ Please use the Git clone way to participate.
 ## Paths under Eintopf control
 
 * ```$HOME/.eintopf/default``` mapped inBox to ```/vagrant```
-  * The home of your Vagrantfile 
-  
+  * The home of your Vagrantfile
+
 * ```$HOME/.eintopf/default/configs/*``` mapped inBox to ```/vagrant/configs```
-  * The home of your project descriptions with all docker configurations 
-  
+  * The home of your project descriptions with all docker configurations
+
 * ```HOME/eintopf/*``` mapped inBox to ```/projects```
   * The home of your project sources
 
-## Ports and Proxy
+## Ports and Proxy magic
 
-* __4480__  -> Proxy that provides all docker container with exposed port __80__ 
-* __31313__  -> Eintopf http GUI
+ host port | vm port   | docker expose | description |
+---|---|---|---
+ __4480__  | __4480__  | __80__ | Proxy that provides all started docker container
+ __4443__  | __4443__  |        | Proxy SSL termination point __cumming soon__
+ __31313__ | [_31313_] |        | Eintopf GUI server currently host only version
 
 
 
@@ -65,13 +68,12 @@ Also here you declare the version of Electron runtime you want to use:
 }
 ```
 
-#### 2. For your application
-Sits on path: `eintopf/app/package.json`. This is **real** manifest of your application. Declare your app dependencies here.
+#### 2. For the application
+Sits on path: `eintopf/app/package.json`. This is **real** manifest of the application. Declare your app dependencies here.
 
 ### Project's folders
 
 - `app` - code of your application goes here.
-- `config` - place for you to declare environment specific stuff.
 - `releases` - ready for distribution installers will land here.
 - `resources` - resources for particular operating system.
 - `tasks` - build and development environment scripts.

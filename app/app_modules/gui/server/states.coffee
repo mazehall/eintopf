@@ -3,18 +3,14 @@ _r = require 'kefir'
 setupModel = require '../../../models/setup/setup.coffee'
 projectsModel = require '../../../models/projects/list.coffee'
 dockerModel = require '../../../models/docker/list.coffee'
-
 watcherModel =require '../../../models/stores/watcher.coffee'
-
 
 setupModel.run()
 projectsModel.loadProjects()
-dockerModel.loadContainers()
 
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 
 states = (connections_, rawSocket) ->
-
   # emit changes in project list
   watcherModel.propertyToKefir 'projects:list'
   .onValue (val) ->

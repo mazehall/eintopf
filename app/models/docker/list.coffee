@@ -1,12 +1,10 @@
 _r = require 'kefir'
 Dockerrode = require 'dockerode'
-docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
 DockerEvents = require 'docker-events'
-
 watcherModel = require '../stores/watcher.coffee'
 
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
-
+docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
 
 #@todo don't call loadContainers multiple times in a row
 # triggers reloading of container list
