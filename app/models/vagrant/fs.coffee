@@ -4,6 +4,7 @@ jetpack = require 'fs-jetpack'
 appConfig = config.get 'app'
 
 getHomePath = () ->
+  return process.env.EINTOPF_HOME if process.env.EINTOPF_HOME
   return process.env.USERPROFILE if process.platform == 'win32'
   return process.env.HOME
 
