@@ -1,8 +1,8 @@
 config = require 'config'
 _r = require 'kefir'
 vagrant = require 'node-vagrant'
-
 fsModel = require './fs.coffee'
+utilModel = require '../util/'
 
 isVagrantInstalled = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
@@ -14,7 +14,7 @@ isVagrantInstalled = (callback) ->
     callback new Error 'vagrant is apparently not installed'
 
 getVagrantMachine = (callback) ->
-  return callback new Error '' if ! (configModulePath = fsModel.getConfigModulePath())?
+  return callback new Error '' if ! (configModulePath = utilModel.getConfigModulePath())?
   return machine = vagrant.create {cwd: configModulePath}
 
 model = {}
@@ -30,7 +30,7 @@ model.up = (callback) ->
     errorMessage += '\nPlease start vagrant manually.'
     errorMessage += '\nOpen a shell/terminal and enter:'
     errorMessage += '\n'
-    errorMessage += '\ncd ' + fsModel.getConfigModulePath()
+    errorMessage += '\ncd ' + utilModel.getConfigModulePath()
     errorMessage += '\nvagrant up'
     return callback errorMessage
 

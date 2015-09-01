@@ -1,8 +1,6 @@
 {
   "app": {
     "defaultNamespace": "default",
-    "pathDefaultVagrantFile": "config/Vagrantfile.default",
-    "configPath": "~/.eintopf",
-    "projectsPath": "~/eintopf"
+    "pathDefaultVagrantFile": "config/Vagrantfile.default"
   }
 }

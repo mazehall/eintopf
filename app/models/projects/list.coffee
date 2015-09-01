@@ -5,7 +5,7 @@ mazehall = require 'mazehall/lib/modules'
 fs = require 'fs'
 child = require 'child_process'
 
-vagrantFsModel = require '../vagrant/fs.coffee'
+utilModel = require '../util/'
 watcherModel = require '../stores/watcher.coffee'
 
 projects = []
@@ -46,7 +46,7 @@ model.installProject = (gitUrl, callback) ->
       res.status = if err then 'error' else 'success'
       watcherModel.set 'res:projects:install', res
 
-  return callback new Error 'could not resolve config path' if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
+  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
   return callback new Error 'invalid or unsupported git url' if !(projectDir = getProjectNameFromGitUrl(gitUrl))?
 
   jetpack.dirAsync configModulePath
@@ -61,7 +61,7 @@ model.installProject = (gitUrl, callback) ->
 
 model.loadProject = (projectDir, callback) ->
   return callback new Error 'invalid project dir given' if ! projectDir?
-  return callback new Error 'could not resolve config path' if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
+  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
 
   dst = jetpack.cwd configModulePath, 'configs', projectDir
   dst.readAsync 'package.json', 'json'
@@ -79,7 +79,7 @@ model.loadProject = (projectDir, callback) ->
   .fail callback
 
 model.loadProjects = () ->
-  return false if ! (configModulePath = vagrantFsModel.getConfigModulePath())?
+  return false if ! (configModulePath = utilModel.getConfigModulePath())?
   foundProjects = []
 
   _r.stream dirEmitter jetpack.cwd(configModulePath, 'configs').path()
