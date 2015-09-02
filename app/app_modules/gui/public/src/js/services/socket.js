@@ -102,6 +102,22 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
+ .factory('resProjectUpdate', ['socket', function (socket){
+    return {
+      fromProject: function (project){
+        return Kefir.fromEvent(socket, 'res:project:update:' + project).toProperty();
+      }
+    }
+  }])
+
+  .factory('reqProjectUpdate', ['socket', function (socket){
+    return {
+      emit: function (data) {
+        socket.emit('project:update', data);
+      }
+    }
+  }])
+
   .factory('reqContainersList', ['socket', function (socket) {
     return {
       emit: function (data) {

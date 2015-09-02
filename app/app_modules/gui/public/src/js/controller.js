@@ -56,8 +56,8 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-  ['$scope', '$stateParams', '$state', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete',
-    function($scope, $stateParams, $state, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete) {
+  ['$scope', '$stateParams', '$state', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate',
+    function($scope, $stateParams, $state, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate) {
       $scope.project = {
         id: $stateParams.id
       };
@@ -83,6 +83,10 @@ angular.module('eintopf')
         resProjectDelete.fromProject($stateParams.id).onValue(function(){
           $state.go("cooking.projects");
         });
+      };
+      $scope.updateProject = function(project){
+        reqProjectUpdate.emit(project);
+        resProjectUpdate.fromProject($stateParams.id).$assignProperty($scope, 'log');
       };
       $scope.$root.lastProjectId = $stateParams.id
     }
