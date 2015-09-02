@@ -117,5 +117,27 @@ model.stopProject = (project, callback) ->
   process.stderr.on 'data',(chunk) ->
     watcherModel.log 'res:project:stop:' + project.id, chunk
 
+model.deleteProject = (project, callback) ->
+  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+
+  jetpack.removeAsync project.path
+  .fail (error) ->
+    callback error
+  .then ->
+    jetpack.inspectAsync project.path
+    .then ->
+      watcherModel.log 'res:project:delete:' + project.id
+    .fail (error) ->
+      callback error
+
+model.updateProject = (project, callback) ->
+  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+
+  watcherModel.log "res:project:update:#{project.id}", ["Start pulling...\n"]
+  process = child.exec "git pull", {cwd: project.path}
+  process.stdout.on 'data',(chunk) ->
+    watcherModel.log "res:project:update:#{project.id}", chunk
+  process.stderr.on 'data',(chunk) ->
+    watcherModel.log "res:project:update:#{project.id}", chunk
 
 module.exports = model;

@@ -25,6 +25,14 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
+  .factory('reqProjectListRefresh', ['socket', function (socket) {
+    return {
+      emit: function (data) {
+        socket.emit('projects:list:refresh', data);
+      }
+    }
+  }])
+
   .factory('resProjectsList', ['socket', 'reqProjectList', function (socket, reqProjectList) {
     reqProjectList.emit();
     return Kefir.fromEvent(socket, 'res:projects:list').toProperty();
@@ -82,6 +90,38 @@ angular.module('eintopf.services.socket.states', [])
     return {
       emit: function (data) {
         socket.emit('project:stop', data);
+      }
+    }
+  }])
+
+  .factory('resProjectDelete', ['socket', function (socket){
+    return {
+      fromProject: function (project){
+        return Kefir.fromEvent(socket, 'res:project:delete:' + project);
+      }
+    }
+  }])
+
+  .factory('reqProjectDelete', ['socket', function (socket){
+    return {
+      emit: function (data) {
+        socket.emit('project:delete', data);
+      }
+    }
+  }])
+
+ .factory('resProjectUpdate', ['socket', function (socket){
+    return {
+      fromProject: function (project){
+        return Kefir.fromEvent(socket, 'res:project:update:' + project).toProperty();
+      }
+    }
+  }])
+
+  .factory('reqProjectUpdate', ['socket', function (socket){
+    return {
+      emit: function (data) {
+        socket.emit('project:update', data);
       }
     }
   }])

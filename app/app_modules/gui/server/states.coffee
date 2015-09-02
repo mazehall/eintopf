@@ -47,6 +47,18 @@ states = (connections_, rawSocket) ->
   .onValue (val) ->
     rawSocket.emit val.name, val.newValue
 
+  watcherModel.toKefir()
+  .filter (x) ->
+    x.name.match /^res:project:delete:/
+  .onValue (val) ->
+    rawSocket.emit val.name, val.newValue
+
+  watcherModel.toKefir()
+  .filter (x) ->
+    x.name.match /^res:project:update:/
+  .onValue (val) ->
+    rawSocket.emit val.name, val.newValue
+
   # emit apps changes
   watcherModel.propertyToKefir 'apps:list'
   .onValue (val) ->
@@ -58,6 +70,10 @@ states = (connections_, rawSocket) ->
     _r.fromEvents socket, 'projects:list'
       .onValue () ->
         socket.emit 'res:projects:list', watcherModel.get 'projects:list'
+
+    _r.fromEvents socket, 'projects:list:refresh'
+    .onValue () ->
+      projectsModel.loadProjects()
 
     _r.fromEvents socket, 'states:restart'
     .onValue () ->
@@ -100,5 +116,17 @@ states = (connections_, rawSocket) ->
       x if x.id?
     .onValue (project) ->
       projectsModel.stopProject project
+
+    _r.fromEvents socket, 'project:delete'
+    .filter (x) ->
+      x if x.id?
+    .onValue (project) ->
+      projectsModel.deleteProject project
+
+    _r.fromEvents socket, 'project:update'
+    .filter (x) ->
+      x if x.id?
+    .onValue (project) ->
+      projectsModel.updateProject project
 
 module.exports = states
