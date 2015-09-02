@@ -49,6 +49,12 @@ states = (connections_, rawSocket) ->
 
   watcherModel.toKefir()
   .filter (x) ->
+    x.name.match /^res:project:delete:/
+  .onValue (val) ->
+    rawSocket.emit val.name, val.newValue
+
+  watcherModel.toKefir()
+  .filter (x) ->
     x.name.match /^res:project:update:/
   .onValue (val) ->
     rawSocket.emit val.name, val.newValue
