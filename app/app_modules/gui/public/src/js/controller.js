@@ -63,8 +63,8 @@ angular.module('eintopf')
       };
       $scope.loading = false;
 
-      resProjectStart.fromProject($stateParams.id).$assignProperty($scope, 'log');
-      resProjectStop.fromProject($stateParams.id).$assignProperty($scope, 'log');
+      resProjectStart.fromProject($stateParams.id).$assignProperty($scope, 'logs.Start');
+      resProjectStop.fromProject($stateParams.id).$assignProperty($scope, 'logs.Stop');
       resProjectDetail.$assignProperty($scope, 'project');
       reqProjectDetail.emit($stateParams.id);
 
@@ -86,11 +86,37 @@ angular.module('eintopf')
           $state.go("cooking.projects");
         });
       };
+
+      $scope.$root.lastProjectId = $stateParams.id;
+
       $scope.updateProject = function(project){
         reqProjectUpdate.emit(project);
-        resProjectUpdate.fromProject($stateParams.id).$assignProperty($scope, 'log');
+        resProjectUpdate.fromProject($stateParams.id).$assignProperty($scope, 'logs.Update');
       };
-      $scope.$root.lastProjectId = $stateParams.id
+
+      /**
+       * Log section
+       */
+
+      $scope.tabs = [/** placeholder **/];
+      $scope.currentTab = null;
+      $scope.onClickTab = function(tab){
+          $scope.currentTab = tab;
+      };
+
+      $scope.$watchCollection("logs", function(value){
+          var logs = Object.keys(value || {});
+          if (logs.length !== $scope.tabs.length){
+              for(var index = 0; index < logs.length; index++){
+                  var tabName = logs[index];
+                  if (tabName && $scope.tabs.indexOf(tabName) === -1){
+                      $scope.tabs.push(tabName);
+                      $scope.currentTab = tabName;
+                      break;
+                  }
+              }
+          }
+      });
     }
   ])
   .controller('createProjectCtrl',

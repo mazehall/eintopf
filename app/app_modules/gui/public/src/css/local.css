@@ -111,5 +111,21 @@ input{
 .cssContainer li p, .cssSidebar a p, pre{
     word-wrap: break-word;
 }
-
+.cssTabbedLogs  {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.cssTabbedLogs  li {
+    float: left;
+    margin-right: 5px;
+    padding: 0 10px;
+    background-color: #cccccc;
+    cursor: pointer;
+}
+.cssTabbedLogs .cssActive {
+    color: #ffffff;
+    background-color: inherit;
+    cursor: default;
+}
 
