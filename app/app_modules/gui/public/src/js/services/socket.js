@@ -86,6 +86,22 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
+  .factory('resProjectDelete', ['socket', function (socket){
+    return {
+      fromProject: function (project){
+        return Kefir.fromEvent(socket, 'res:project:delete:' + project);
+      }
+    }
+  }])
+
+  .factory('reqProjectDelete', ['socket', function (socket){
+    return {
+      emit: function (data) {
+        socket.emit('project:delete', data);
+      }
+    }
+  }])
+
   .factory('reqContainersList', ['socket', function (socket) {
     return {
       emit: function (data) {

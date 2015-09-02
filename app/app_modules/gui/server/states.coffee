@@ -101,4 +101,10 @@ states = (connections_, rawSocket) ->
     .onValue (project) ->
       projectsModel.stopProject project
 
+    _r.fromEvents socket, 'project:delete'
+    .filter (x) ->
+      x if x.id?
+    .onValue (project) ->
+      projectsModel.deleteProject project
+
 module.exports = states
