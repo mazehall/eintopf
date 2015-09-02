@@ -1,6 +1,7 @@
 var eintopf = angular.module('eintopf', [
   'ui.router',
   'angular-kefir',
+  'luegg.directives',
   'eintopf.services.socket.states'
 ]);
 
