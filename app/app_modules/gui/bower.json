@@ -16,6 +16,7 @@
     "socket.io-client": "~1.2",
     "angular-kefir": "~1.0.0",
     "zeroclipboard": "~2.2.0",
-    "ng-clip": "~0.2.6"
+    "ng-clip": "~0.2.6",
+    "angular-scroll-glue": "2.0.6"
   }
 }
