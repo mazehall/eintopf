@@ -62,10 +62,13 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
-  .factory('resProjectStart', ['socket', function (socket) {
+  .factory('resProjectStart', ['socket', 'storage', function (socket, storage) {
     return {
       fromProject: function (project) {
-        return Kefir.fromEvent(socket, 'res:project:start:' + project ).toProperty();
+        return Kefir.fromEvent(socket, 'res:project:start:' + project ).onValue(function(value){
+          storage.add("project.log.start."+ project, value);
+          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +":start: "+ value);
+        }).toProperty();
       }
     }
   }])
@@ -78,10 +81,13 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
-  .factory('resProjectStop', ['socket', function (socket) {
+  .factory('resProjectStop', ['socket', 'storage', function (socket, storage) {
     return {
       fromProject: function (project) {
-        return Kefir.fromEvent(socket, 'res:project:stop:' + project ).toProperty();
+        return Kefir.fromEvent(socket, 'res:project:stop:' + project).onValue(function(value){
+          storage.add("project.log.stop."+ project, value);
+          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +":stop: "+ value);
+        }).toProperty();
       }
     }
   }])
@@ -110,10 +116,13 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
- .factory('resProjectUpdate', ['socket', function (socket){
+ .factory('resProjectUpdate', ['socket', 'storage', function (socket, storage) {
     return {
       fromProject: function (project){
-        return Kefir.fromEvent(socket, 'res:project:update:' + project).toProperty();
+        return Kefir.fromEvent(socket, 'res:project:update:' + project).onValue(function(value){
+          storage.add("project.log.update."+ project, value);
+          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +":update: "+ value);
+        }).toProperty();
       }
     }
   }])

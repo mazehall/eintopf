@@ -56,8 +56,8 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-  ['$scope', '$stateParams', '$state', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'reqProjectListRefresh',
-    function($scope, $stateParams, $state, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, reqProjectListRefresh) {
+  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'reqProjectListRefresh',
+    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, reqProjectListRefresh) {
       $scope.project = {
         id: $stateParams.id
       };
@@ -98,24 +98,16 @@ angular.module('eintopf')
        * Log section
        */
 
-      $scope.tabs = [/** placeholder **/];
-      $scope.currentTab = null;
+      $scope.tabs = ["protocol"];
+      $scope.currentTab = "protocol";
+      $scope.tabContent = {};
       $scope.onClickTab = function(tab){
           $scope.currentTab = tab;
       };
 
-      $scope.$watchCollection("logs", function(value){
-          var logs = Object.keys(value || {});
-          if (logs.length !== $scope.tabs.length){
-              for(var index = 0; index < logs.length; index++){
-                  var tabName = logs[index];
-                  if (tabName && $scope.tabs.indexOf(tabName) === -1){
-                      $scope.tabs.push(tabName);
-                      $scope.currentTab = tabName;
-                      break;
-                  }
-              }
-          }
+      storage.stream("project.log.complete."+ $scope.project.id).onValue(function(log){
+          $scope.tabContent.protocol += log.value;
+          $scope.$applyAsync();
       });
     }
   ])

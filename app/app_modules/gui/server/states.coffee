@@ -57,7 +57,7 @@ states = (connections_, rawSocket) ->
   .filter (x) ->
     x.name.match /^res:project:update:/
   .onValue (val) ->
-    rawSocket.emit val.name, val.newValue
+    rawSocket.emit val.name, val.newValue[val.newValue.length-1]
 
   # emit apps changes
   watcherModel.propertyToKefir 'apps:list'
