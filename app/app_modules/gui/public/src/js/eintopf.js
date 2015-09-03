@@ -2,7 +2,8 @@ var eintopf = angular.module('eintopf', [
   'ui.router',
   'angular-kefir',
   'luegg.directives',
-  'eintopf.services.socket.states'
+  'eintopf.services.socket.states',
+  'eintopf.services.storage'
 ]);
 
 eintopf.config(function($stateProvider, $urlRouterProvider) {
