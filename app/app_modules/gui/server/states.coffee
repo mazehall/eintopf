@@ -39,13 +39,13 @@ states = (connections_, rawSocket) ->
   .filter (x) ->
     x.name.match /^res:project:start:/
   .onValue (val) ->
-    rawSocket.emit val.name, val.newValue
+    rawSocket.emit val.name, val.newValue[val.newValue.length-1]
 
   watcherModel.toKefir()
   .filter (x) ->
     x.name.match /^res:project:stop:/
   .onValue (val) ->
-    rawSocket.emit val.name, val.newValue
+    rawSocket.emit val.name, val.newValue[val.newValue.length-1]
 
   watcherModel.toKefir()
   .filter (x) ->
