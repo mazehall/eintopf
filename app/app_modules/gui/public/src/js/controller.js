@@ -63,8 +63,8 @@ angular.module('eintopf')
       };
       $scope.loading = false;
 
-      resProjectStart.fromProject($stateParams.id).$assignProperty($scope, 'logs.Start');
-      resProjectStop.fromProject($stateParams.id).$assignProperty($scope, 'logs.Stop');
+      resProjectStart.fromProject($stateParams.id);
+      resProjectStop.fromProject($stateParams.id);
       resProjectDetail.$assignProperty($scope, 'project');
       reqProjectDetail.emit($stateParams.id);
 
@@ -91,7 +91,7 @@ angular.module('eintopf')
 
       $scope.updateProject = function(project){
         reqProjectUpdate.emit(project);
-        resProjectUpdate.fromProject($stateParams.id).$assignProperty($scope, 'logs.Update');
+        resProjectUpdate.fromProject($stateParams.id);
       };
 
       /**
