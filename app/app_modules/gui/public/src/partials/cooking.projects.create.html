@@ -9,11 +9,11 @@
             <span>install</span>
         </a>
     </form>
-    <div ng-show="result.errorMessage">
-        <p class="fnt--red m0 py05">Error:</p>
-        <pre class="bg--dark-gray m0 p1 fnt--off-white ">{{result.errorMessage}}</pre>
-    </div>
-    <div ng-show="result.status == 'success'">
-        <p class="muted m0 py05">Success</p>
-    </div>
+</div>
+<div class="grd px2 m0" ng-show="result.errorMessage">
+    <p class="fnt--red m0 py05">Error:</p>
+    <pre class="bg--dark-gray m0 p1 fnt--off-white ">{{result.errorMessage}}</pre>
+</div>
+<div class="grd px2 m0" ng-show="result.status == 'success'">
+    <p class="muted m0 py05">Success</p>
 </div>
