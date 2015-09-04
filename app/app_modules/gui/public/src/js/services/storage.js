@@ -14,8 +14,6 @@ angular.module("eintopf.services.storage", []).factory("storage", ["socket", fun
          */
         get: function(key)
         {
-            ioEvent.emit("storage:updated", {name: key, type: "get"});
-
             return storage[key] || null;
         },
 
