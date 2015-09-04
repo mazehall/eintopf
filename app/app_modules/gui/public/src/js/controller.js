@@ -105,10 +105,9 @@ angular.module('eintopf')
           $scope.currentTab = tab;
       };
 
-      storage.stream("project.log.complete."+ $scope.project.id).onValue(function(log){
-          $scope.tabContent.protocol += log.value;
-          $scope.$applyAsync();
-      });
+      storage.stream("project.log.complete."+ $scope.project.id).map(function(value){
+          return value.join("");
+      }).$assignProperty($scope, "tabContent.protocol");
     }
   ])
   .controller('createProjectCtrl',

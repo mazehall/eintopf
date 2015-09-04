@@ -78,7 +78,7 @@ angular.module("eintopf.services.storage", []).factory("storage", ["socket", fun
             return Kefir.fromBinder(function(emitter){
                 ioEvent.on("storage:updated", function(store){
                     if (name && name === store.name || typeof name === "undefined"){
-                        emitter.emit(store);
+                        emitter.emit(factory.get(store.name));
                     }
                 });
             });
