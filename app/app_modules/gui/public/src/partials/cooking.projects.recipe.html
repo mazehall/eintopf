@@ -2,19 +2,19 @@
     <div class="grd-row">
         <ul class="grd-row-col-6 m1 p0 cssToolbar list--unstyled">
             <li class="flt--left">
-            <a href="#" class="btn small" ng-click="startProject(project)" ng-disabled="loading">
+            <a href="#" class="btn small" ng-click="startProject(project);currentTab = 'protocol';" ng-disabled="loading">
                 <i class="fa fa fa-cog fnt--green"></i>
                 <span class="fnt--green">run</span>
             </a>
             </li>
             <li class="flt--left">
-            <a href="#" class="btn small" ng-click="stopProject(project)" ng-disabled="loading">
+            <a href="#" class="btn small" ng-click="stopProject(project);currentTab = 'protocol';" ng-disabled="loading">
                 <i class="fa fa-ban fnt--mid-gray"></i>
                 <span class="fnt--mid-gray">stop</span>
             </a>
             </li>
             <li class="flt--left">
-            <a href="#" class="btn small" ng-click="updateProject(project)">
+            <a href="#" class="btn small" ng-click="updateProject(project);currentTab = 'protocol';">
                 <i class="fa fa-refresh fnt--blue small"></i>
                 <span class="fnt--blue">update</span>
             </a>
