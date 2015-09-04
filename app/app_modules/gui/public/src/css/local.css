@@ -14,35 +14,30 @@ body {
 .cssBgGreen{
     background-color: rgba(228, 240, 232, 1.0);
 }
+.fnt-eintopf-green{
+    color:rgba(180,199,186,1.0);
+}
+.btn-green{
+    border-color: rgba(19, 103, 112, 1.0);
+    background-color: rgba(19, 103, 112, 1.0);
+    color: #fff;
+    border-radius: 3px;
+    padding: .5rem 1.5rem;
+    border: 1px solid #02565f;
+    text-decoration: none;
+    text-align: center;
+}
+.btn-green:hover, .btn-green:focus, .btn-green:active {
+    color: #fff;
+    background-color: rgba(2, 86, 95, 1.0);
+    border-color: rgba(19, 103, 112, 1.0);
+}
 .py05{
     padding:0.5rem 0;
-}
-.cssSidebar{
-    border-right:0px solid rgba(215, 228, 219, 0.8);
 }
 .cssHeader{
     max-height:60px;
     border-bottom:2px solid rgba(215, 228, 219, 1.0);
-}
-.cssSidebar .btn--link, .cssSidebar .btn--link.active {
-    color: rgba(144, 144, 144, .99);
-    border-radius: 0;
-    border-bottom: 1px solid rgba(250, 250, 250, .99);
-}
-.cssSidebar .btn--link.active{
-
-}
-.cssSidebar ul li a.btn--link:hover{
-    border-bottom:1px solid rgba(216,216,216,.99);
-}
-.cssSidebar ul li a.btn--link.active{
-
-    font-weight:bold;
-    color:rgba(2,86,95,.99);
-}
-.cssSidebar .media .media-figure{
-    margin-left:1em;
-    margin-right:0;
 }
 .cssHeader ul li a.btn--link{
     color:#02565f;
@@ -58,6 +53,25 @@ body {
     max-height:60px;
     margin-left:5px;
 }
+.cssSidebar{
+    border-right:0px solid rgba(215, 228, 219, 0.8);
+}
+.cssSidebar .btn--link, .cssSidebar .btn--link.active {
+    color: rgba(144, 144, 144, .99);
+    border-radius: 0;
+    border-bottom: 1px solid rgba(250, 250, 250, .99);
+}
+.cssSidebar ul li a.btn--link:hover{
+    border-bottom:1px solid rgba(216,216,216,.99);
+}
+.cssSidebar ul li a.btn--link.active{
+    font-weight:bold;
+    color:rgba(2,86,95,.99);
+}
+.cssSidebar .media .media-figure{
+    margin-left:1em;
+    margin-right:0;
+}
 .cssToolbar .btn.active, .cssToolbar .active i{
     color:#fff;
 }
@@ -67,9 +81,6 @@ body {
     padding: .5rem;
     margin: 0 0 0 .5rem;
  }
-.fnt-eintopf-green{
-    color:rgba(180,199,186,1.0);
-}
 .cssSetup ul li p.h4{
     margin:0;
 }
@@ -83,12 +94,6 @@ input{
     width:70%;
     padding: .3rem;
 }
-.cssNewProject{
-    min-height:90px;
-    max-height:90px;
-    height:90px;
-}
-
 .scroll {
     width: 100%;
     height: 400px;
@@ -98,18 +103,19 @@ input{
 .scroll::-webkit-scrollbar {
     width: 15px;
 }
-
 .scroll::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     border-radius: 50px;
 }
-
 .scroll::-webkit-scrollbar-thumb {
     border-radius: 5px;
     -webkit-box-shadow: inset 0 0 6px rgba(144,144,144,.99);
 }
 .cssContainer li p, .cssSidebar a p, pre{
     word-wrap: break-word;
+}
+.cssBox:hover{
+    background-color:rgba(215, 228, 219, 1.0)
 }
 
 
