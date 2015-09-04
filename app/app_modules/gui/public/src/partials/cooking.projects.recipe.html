@@ -56,7 +56,7 @@
             </ul>
             <div class="scroll bg--dark-gray p1" scroll-glue>
                 <div ng-repeat="tab in tabs" ng-show="currentTab == tab">
-                    <pre id="jsScrollToBottom" class="fnt--off-white">{{tabContent[tab]}}</pre>
+                    <div class="fnt--off-white" marked="tabContent[tab]"></div>
                 </div>
                 <div class="fnt--off-white" ng-repeat="markdown in project.markdowns" ng-show="currentTab == markdown.name">
                     <div marked src="'/projects/'+ project.id +'/'+ markdown.name"></div>

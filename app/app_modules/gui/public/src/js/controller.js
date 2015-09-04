@@ -106,7 +106,7 @@ angular.module('eintopf')
       };
 
       storage.stream("project.log.complete."+ $scope.project.id).map(function(value){
-          return value.join("");
+          return value.join("").replace(/\n/ig, "<br>");
       }).$assignProperty($scope, "tabContent.protocol");
     }
   ])

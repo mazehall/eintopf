@@ -68,7 +68,7 @@ angular.module('eintopf.services.socket.states', [])
       fromProject: function (project) {
         return stream = stream || Kefir.fromEvent(socket, 'res:project:start:' + project ).onValue(function(value){
           storage.add("project.log.start."+ project, value);
-          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +":start: "+ value);
+          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +" - [start] > "+ value);
         }).toProperty();
       }
     }
@@ -88,7 +88,7 @@ angular.module('eintopf.services.socket.states', [])
       fromProject: function (project) {
         return stream = stream || Kefir.fromEvent(socket, 'res:project:stop:' + project).onValue(function(value){
           storage.add("project.log.stop."+ project, value);
-          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +":stop: "+ value);
+          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +" - [stop] > "+ value);
         }).toProperty();
       }
     }
@@ -124,7 +124,7 @@ angular.module('eintopf.services.socket.states', [])
       fromProject: function (project){
         return stream = stream || Kefir.fromEvent(socket, 'res:project:update:' + project).onValue(function(value){
           storage.add("project.log.update."+ project, value);
-          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +":update: "+ value);
+          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +" - [update] > "+ value);
         }).toProperty();
       }
     }
