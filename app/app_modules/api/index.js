@@ -17,4 +17,6 @@ module.exports = function(app) {
     app.post("/api/stop", projectsHandler.stopProject);
 
     app.post("/api/action", projectsHandler.projectAction);
+
+    app.get("/projects/:project/:resource", projectsHandler.projectResource);
 };
