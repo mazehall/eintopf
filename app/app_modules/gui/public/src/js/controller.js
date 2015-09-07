@@ -104,7 +104,7 @@ angular.module('eintopf')
           $scope.currentTab = tab;
       };
 
-      storage.stream("project.log.complete."+ $scope.project.id).map(function(value){
+      storage.stream("project.log.complete."+ $stateParams.id).map(function(value){
           return value.join("").replace(/\n/ig, "<br>");
       }).$assignProperty($scope, "protocol");
     }
