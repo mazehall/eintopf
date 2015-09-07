@@ -46,21 +46,24 @@
     </div>
     <div class="grd-row">
         <div class="grd-row-col-6 p2">
-            <ul class="cssTabbedLogs bg--dark-gray list--unstyled p0 m0">
-                <li ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.markdowns[0]">
-                    README
+            <ul class="grd-row cssTabbedLogs cssBgGreen list--unstyled p0 m0">
+                <li class="grd-row-col-1-6">
+                    <p class="txt--center m0">Actions</p>
                 </li>
-                <li ng-click="onClickTab('protocol')" ng-class="{cssActive: currentTab == 'protocol'}">
-                    protocol
+                <li class="grd-row-col-1-6" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.markdowns[0]">
+                    <p class="txt--center m0">Readme</p>
+                </li>
+                <li class="grd-row-col-1-6 " ng-click="onClickTab('protocol')" ng-class="{cssActive: currentTab == 'protocol'}">
+                    <p class="txt--center m0">Logs</p>
                 </li>
             </ul>
-            <div class="scroll bg--dark-gray p1" scroll-glue>
-                <div ng-show="currentTab == 'protocol'">
+            <div class="grd-row p0 m0 cssBorderWhitoutTop">
+                <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-glue ng-show="currentTab == 'protocol'">
                     <div class="fnt--off-white" marked="protocol"></div>
                 </div>
 
-                <div class="fnt--off-white" ng-if="project.markdowns[0]" ng-show="currentTab == 'readme'">
-                    <div marked src="'/projects/'+ project.id +'/'+ project.markdowns[0].name"></div>
+                <div class="grd-row-col-6  p1 " ng-if="project.markdowns[0]" ng-show="currentTab == 'readme'">
+                    <div class="cssReadme" marked src="'/projects/'+ project.id +'/'+ project.markdowns[0].name"></div>
                 </div>
             </div>
         </div>

@@ -117,16 +117,75 @@ input{
 .cssBox:hover{
     background-color:rgba(215, 228, 219, 1.0)
 }
+.cssBorderWhitoutTop{
+    border-left: thin solid rgba(228, 240, 232, 1.0);
+    border-right: thin solid rgba(228, 240, 232, 1.0);
+    border-bottom: thin solid rgba(228, 240, 232, 1.0);
+}
 .cssTabbedLogs  li {
-    float: left;
-    margin-right: 5px;
-    padding: 0 10px;
-    background-color: #cccccc;
+    border-top:2px solid rgba(228, 240, 232, 1.0);
     cursor: pointer;
+    color:#02565f;
 }
 .cssTabbedLogs .cssActive {
-    color: #ffffff;
-    background-color: inherit;
+    border-top:2px solid #f2695e;
     cursor: default;
+    background:#fff;
+}
+.cssReadme h1,.cssReadme h2,.cssReadme h3,.cssReadme h4,.cssReadme h5{
+    margin-top: 1em;
+    margin-bottom: 16px;
+    font-weight:bold;
+    border-bottom:1px solid #eee;
+    padding-bottom:.3em;
+}
+.cssReadme h1{
+    font-size:2.25em;
+    line-height: 1.2;
+}
+.cssReadme h2{
+    font-size:1.75em;
+    line-height: 1.225;
+}
+.cssReadme h3{
+    font-size:1.5em;
+}
+.cssReadme h4{
+    font-size:1.25em;
+}
+.cssReadme pre{
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border-radius: 3px;
+}
+.cssReadme code{
+    padding: 0;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    margin: 0;
+    font-size: 85%;
+    background-color: #f7f7f7;
+    border-radius: 3px;
+}
+.cssReadme table{
+    display: block;
+    width: 100%;
+    overflow: auto;
+    word-break: normal;
+    word-break: keep-all;
+}
+.cssReadme table tr{
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+}
+.cssReadme table tr:nth-child(2n){
+    background-color: #f8f8f8;
+}
+.cssReadme table th,.cssReadme table td{
+    padding: 6px 13px;
+    border: 1px solid #ddd;
 }
 
