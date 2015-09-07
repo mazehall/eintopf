@@ -117,11 +117,6 @@ input{
 .cssBox:hover{
     background-color:rgba(215, 228, 219, 1.0)
 }
-.cssTabbedLogs  {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
 .cssTabbedLogs  li {
     float: left;
     margin-right: 5px;

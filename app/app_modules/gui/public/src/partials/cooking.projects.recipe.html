@@ -46,13 +46,17 @@
     </div>
     <div class="grd-row">
         <div class="grd-row-col-6 p2">
-            <ul class="cssTabbedLogs bg--dark-gray">
+            <ul class="cssTabbedLogs bg--dark-gray list--unstyled p0 m0">
                 <li ng-repeat="markdown in project.markdowns"
                     ng-class="{cssActive:markdown.name == currentTab}"
-                    ng-click="onClickTab(markdown.name)">{{markdown.name}}</li>
+                    ng-click="onClickTab(markdown.name)">
+                    <p>{{markdown.name}}</p>
+                </li>
                 <li ng-repeat="tab in tabs"
                     ng-class="{cssActive:tab == currentTab}"
-                    ng-click="onClickTab(tab)">{{tab}}</li>
+                    ng-click="onClickTab(tab)">
+                    <p>{{tab}}</p>
+                </li>
             </ul>
             <div class="scroll bg--dark-gray p1" scroll-glue>
                 <div ng-repeat="tab in tabs" ng-show="currentTab == tab">
