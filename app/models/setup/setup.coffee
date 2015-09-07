@@ -19,6 +19,16 @@ inSetup = false
 
 states = JSON.parse(JSON.stringify(defaultStates));
 
+watchVagrantSshConfigAndSetIt = () ->
+  _r.withInterval 5000, (emitter) ->
+    vagrantRunModel.getSshConfig (err, result) ->
+      return emitter.error err if err
+      emitter.emit result
+  .onValue (val) ->
+    watcherModel.setProperty 'settings:list', 'vagrantSshConfig', val
+  .onError (err) ->
+    watcherModel.setProperty 'settings:list', 'vagrantSshConfig', {}
+
 model = {};
 model.getState = () ->
   states.datetime = new Date()
@@ -61,4 +71,5 @@ model.run = () ->
   .onEnd () ->
     inSetup = false
 
+watchVagrantSshConfigAndSetIt()
 module.exports = model;

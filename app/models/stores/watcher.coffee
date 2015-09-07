@@ -28,6 +28,15 @@ model.prototype.set = (propertyName, value) ->
   watchAndEmitProperty this, propertyName if typeof _store[propertyName] == "undefined"
   _store[propertyName] = value
 
+model.prototype.setProperty = (propertyName, childName, value) ->
+  return false if ! propertyName? || ! childName? || !(typeof _store[propertyName] == "object" || typeof _store[propertyName] == "undefined")
+  value = null if typeof value == "undefined"
+  if typeof _store[propertyName] == "undefined"
+    property = {}
+    property[childName] = value
+    return this.set propertyName, property
+  _store[propertyName][childName] = value
+
 # append new values on the property as array
 model.prototype.log = (propertyName, value) ->
   return false if ! propertyName?

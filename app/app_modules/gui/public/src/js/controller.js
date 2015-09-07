@@ -112,4 +112,11 @@ angular.module('eintopf')
         reqProjectsInstall.emit(val);
       }
     }
-  ]);
+  ])
+  .controller('settingsCtrl',
+  ['$scope', 'resSettingsList',
+    function($scope, resSettingsList) {
+        resSettingsList.$assignProperty($scope, 'settings');
+    }
+  ])
+;
