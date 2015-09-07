@@ -1,13 +1,11 @@
 <ul class="grd">
-    <li class="grd-row bg--light-gray" ng-repeat="(key, value) in logs | filter:{read: false}">
-        <span class="grd-row-col-5-6">
-            {{value.message}}
-        </span>
-        <span class="grd-row-col-1-6">
-            <button ng-click="value.read = true">
-                OK
-            </button>
-        </span>
+    <li class="grd-row my1 bg--red" ng-repeat="(key, value) in logs | filter:{read: false}">
+        <div class="grd-row-col-6 p1">
+            <a href="#" class="fnt--white flt--right " ng-click="value.read = true">
+                <i class="fnt--white fa fa-times"></i>
+            </a>
+           <p class="fnt--white">{{value.message}}</p>
+        </div>
     </li>
 </ul>
 
