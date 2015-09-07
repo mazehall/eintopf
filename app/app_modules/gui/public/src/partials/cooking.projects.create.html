@@ -1,19 +1,25 @@
-<div class="grd bg--off-white cssNewProject p1 m0">
-    <form id="formCreateProject" class="">
-        <label class="grd-row mx1 small muted" for="projectName">
-            Please enter the URL of your Project Description (Git Repo)
-        </label>
-        <input class="grd-row-col-4-6 flt--left mx1" type="text" name="projectName" id="projectName" ng-model="newProject">
-        <a href="#" class="grd-row-col-2-6 btn small" ng-click="install(newProject)" ng-disabled="loading" title="Create new project">
-            <i ng-show="loading" class="fa fa-spinner fa-pulse"></i>
-            <span>install</span>
-        </a>
-    </form>
-    <div ng-show="result.errorMessage">
-        <p class="fnt--red m0 py05">Error:</p>
-        <pre class="bg--dark-gray m0 p1 fnt--off-white ">{{result.errorMessage}}</pre>
+
+    <div class="grd-row-col-6 p1 m0">
+        <h4 class="muted m0 p1">
+            Create Project
+        </h4>
     </div>
-    <div ng-show="result.status == 'success'">
-        <p class="muted m0 py05">Success</p>
+    <div class="grd px2 m0">
+        <form id="formCreateProject" class="p2 m0 bg--off-white">
+            <label class="grd-row mx1 small muted" for="projectName">
+                Please enter the URL of your Project Description (Git Repo)
+            </label>
+            <input class="grd-row-col-4-6 flt--left mx1" type="text" name="projectName" id="projectName" ng-model="newProject">
+            <a href="#" class="grd-row-col-2-6 btn small" ng-click="install(newProject)" ng-disabled="loading" title="Create new project">
+                <i ng-show="loading" class="fa fa-spinner fa-pulse"></i>
+                <span>install</span>
+            </a>
+        </form>
     </div>
+<div class="grd px2 m0" ng-show="result.errorMessage">
+    <p class="fnt--red m0 py05">Error:</p>
+    <pre class="bg--dark-gray m0 p1 fnt--off-white ">{{result.errorMessage}}</pre>
+</div>
+<div class="grd px2 m0" ng-show="result.status == 'success'">
+    <p class="muted m0 py05">Success</p>
 </div>
