@@ -39,9 +39,32 @@ angular.module('eintopf')
     }
   ])
   .controller('containersCtrl',
-  ['$scope', 'resContainersList',
-    function($scope, resContainersList) {
+  ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
+    function($scope, resContainersList, reqContainerActions, resContainersLog) {
       resContainersList.$assignProperty($scope, 'containers');
+
+      $scope.logs = [];
+      resContainersLog
+      .filter(function(x) {
+        if(x.message) return x;
+      })
+      .onValue(function(val) {
+        val.read = false;
+        $scope.logs.push(val);
+      });
+
+      $scope.startContainer = function(container) {
+        if(typeof container.id != "string") return false;
+        reqContainerActions.start(container.id);
+      };
+      $scope.stopContainer = function(container) {
+        if(typeof container.id != "string") return false;
+        reqContainerActions.stop(container.id);
+      };
+      $scope.removeContainer = function(container) {
+        if(typeof container.id != "string") return false;
+        reqContainerActions.remove(container.id);
+      };
     }
   ])
   .controller('appsCtrl',

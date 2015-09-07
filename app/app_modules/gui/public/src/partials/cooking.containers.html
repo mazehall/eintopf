@@ -1,35 +1,57 @@
-    <ul class="grd list--unstyled cssContainer">
-        <li class="grd-row muted">
-            <span class="mx1 grd-row-col-1-6">
-                Name
-            </span>
-            <span class="mx1 grd-row-col-1-6">
-                Virtual Host
-            </span>
-            <span class="mx1 grd-row-col-1-6">
-                Status
-            </span>
-            <span class="mx1 grd-row-col-3-6">
+<ul class="grd">
+    <li class="grd-row bg--light-gray" ng-repeat="(key, value) in logs | filter:{read: false}">
+        <span class="grd-row-col-5-6">
+            {{value.message}}
+        </span>
+        <span class="grd-row-col-1-6">
+            <button ng-click="value.read = true">
+                OK
+            </button>
+        </span>
+    </li>
+</ul>
 
-            </span>
-        </li>
-        <li class="grd-row py1" ng-repeat="(key, value) in containers" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
-            <div class="mx1 grd-row-col-1-6">
-                <p class="m0 p0"> {{value.name}}</p>
-            </div>
-            <div class="mx1 grd-row-col-1-6">
-                <p class="m0 p0">{{value.virtualHost}}</p>
-            </div>
-            <div class="mx1 grd-row-col-1-6">
-                <p class="m0 p0"> {{value.status}}</p>
-            </div>
-            <div class="mx1 txt--right grd-row-col-3-6">
-                <a href="#"class="btn small"><i class="fa fa-play-circle fnt--green  "></i><span> start</span></a>
-                <a href="#"class="btn small"><i class="fa fa-ban fnt--dark-gray"></i><span> stop</span></a>
-                <a href="#"class="btn small"><i class="fa fa-minus-circle fnt--red"></i><span> remove</span></a>
-            </div>
-        </li>
-    </ul>
+<ul class="grd list--unstyled cssContainer">
+    <li class="grd-row muted">
+        <span class="mx1 grd-row-col-1-6">
+            Name
+        </span>
+        <span class="mx1 grd-row-col-1-6">
+            Virtual Host
+        </span>
+        <span class="mx1 grd-row-col-1-6">
+            Status
+        </span>
+        <span class="mx1 grd-row-col-3-6">
+
+        </span>
+    </li>
+    <li class="grd-row py1" ng-repeat="(key, value) in containers" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+        <div class="mx1 grd-row-col-1-6">
+            <p class="m0 p0"> {{value.name}}</p>
+        </div>
+        <div class="mx1 grd-row-col-1-6">
+            <p class="m0 p0">{{value.virtualHost}}</p>
+        </div>
+        <div class="mx1 grd-row-col-1-6">
+            <p class="m0 p0"> {{value.status}}</p>
+        </div>
+        <div class="mx1 txt--right grd-row-col-3-6">
+            <a href="#" class="btn small" ng-click="startContainer(value)">
+                <i class="fa fa-play-circle fnt--green  "></i>
+                <span> start</span>
+            </a>
+            <a href="#" class="btn small" ng-click="stopContainer(value)">
+                <i class="fa fa-ban fnt--dark-gray"></i>
+                <span> stop</span>
+            </a>
+            <a href="#" class="btn small" ng-click="removeContainer(value)">
+                <i class="fa fa-minus-circle fnt--red"></i>
+                <span> remove</span>
+            </a>
+        </div>
+    </li>
+</ul>
 
 
 
