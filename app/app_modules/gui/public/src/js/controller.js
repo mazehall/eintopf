@@ -98,7 +98,6 @@ angular.module('eintopf')
        * Log section
        */
 
-      $scope.tabs = ["protocol"];
       $scope.currentTab = "protocol";
       $scope.tabContent = {};
       $scope.onClickTab = function(tab){
@@ -107,7 +106,7 @@ angular.module('eintopf')
 
       storage.stream("project.log.complete."+ $scope.project.id).map(function(value){
           return value.join("").replace(/\n/ig, "<br>");
-      }).$assignProperty($scope, "tabContent.protocol");
+      }).$assignProperty($scope, "protocol");
     }
   ])
   .controller('createProjectCtrl',
