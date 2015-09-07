@@ -122,12 +122,12 @@ input{
     border-right: thin solid rgba(228, 240, 232, 1.0);
     border-bottom: thin solid rgba(228, 240, 232, 1.0);
 }
-.cssTabbedLogs  li {
+.cssTab  li {
     border-top:2px solid rgba(228, 240, 232, 1.0);
     cursor: pointer;
     color:#02565f;
 }
-.cssTabbedLogs .cssActive {
+.cssTab .cssActive {
     border-top:2px solid #f2695e;
     cursor: default;
     background:#fff;
