@@ -53,8 +53,8 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject',
-    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject) {
+  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction',
+    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction) {
       $scope.project = {
         id: $stateParams.id
       };
@@ -103,6 +103,12 @@ angular.module('eintopf')
       storage.stream("project.log.complete."+ $stateParams.id).map(function(value){
           return value.join("").replace(/\n/ig, "<br>");
       }).$assignProperty($scope, "protocol");
+
+      $scope.doAction = function(project, action){
+        project.action = action;
+        reqProjectStartAction.emit(project);
+        resProjectStartAction.fromProject($stateParams.id);
+      };
     }
   ])
   .controller('createProjectCtrl',
