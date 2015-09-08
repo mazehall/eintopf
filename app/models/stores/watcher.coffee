@@ -20,6 +20,7 @@ watchAndEmitProperty = (self, propertyName) ->
 
 model = () ->
   events.EventEmitter.call this
+  events.defaultMaxListeners = 22
 util.inherits model, events.EventEmitter
 
 model.prototype.set = (propertyName, value) ->
