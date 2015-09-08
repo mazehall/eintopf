@@ -30,14 +30,9 @@ angular.module('eintopf')
     }
   ])
   .controller('cookingCtrl',
-  ['$scope', 'reqProjectList', 'resProjectsList', '$state', 'storage',
-    function($scope, reqProjectsList, resProjectsList, $state, storage) {
+  ['$scope', 'reqProjectList', 'resProjectsList',
+    function($scope, reqProjectsList, resProjectsList) {
       resProjectsList.$assignProperty($scope, 'projects');
-      if (storage.get("frontend.tabs.lastActive")) {
-        return $state.go("cooking.projects.recipe", {id: storage.get("frontend.tabs.lastActive")});
-      }
-
-      $state.go("cooking.projects.create");
     }
   ])
   .controller('containersCtrl',
@@ -58,8 +53,8 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'reqProjectListRefresh',
-    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, reqProjectListRefresh) {
+  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'reqProjectListRefresh', 'currentProject',
+    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, reqProjectListRefresh, currentProject) {
       $scope.project = {
         id: $stateParams.id
       };
@@ -84,17 +79,16 @@ angular.module('eintopf')
         reqProjectDelete.emit(project);
         resProjectDelete.fromProject($stateParams.id).onValue(function(){
           reqProjectListRefresh.emit();
-          storage.unset("frontend.tabs.lastActive");
+          currentProject.setProjectId();
           $state.go("cooking.projects");
         });
       };
-
-      storage.set("frontend.tabs.lastActive", $stateParams.id);
 
       $scope.updateProject = function(project){
         reqProjectUpdate.emit(project);
         resProjectUpdate.fromProject($stateParams.id);
       };
+      currentProject.setProjectId($stateParams.id);
 
       /**
        * Log section
@@ -131,4 +125,11 @@ angular.module('eintopf')
         reqProjectsInstall.emit(val);
       }
     }
-  ]);
+  ])
+  .controller('settingsCtrl',
+  ['$scope', 'resSettingsList',
+    function($scope, resSettingsList) {
+        resSettingsList.$assignProperty($scope, 'settings');
+    }
+  ])
+;

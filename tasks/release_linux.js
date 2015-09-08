@@ -31,11 +31,15 @@ var copyRuntime = function () {
     return projectDir.copyAsync('node_modules/electron-prebuilt/dist', readyAppDir.path(), { overwrite: true });
 };
 
+var cleanupRuntime = function() {
+    return readyAppDir.removeAsync('resources/default_app');
+};
+
 var packageBuiltApp = function () {
     var deferred = Q.defer();
 
     asar.createPackageWithOptions(projectDir.path('build'), readyAppDir.path('resources/app.asar'), {
-        unpack: "!**/node_modules/**"
+        unpack: "*"
     }, function() {
         deferred.resolve();
     });
@@ -117,6 +121,7 @@ var cleanClutter = function () {
 module.exports = function () {
     return init()
     .then(copyRuntime)
+    .then(cleanupRuntime)
     .then(packageBuiltApp)
     .then(finalize)
     .then(renameApp)

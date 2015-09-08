@@ -2,6 +2,7 @@
 var gulp = require('gulp');
 var utils = require('./tasks/utils');
 var jetpack = require('fs-jetpack');
+var exec = require("child_process").exec;
 
 var releaseForOs = {
   osx: require('./tasks/release_osx'),
@@ -21,9 +22,18 @@ gulp.task("copy", function() {
   });
 });
 
-/**
- * @todo build release app without dev dependencies
- */
-gulp.task('release', ['build', 'copy'], function () {
+gulp.task("cleanup dependencies", ["copy"], function() {
+
+  /**
+   * remove all packages specified in the 'devDependencies' section
+   */
+
+  var buildDir = jetpack.cwd("./build").dir(".");
+  var process = exec("npm prune --production", {cwd: buildDir.path()});
+
+  return process.stdout;
+});
+
+gulp.task('release', ['cleanup dependencies'], function () {
   return releaseForOs[utils.os()]();
 });

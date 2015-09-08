@@ -1,6 +1,5 @@
 'use strict';
 
-var argv = require('yargs').argv;
 var os = require('os');
 var jetpack = require('fs-jetpack');
 
@@ -25,7 +24,15 @@ module.exports.replace = function (str, patterns) {
 };
 
 module.exports.getEnvName = function () {
-    return argv.env || 'development';
+    var environment = "development";
+
+    process.argv.forEach(function(args) {
+        if (args.indexOf("--env") === 0){
+            environment = args.split("--env=")[1];
+        }
+    });
+
+    return environment;
 };
 
 module.exports.getElectronVersion = function () {
