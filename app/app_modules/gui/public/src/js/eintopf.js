@@ -80,8 +80,9 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
 eintopf.run(function($rootScope, $state, currentProject) {
   $rootScope.$on('$stateChangeStart',
     function(event, toState, toParams, fromState, fromParams){
-      if(typeof toState != "object" || toState.name != "cooking.projects" || ! currentProject.getProjectId()) return false;
+      if(typeof toState != "object" || toState.name != "cooking.projects") return false;
       event.preventDefault();
+      if (! currentProject.getProjectId()) return $state.go("cooking.projects.create");
       $state.go("cooking.projects.recipe", {id: currentProject.getProjectId()});
     });
 });
