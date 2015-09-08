@@ -44,6 +44,7 @@ model.installProject = (gitUrl, callback) ->
       res = {}
       res.errorMessage = err.message if err? && typeof err == 'object'
       res.status = if err then 'error' else 'success'
+      res.project = result if result?
       watcherModel.set 'res:projects:install', res
 
   return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?

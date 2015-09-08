@@ -91,15 +91,18 @@ angular.module('eintopf')
     }
   ])
   .controller('createProjectCtrl',
-  ['$scope', 'reqProjectsInstall', 'resProjectsInstall',
-    function($scope, reqProjectsInstall, resProjectsInstall) {
+  ['$scope', '$state', 'reqProjectsInstall', 'resProjectsInstall',
+    function($scope, $state, reqProjectsInstall, resProjectsInstall) {
       resProjectsInstall.$assignProperty($scope, 'result');
       $scope.$fromWatch('result')
         .filter(function(val) {
-          if (typeof val.newValue == "object" && val.newValue.status) return true;
+          if (val.newValue && typeof val.newValue == "object" && val.newValue.status) return true;
         })
-        .onValue(function() {
+        .onValue(function(val) {
           $scope.loading = false;
+          if(val.newValue.status == "success" && typeof val.newValue.project == "object") {
+            $state.go("cooking.projects.recipe", {id: val.newValue.project.id});
+          }
         });
 
       $scope.install = function(val) {
