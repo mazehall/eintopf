@@ -24,6 +24,10 @@ model.getStatus = (callback) ->
     return callback new Error err if err
     return callback(null, i.status) for own d, i of result
 
+model.getSshConfig = (callback) ->
+  return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
+  machine.sshConfig callback
+
 model.up = (callback) ->
   if process.platform != 'win32'
     errorMessage = 'Your OS is currently not supported for automatic vagrant start.'

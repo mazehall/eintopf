@@ -5,6 +5,19 @@ var eintopf = angular.module('eintopf', [
   'eintopf.services.socket.states'
 ]);
 
+eintopf.factory('currentProject', [function () {
+  var projectId = null;
+  return {
+    getProjectId: function() {
+      return projectId;
+    },
+    setProjectId: function(value) {
+      if(typeof value == "undefined") value = null;
+      projectId = value;
+    }
+  };
+}]);
+
 eintopf.config(function($stateProvider, $urlRouterProvider) {
   //
   //// For any unmatched url, redirect to /state1
@@ -48,10 +61,25 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       controller: "containersCtrl",
       templateUrl: "partials/cooking.containers.html"
     })
+    .state('cooking.settings', {
+      url: "/settings",
+      controller: "settingsCtrl",
+      templateUrl: "partials/cooking.settings.html"
+    })
     .state('cooking.apps', {
       url: "/apps",
       controller: "appsCtrl",
       templateUrl: "partials/cooking.apps.html"
     });
 
+});
+
+// set current project state when changing projects state
+eintopf.run(function($rootScope, $state, currentProject) {
+  $rootScope.$on('$stateChangeStart',
+    function(event, toState, toParams, fromState, fromParams){
+      if(typeof toState != "object" || toState.name != "cooking.projects" || ! currentProject.getProjectId()) return false;
+      event.preventDefault();
+      $state.go("cooking.projects.recipe", {id: currentProject.getProjectId()});
+    });
 });

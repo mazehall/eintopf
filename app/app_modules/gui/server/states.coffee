@@ -64,6 +64,11 @@ states = (connections_, rawSocket) ->
   .onValue (val) ->
     rawSocket.emit 'res:apps:list', val.newValue
 
+  # emit settings changes
+  watcherModel.propertyToKefir 'settings:list'
+  .onValue (val) ->
+    rawSocket.emit 'res:settings:list', val.newValue
+
   connections_.onValue (socket) ->
     socket.emit 'states:live', watcherModel.get 'states:live'
 
@@ -128,6 +133,10 @@ states = (connections_, rawSocket) ->
       x if x.id?
     .onValue (project) ->
       projectsModel.updateProject project
+
+    _r.fromEvents socket, 'settings:list'
+    .onValue () ->
+      socket.emit 'res:settings:list', watcherModel.get 'settings:list'
 
     _r.fromEvents socket, 'container:start'
     .filter (x) ->
