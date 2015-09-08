@@ -127,11 +127,9 @@ model.deleteProject = (project, callback) ->
   .fail (error) ->
     callback error
   .then ->
-    jetpack.inspectAsync project.path
-    .then ->
-      watcherModel.log 'res:project:delete:' + project.id
-    .fail (error) ->
-      callback error
+    watcherModel.log 'res:project:delete:' + project.id
+    model.loadProjects()
+    callback null, null
 
 model.updateProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
