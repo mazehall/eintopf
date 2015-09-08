@@ -64,16 +64,18 @@ angular.module('eintopf.services.socket.states', [])
 
   .factory('resProjectStart', ['socket', 'storage', function (socket, storage) {
     var streams = {};
-    var xstream = null;
     return {
       fromProject: function (project) {
-        xstream = streams[project] = streams[project] || Kefir.fromEvent(socket, 'res:project:start:' + project );
-        xstream.onValue(function(value){
+        if (streams[project]){
+          return streams[project];
+        }
+
+        streams[project] = Kefir.fromEvent(socket, 'res:project:start:' + project ).onValue(function(value){
           storage.add("project.log.start."+ project, value);
           storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +" - [start] > "+ value);
-        });
+        }).toProperty();
 
-        return xstream.toProperty();
+        return streams[project];
       }
     }
   }])
@@ -88,16 +90,18 @@ angular.module('eintopf.services.socket.states', [])
 
   .factory('resProjectStop', ['socket', 'storage', function (socket, storage) {
     var streams = {};
-    var xstream = null;
     return {
       fromProject: function (project) {
-        xstream = streams[project] = streams[project] || Kefir.fromEvent(socket, 'res:project:stop:' + project);
-        xstream.onValue(function(value){
+        if (streams[project]){
+          return streams[project];
+        }
+
+        streams[project] = Kefir.fromEvent(socket, 'res:project:stop:' + project).onValue(function(value){
           storage.add("project.log.stop."+ project, value);
           storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +" - [stop] > "+ value);
-        });
+        }).toProperty();
 
-        return xstream.toProperty();
+        return streams[project];
       }
     }
   }])
@@ -128,16 +132,18 @@ angular.module('eintopf.services.socket.states', [])
 
  .factory('resProjectUpdate', ['socket', 'storage', function (socket, storage) {
     var streams = {};
-    var xstream = null;
     return {
       fromProject: function (project){
-        xstream = streams[project] = streams[project] || Kefir.fromEvent(socket, 'res:project:update:' + project);
-        xstream.onValue(function(value){
+        if (streams[project]){
+          return streams[project];
+        }
+
+        streams[project] = Kefir.fromEvent(socket, 'res:project:update:' + project).onValue(function(value){
           storage.add("project.log.update."+ project, value);
           storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +" - [update] > "+ value);
-        });
+        }).toProperty();
 
-        return xstream.toProperty();
+        return streams[project];
       }
     }
   }])
