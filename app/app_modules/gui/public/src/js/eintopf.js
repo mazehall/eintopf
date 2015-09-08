@@ -61,6 +61,11 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       controller: "containersCtrl",
       templateUrl: "partials/cooking.containers.html"
     })
+    .state('cooking.settings', {
+      url: "/settings",
+      controller: "settingsCtrl",
+      templateUrl: "partials/cooking.settings.html"
+    })
     .state('cooking.apps', {
       url: "/apps",
       controller: "appsCtrl",
