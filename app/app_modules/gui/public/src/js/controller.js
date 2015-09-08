@@ -30,11 +30,11 @@ angular.module('eintopf')
     }
   ])
   .controller('cookingCtrl',
-  ['$scope', 'reqProjectList', 'resProjectsList', '$state',
-    function($scope, reqProjectsList, resProjectsList, $state) {
+  ['$scope', 'reqProjectList', 'resProjectsList', '$state', 'storage',
+    function($scope, reqProjectsList, resProjectsList, $state, storage) {
       resProjectsList.$assignProperty($scope, 'projects');
-      if ($scope.$root.lastProjectId) {
-        $state.go("cooking.projects.recipe", {id: $scope.$root.lastProjectId});
+      if (storage.get("frontend.tabs.lastActive")) {
+        return $state.go("cooking.projects.recipe", {id: storage.get("frontend.tabs.lastActive")});
       }
     }
   ])
@@ -82,12 +82,12 @@ angular.module('eintopf')
         reqProjectDelete.emit(project);
         resProjectDelete.fromProject($stateParams.id).onValue(function(){
           reqProjectListRefresh.emit();
-          $scope.$root.lastProjectId = null;
+          storage.unset("frontend.tabs.lastActive");
           $state.go("cooking.projects");
         });
       };
 
-      $scope.$root.lastProjectId = $stateParams.id;
+      storage.set("frontend.tabs.lastActive", $stateParams.id);
 
       $scope.updateProject = function(project){
         reqProjectUpdate.emit(project);
@@ -98,10 +98,11 @@ angular.module('eintopf')
        * Log section
        */
 
-      $scope.currentTab = "protocol";
+      $scope.currentTab = storage.get("frontend.tabs"+ $stateParams.id+ ".lastActive") || "protocol";
       $scope.tabContent = {};
       $scope.onClickTab = function(tab){
           $scope.currentTab = tab;
+          storage.set("frontend.tabs"+ $stateParams.id+ ".lastActive", tab);
       };
 
       storage.stream("project.log.complete."+ $stateParams.id).map(function(value){
