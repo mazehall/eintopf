@@ -122,6 +122,10 @@ input{
     border-right: thin solid rgba(228, 240, 232, 1.0);
     border-bottom: thin solid rgba(228, 240, 232, 1.0);
 }
+.cssTab {
+    border-left:1px solid rgba(228, 240, 232, 1.0);
+    border-right:1px solid rgba(228, 240, 232, 1.0);
+}
 .cssTab  li {
     border-top:2px solid rgba(228, 240, 232, 1.0);
     cursor: pointer;
@@ -187,5 +191,33 @@ input{
 .cssReadme table th,.cssReadme table td{
     padding: 6px 13px;
     border: 1px solid #ddd;
+}
+@media screen and (max-width: 32rem){
+    .cssLogo{
+        background:url(../img/icon_topf.png) center left no-repeat;
+        min-height:30px;
+        max-width:10%;
+    }
+    .cssLogoImg{
+        display:none;
+    }
+    .cssNav{
+        max-width:90%;
+        text-align:center;
+
+    }
+    .cssNav ul{
+        float:left;
+        width:100%;
+    }
+    .cssNav ul li{
+        width:23%;
+    }
+    .cssToolbar li a span{
+        display:none;
+    }
+    .cssToolbar li a {
+        font-size:100%;
+    }
 }
 
