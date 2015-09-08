@@ -36,6 +36,8 @@ angular.module('eintopf')
       if (storage.get("frontend.tabs.lastActive")) {
         return $state.go("cooking.projects.recipe", {id: storage.get("frontend.tabs.lastActive")});
       }
+
+      $state.go("cooking.projects.create");
     }
   ])
   .controller('containersCtrl',
