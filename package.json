@@ -17,8 +17,7 @@
     "gulp-watch": "^4.2.4",
     "q": "^1.4.1",
     "tree-kill": "^0.1.1",
-    "vinyl-map": "^1.0.1",
-    "yargs": "^3.13.0"
+    "vinyl-map": "^1.0.1"
   },
   "optionalDependencies": {
     "appdmg": "^0.3.2",
