@@ -8,8 +8,6 @@
 
 var childProcess = require('child_process');
 var jetpack = require('fs-jetpack');
-var argv = require('yargs').argv;
-
 var utils = require('./utils');
 
 var electronVersion = utils.getElectronVersion();
@@ -33,8 +31,8 @@ process.env.npm_config_target = electronVersion;
 
 var params = ['install'];
 // Maybe there was name of package user wants to install passed as a parameter.
-if (argv._.length > 0) {
-    params.push(argv._[0]);
+if (process.argv.length > 2) {
+    params.push(process.argv[2]);
     params.push('--save');
 }
 
