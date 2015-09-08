@@ -44,11 +44,6 @@ angular.module('eintopf')
   .controller('appsCtrl',
   ['$scope', 'resAppsList',
     function($scope, resAppsList) {
-      if (navigator.userAgent && navigator.userAgent.match(/^electron/)) {
-        $scope.renderLinks = false
-      } else {
-        $scope.renderLinks = true
-      }
       resAppsList.$assignProperty($scope, 'apps');
     }
   ])

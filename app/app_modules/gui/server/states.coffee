@@ -1,5 +1,7 @@
 _r = require 'kefir'
 
+utils = require '../../../models/util/index.coffee'
+
 setupModel = require '../../../models/setup/setup.coffee'
 projectsModel = require '../../../models/projects/list.coffee'
 dockerModel = require '../../../models/docker/list.coffee'
@@ -128,5 +130,10 @@ states = (connections_, rawSocket) ->
       x if x.id?
     .onValue (project) ->
       projectsModel.updateProject project
+
+    _r.fromEvents socket, 'openExternalUrl'
+    .filter()
+    .onValue (url) ->
+      utils.openExternalUrl url
 
 module.exports = states
