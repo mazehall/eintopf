@@ -168,7 +168,7 @@ angular.module('eintopf.services.socket.states', [])
 
   .factory('reqProjectStartAction', ['socket', function (socket){
     return {
-      emit: function (data, action){
+      emit: function (data){
         socket.emit('project:action:script', data);
       }
     }
