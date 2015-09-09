@@ -90,10 +90,13 @@ model.loadProjects = () ->
   .filter (x) ->
     x.pkg.mazehall && x.pkg.eintopf && typeof x.pkg.eintopf is "object"
   .onValue (val) ->
-    val.pkg.eintopf['path'] = val.path
-    val.pkg.eintopf['scripts'] = val.pkg.scripts
-    val.pkg.eintopf['id'] = val.pkg.name
-    foundProjects.push val.pkg.eintopf
+    jetpack.cwd(val.path).findAsync val.path, {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
+    .then (markdowns) ->
+      val.pkg.eintopf['path'] = val.path
+      val.pkg.eintopf['scripts'] = val.pkg.scripts
+      val.pkg.eintopf['id'] = val.pkg.name
+      val.pkg.eintopf['markdowns'] = markdowns
+      foundProjects.push val.pkg.eintopf
   .onEnd () ->
     projects = foundProjects
     watcherModel.set 'projects:list', projects
@@ -125,11 +128,9 @@ model.deleteProject = (project, callback) ->
   .fail (error) ->
     callback error
   .then ->
-    jetpack.inspectAsync project.path
-    .then ->
-      watcherModel.log 'res:project:delete:' + project.id
-    .fail (error) ->
-      callback error
+    watcherModel.log 'res:project:delete:' + project.id
+    model.loadProjects()
+    callback null, null
 
 model.updateProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?

@@ -1,20 +1,20 @@
-<div class="grd-row-col-6 px2 cssContainer">
+<div class="grd-row-col-6 p1 m0 cssContainer">
     <div class="grd-row">
         <ul class="grd-row-col-6 m1 p0 cssToolbar list--unstyled">
             <li class="flt--left">
-            <a href="#" class="btn small" ng-click="startProject(project)" ng-disabled="loading">
+            <a href="#" class="btn small" ng-click="startProject(project);currentTab = 'protocol';" ng-disabled="loading">
                 <i class="fa fa fa-cog fnt--green"></i>
                 <span class="fnt--green">run</span>
             </a>
             </li>
             <li class="flt--left">
-            <a href="#" class="btn small" ng-click="stopProject(project)" ng-disabled="loading">
+            <a href="#" class="btn small" ng-click="stopProject(project);currentTab = 'protocol';" ng-disabled="loading">
                 <i class="fa fa-ban fnt--mid-gray"></i>
                 <span class="fnt--mid-gray">stop</span>
             </a>
             </li>
             <li class="flt--left">
-            <a href="#" class="btn small" ng-click="updateProject(project)">
+            <a href="#" class="btn small" ng-click="updateProject(project);currentTab = 'protocol';">
                 <i class="fa fa-refresh fnt--blue small"></i>
                 <span class="fnt--blue">update</span>
             </a>
@@ -44,11 +44,24 @@
             </div>
         </div>
     </div>
-    <div class="grd-row" ng-show="log">
+    <div class="grd-row">
         <div class="grd-row-col-6 p2">
-            <p class="muted">output:</p>
-            <div class="scroll bg--dark-gray p1" scroll-glue>
-                <pre id="jsScrollToBottom" class="fnt--off-white">{{log.join('')}}</pre>
+            <ul class="grd-row cssTab cssBgGreen list--unstyled p0 m0">
+                <li class="grd-row-col-1-6" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.markdowns[0]">
+                    <p class="txt--center m0">Readme</p>
+                </li>
+                <li class="grd-row-col-1-6 " ng-click="onClickTab('protocol')" ng-class="{cssActive: currentTab == 'protocol'}">
+                    <p class="txt--center m0">Logs</p>
+                </li>
+            </ul>
+            <div class="grd-row p0 m0 cssBorderWhitoutTop">
+                <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-glue ng-show="currentTab == 'protocol'">
+                    <div class="fnt--off-white" marked="protocol"></div>
+                </div>
+
+                <div class="grd-row-col-6  p1 " ng-if="project.markdowns[0]" ng-show="currentTab == 'readme'">
+                    <div class="cssReadme" marked src="'/projects/'+ project.id +'/'+ project.markdowns[0].name"></div>
+                </div>
             </div>
         </div>
     </div>

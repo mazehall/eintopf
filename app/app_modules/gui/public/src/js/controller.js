@@ -71,15 +71,15 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-  ['$scope', '$stateParams', '$state', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'reqProjectListRefresh', 'currentProject',
-    function($scope, $stateParams, $state, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, reqProjectListRefresh, currentProject) {
+  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject',
+    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject) {
       $scope.project = {
         id: $stateParams.id
       };
       $scope.loading = false;
 
-      resProjectStart.fromProject($stateParams.id).$assignProperty($scope, 'log');
-      resProjectStop.fromProject($stateParams.id).$assignProperty($scope, 'log');
+      resProjectStart.fromProject($stateParams.id);
+      resProjectStop.fromProject($stateParams.id);
       resProjectDetail.$assignProperty($scope, 'project');
       reqProjectDetail.emit($stateParams.id);
 
@@ -96,16 +96,31 @@ angular.module('eintopf')
       $scope.deleteProject = function(project){
         reqProjectDelete.emit(project);
         resProjectDelete.fromProject($stateParams.id).onValue(function(){
-          reqProjectListRefresh.emit();
           currentProject.setProjectId();
           $state.go("cooking.projects");
         });
       };
+
       $scope.updateProject = function(project){
         reqProjectUpdate.emit(project);
-        resProjectUpdate.fromProject($stateParams.id).$assignProperty($scope, 'log');
+        resProjectUpdate.fromProject($stateParams.id);
       };
       currentProject.setProjectId($stateParams.id);
+
+      /**
+       * Log section
+       */
+
+      $scope.currentTab = storage.get("frontend.tabs"+ $stateParams.id+ ".lastActive") || "protocol";
+      $scope.tabContent = {};
+      $scope.onClickTab = function(tab){
+          $scope.currentTab = tab;
+          storage.set("frontend.tabs"+ $stateParams.id+ ".lastActive", tab);
+      };
+
+      storage.stream("project.log.complete."+ $stateParams.id).map(function(value){
+          return value.join("").replace(/\n/ig, "<br>");
+      }).$assignProperty($scope, "protocol");
     }
   ])
   .controller('createProjectCtrl',
