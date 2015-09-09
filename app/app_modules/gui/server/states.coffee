@@ -145,4 +145,37 @@ states = (connections_, rawSocket) ->
     .onValue (url) ->
       utils.openExternalUrl url
 
+    _r.fromEvents socket, 'container:start'
+    .filter (x) ->
+      x if typeof x == "string"
+    .onValue (containerId) ->
+      dockerModel.startContainer containerId, (err, result) ->
+        return false if ! err
+        ret =
+          id: containerId
+          message: err.reason || err.json
+        socket.emit 'res:containers:log', ret
+
+    _r.fromEvents socket, 'container:stop'
+    .filter (x) ->
+      x if typeof x == "string"
+    .onValue (containerId) ->
+      dockerModel.stopContainer containerId, (err, result) ->
+        return false if ! err
+        ret =
+          id: containerId
+          message: err.reason || err.json
+        socket.emit 'res:containers:log', ret
+
+    _r.fromEvents socket, 'container:remove'
+    .filter (x) ->
+      x if typeof x == "string"
+    .onValue (containerId) ->
+      dockerModel.removeContainer containerId, (err, result) ->
+        return false if ! err
+        ret =
+          id: containerId
+          message: err.reason || err.json
+        socket.emit 'res:containers:log', ret
+
 module.exports = states

@@ -181,4 +181,22 @@ angular.module('eintopf.services.socket.states', [])
     };
   }])
 
+  .factory('reqContainerActions', ['socket', function (socket) {
+    return {
+      start: function (containerId) {
+        socket.emit('container:start', containerId);
+      },
+      stop: function (containerId) {
+        socket.emit('container:stop', containerId);
+      },
+      remove: function (containerId) {
+        socket.emit('container:remove', containerId);
+      }
+    }
+  }])
+
+  .factory('resContainersLog', ['socket', function (socket) {
+    return Kefir.fromEvent(socket, 'res:containers:log');
+  }])
+
 ;

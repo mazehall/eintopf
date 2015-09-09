@@ -48,6 +48,23 @@ loadApps = () ->
 initDockerEvents()
 model = {}
 
+model.startContainer = (containerId, callback) ->
+  return callback new Error 'invalid Docker Id' if typeof x == "string"
+
+  container = docker.getContainer containerId
+  container.start callback
+
+model.stopContainer = (containerId, callback) ->
+  return callback new Error 'invalid Docker Id' if typeof x == "string"
+
+  container = docker.getContainer containerId
+  container.stop callback
+
+model.removeContainer = (containerId, callback) ->
+  return callback new Error 'invalid Docker Id' if typeof x == "string"
+
+  container = docker.getContainer containerId
+  container.remove callback
 
 model.loadContainers = () ->
   foundContainers = [];
