@@ -23,5 +23,5 @@ module.exports.getConfigModulePath = () ->
   return jetpack.cwd(configPath).path appConfig.defaultNamespace
 
 module.exports.openExternalUrl = (url) ->
-  return false if ! url?
+  return false if ! url
   shell.openExternal url
