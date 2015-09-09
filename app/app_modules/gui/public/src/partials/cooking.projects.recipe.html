@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="grd-row-col-6  p1 " ng-if="project.actions && project.actions.length" ng-show="currentTab == 'actions'">
-                    <button ng-repeat="action in project.actions" ng-if="!action.warning" class="btn--blue w100--s mx1"
+                    <button ng-repeat="action in project.actions" class="btn--blue w100--s mx1"
                             ng-click="doAction(project, action)">
                         {{action.name}}
                     </button>
