@@ -173,4 +173,12 @@ angular.module('eintopf.services.socket.states', [])
     return Kefir.fromEvent(socket, 'res:settings:list').toProperty();
   }])
 
+  .factory('openBrowserWindow', ['socket', function (socket) {
+    return {
+      emit: function (url) {
+        socket.emit('openExternalUrl', url);
+      }
+    };
+  }])
+
 ;
