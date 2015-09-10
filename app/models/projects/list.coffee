@@ -70,13 +70,15 @@ model.loadProject = (projectDir, callback) ->
     return callback new Error 'package does not seem to be a eintopf project' if ! config.eintopf?
 
     project = config.eintopf
-    project['path'] = dst.path()
-    project['scripts'] = config.scripts if config.scripts
-    project['id'] = config.name
-
-    projects.push project
-    watcherModel.set 'projects:list', projects
-    callback null, project
+    jetpack.findAsync dst.path(), {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
+    .then (markdowns) ->
+      project['path'] = dst.path()
+      project['scripts'] = config.scripts if config.scripts
+      project['id'] = config.name
+      project['markdowns'] = markdowns
+      projects.push project
+      watcherModel.set 'projects:list', projects
+      callback null, project
   .fail callback
 
 model.loadProjects = () ->
