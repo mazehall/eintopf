@@ -3,6 +3,7 @@
 angular.module("eintopf.services.storage", []).factory("storage", ["socket", function(socket){
 
     var ioEvent = socket.io.connect("/eintopf.services.storage");
+    var streams = {};
     var storage = {};
     var factory = {
 
@@ -68,6 +69,19 @@ angular.module("eintopf.services.storage", []).factory("storage", ["socket", fun
         },
 
         /**
+         * Notify subscribers of a given stream name
+         *
+         * @param  {string} name
+         * @return {factory}
+         */
+        notify: function(name)
+        {
+            ioEvent.emit("storage:updated", {name: name});
+
+            return this;
+        },
+
+        /**
          * Returns a Kefir stream
          *
          * @param  {string} [name=null]
@@ -75,13 +89,20 @@ angular.module("eintopf.services.storage", []).factory("storage", ["socket", fun
          */
         stream: function(name)
         {
-            return Kefir.fromBinder(function(emitter){
+            var filter = name || ".";
+            if (filter && streams[filter]){
+                return streams[filter];
+            }
+
+            streams[filter] = Kefir.fromBinder(function(emitter){
                 ioEvent.on("storage:updated", function(store){
                     if (name && name === store.name || typeof name === "undefined"){
                         emitter.emit(factory.get(store.name));
                     }
                 });
             });
+
+            return streams[filter];
         }
     };
 

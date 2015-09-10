@@ -111,16 +111,22 @@ angular.module('eintopf')
        * Log section
        */
 
-      $scope.currentTab = storage.get("frontend.tabs"+ $stateParams.id+ ".lastActive") || "protocol";
-      $scope.tabContent = {};
+      $scope.currentTab = storage.get("frontend.tabs"+ $stateParams.id+ ".lastActive") || "readme";
       $scope.onClickTab = function(tab){
           $scope.currentTab = tab;
           storage.set("frontend.tabs"+ $stateParams.id+ ".lastActive", tab);
       };
 
       storage.stream("project.log.complete."+ $stateParams.id).map(function(value){
-          return value.join("").replace(/\n/ig, "<br>");
+          return value && value.join("").replace(/\n/ig, "<br>");
       }).$assignProperty($scope, "protocol");
+      storage.notify("project.log.complete."+ $stateParams.id);
+
+      $scope.$fromWatch("project.markdowns").skip(1).onValue(function(value){
+          if (value.newValue.length === 0 || storage.get("project.log.complete."+ $stateParams.id)){
+              return $scope.currentTab = "protocol";
+          }
+      });
     }
   ])
   .controller('createProjectCtrl',
