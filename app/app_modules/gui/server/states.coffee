@@ -5,10 +5,12 @@ utils = require '../../../models/util/index.coffee'
 setupModel = require '../../../models/setup/setup.coffee'
 projectsModel = require '../../../models/projects/list.coffee'
 dockerModel = require '../../../models/docker/list.coffee'
-watcherModel =require '../../../models/stores/watcher.coffee'
+watcherModel = require '../../../models/stores/watcher.coffee'
+recommendationsModel = require '../../../models/stores/recommendations.coffee'
 
 setupModel.run()
 projectsModel.loadProjects()
+recommendationsModel.loadRecommendationsWithInterval()
 
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 
@@ -70,6 +72,11 @@ states = (connections_, rawSocket) ->
   watcherModel.propertyToKefir 'settings:list'
   .onValue (val) ->
     rawSocket.emit 'res:settings:list', val.newValue
+
+  # emit recommendations changes
+  watcherModel.propertyToKefir 'recommendations:list'
+  .onValue (val) ->
+    rawSocket.emit 'res:recommendations:list', val.newValue
 
   connections_.onValue (socket) ->
     socket.emit 'states:live', watcherModel.get 'states:live'
@@ -144,6 +151,10 @@ states = (connections_, rawSocket) ->
     .filter()
     .onValue (url) ->
       utils.openExternalUrl url
+
+    _r.fromEvents socket, 'recommendations:list'
+    .onValue (url) ->
+      socket.emit 'res:recommendations:list', watcherModel.get 'recommendations:list'
 
     _r.fromEvents socket, 'container:start'
     .filter (x) ->

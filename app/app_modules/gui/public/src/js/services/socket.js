@@ -221,4 +221,17 @@ angular.module('eintopf.services.socket.states', [])
     return Kefir.fromEvent(socket, 'res:containers:log');
   }])
 
+  .factory('reqRecommendationsList', ['socket', function (socket) {
+    return {
+      emit: function (data) {
+        socket.emit('recommendations:list', data);
+      }
+    }
+  }])
+
+  .factory('resRecommendationsList', ['socket', 'reqRecommendationsList', function (socket, reqRecommendationsList) {
+    reqRecommendationsList.emit();
+    return Kefir.fromEvent(socket, 'res:recommendations:list').toProperty();
+  }])
+
 ;
