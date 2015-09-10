@@ -1,40 +1,31 @@
-<ul class="grd list--unstyled cssContainer">
-    <div class="grd-row muted">
+<h1>Settings</h1>
+<ul class="grd list--unstyled cssContainer" ng-show="settings.vagrantSshConfig">
+    <li class="grd-row muted">
+        <span class="mx1 grd-row-col-2-6">
+            Name
+        </span>
         <span class="mx1 grd-row-col-1-6">
-            Settings
+            Host
         </span>
-    </div>
-
-    <div class="py1" ng-show="settings.vagrantSshConfig">
-        <span class="mx1 grd-row">
-            Vagrant ssh config
+        <span class="mx1 grd-row-col-1-6">
+            Port
         </span>
-
-        <div class="mx1 grd-row">
-            <span class="grd-row-col-1-6">
-                Host:
-            </span>
-            <span class="grd-row-col-5-6">
-                {{settings.vagrantSshConfig.hostname}}
-            </span>
+        <span class="mx1 grd-row-col-2-6">
+            User
+        </span>
+    </li>
+    <li class="grd-row py1" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+        <div class="mx1 grd-row-col-2-6">
+            <p class="m0 p0">Vagrant SSH config</p>
         </div>
-
-        <div class="mx1 grd-row">
-            <span class="grd-row-col-1-6">
-                Port:
-            </span>
-            <span class="grd-row-col-5-6">
-                {{settings.vagrantSshConfig.port}}
-            </span>
+        <div class="mx1 grd-row-col-1-6">
+            <p class="m0 p0">{{settings.vagrantSshConfig.hostname}}</p>
         </div>
-
-        <div class="mx1 grd-row">
-            <span class="grd-row-col-1-6">
-                User:
-            </span>
-            <span class="grd-row-col-5-6">
-                {{settings.vagrantSshConfig.user}}
-            </span>
+        <div class="mx1 grd-row-col-1-6">
+            <p class="m0 p0"> {{settings.vagrantSshConfig.port}}</p>
         </div>
-    </div>
+        <div class="mx1 grd-row-col-2-6">
+            <p class="m0 p0"> {{settings.vagrantSshConfig.user}}</p>
+        </div>
+    </li>
 </ul>

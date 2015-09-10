@@ -67,10 +67,17 @@
                 </div>
 
                 <div class="grd-row-col-6  p1 " ng-if="project.actions && project.actions.length" ng-show="currentTab == 'actions'">
-                    <button ng-repeat="action in project.actions" class="btn--blue w100--s mx1"
-                            ng-click="doAction(project, action)">
-                        {{action.name}}
-                    </button>
+                    <ul class="grd list--unstyled cssContainer m0 p0">
+                        <li class="grd-row py1" ng-repeat="action in project.actions" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+                            <div class="mx1 grd-row-col-5-6">
+                                <p class="m0 p0">{{action.name}}</p>
+                                <small>{{action.warning}}</small>
+                            </div>
+                            <div class="mx1 txt--right grd-row-col-1-6">
+                                <a href="#"class="btn small"><i class="fa fa-play-circle"></i><span> go!</span></a>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

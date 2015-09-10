@@ -122,6 +122,10 @@ input{
     border-right: thin solid rgba(228, 240, 232, 1.0);
     border-bottom: thin solid rgba(228, 240, 232, 1.0);
 }
+.cssTab{
+    border-left:1px solid rgba(228, 240, 232, 1.0);
+    border-right:1px solid rgba(228, 240, 232, 1.0);
+}
 .cssTab  li {
     border-top:2px solid rgba(228, 240, 232, 1.0);
     cursor: pointer;
