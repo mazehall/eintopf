@@ -148,6 +148,32 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
+ .factory('resProjectStartAction', ['socket', 'storage', function (socket, storage) {
+    var streams = {};
+    return {
+      fromProject: function (project){
+        if (streams[project]){
+          return streams[project];
+        }
+
+        streams[project] = Kefir.fromEvent(socket, 'res:project:action:script:' + project).onValue(function(value){
+          storage.add("project.log.action."+ project, value);
+          storage.add("project.log.complete."+ project, new Date().toLocaleTimeString() +" - [action] > "+ value);
+        }).toProperty();
+
+        return streams[project];
+      }
+    }
+  }])
+
+  .factory('reqProjectStartAction', ['socket', function (socket){
+    return {
+      emit: function (data){
+        socket.emit('project:action:script', data);
+      }
+    }
+  }])
+
   .factory('reqContainersList', ['socket', function (socket) {
     return {
       emit: function (data) {

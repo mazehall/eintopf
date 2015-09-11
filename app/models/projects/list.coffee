@@ -144,4 +144,17 @@ model.updateProject = (project, callback) ->
   process.stderr.on 'data',(chunk) ->
     watcherModel.log "res:project:update:#{project.id}", chunk
 
+model.callAction = (project, action, callback) ->
+  if callback?
+    return callback new Error 'invalid project given' if typeof project != "object" || ! project.path? || ! action?
+    return callback new Error 'invalid script name' if project.scripts? or action.script? or project.scripts[action.script]?
+
+  return watcherModel.log "res:project:action:script:#{project.id}", "script '#{action.script}' does not exists\n" unless project.scripts[action.script]
+
+  process = child.exec "npm run #{action.script}", {cwd: project.path}
+  process.stdout.on "data",(chunk) ->
+    watcherModel.log "res:project:action:script:#{project.id}", chunk if chunk
+  process.stderr.on "data",(chunk) ->
+    watcherModel.log "res:project:action:script:#{project.id}", chunk
+
 module.exports = model;
