@@ -130,9 +130,11 @@ angular.module('eintopf')
     }
   ])
   .controller('createProjectCtrl',
-  ['$scope', '$state', 'reqProjectsInstall', 'resProjectsInstall',
-    function($scope, $state, reqProjectsInstall, resProjectsInstall) {
+  ['$scope', '$state', 'reqProjectsInstall', 'resProjectsInstall', 'resRecommendationsList',
+    function($scope, $state, reqProjectsInstall, resProjectsInstall, resRecommendationsList) {
+      resRecommendationsList.$assignProperty($scope, 'recommendations');
       resProjectsInstall.$assignProperty($scope, 'result');
+
       $scope.$fromWatch('result')
         .filter(function(val) {
           if (val.newValue && typeof val.newValue == "object" && val.newValue.status) return true;
@@ -149,7 +151,13 @@ angular.module('eintopf')
         $scope.result = {};
         $scope.loading = true;
         reqProjectsInstall.emit(val);
-      }
+      };
+
+      $scope.installRecommendation = function(project) {
+        if (!project || typeof project != "object" || !project.url) return false;
+        $scope.newProject = project.url;
+        $scope.install(project.url);
+      };
     }
   ])
   .controller('settingsCtrl',
