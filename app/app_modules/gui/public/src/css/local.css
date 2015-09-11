@@ -44,8 +44,12 @@ body {
     line-height:60px;
     border-radius:0;
 }
+
 .cssHeader ul li:hover, .cssHeader ul li.active{
     border-bottom:2px solid #f2695e;
+}
+.cssHeader ul li.active a.btn--link i, .cssHeader ul li:hover a.btn--link i{
+    color:#02565f;
 }
 .cssHeader ul li{
     min-height:60px;
