@@ -20,22 +20,6 @@ eintopf.factory('currentProject', [function () {
   };
 }]);
 
-/**
- * directive that emits the elements href to the server to open it in a browser window
- * only triggers in electron window
- */
-eintopf.directive('electronExternalLink', function(openBrowserWindow) {
-  return {
-    link: function(scope, element, attr) {
-      element.on('click', function(e) {
-        if (!attr.href || (navigator.userAgent && !navigator.userAgent.match(/^electron/))) return false;
-        e.preventDefault();
-        openBrowserWindow.emit(attr.href);
-      });
-    }
-  };
-});
-
 eintopf.config(function($stateProvider, $urlRouterProvider) {
   //
   //// For any unmatched url, redirect to /state1

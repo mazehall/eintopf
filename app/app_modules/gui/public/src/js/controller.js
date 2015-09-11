@@ -67,6 +67,10 @@ angular.module('eintopf')
   .controller('appsCtrl',
   ['$scope', 'resAppsList',
     function($scope, resAppsList) {
+      $scope.isElectron = false;
+      if (navigator.userAgent && navigator.userAgent.match(/^electron/)) {
+        $scope.isElectron = true;
+      }
       resAppsList.$assignProperty($scope, 'apps');
     }
   ])
