@@ -39,10 +39,20 @@ var checkBackup = function(){
        * Directory '.vagrant' does not exists (first start?), continue
        */
 
-      return deferred.resolve();
     }
 
     fs.access(vagrantBackup, function(backupError){
+
+      /**
+       * Delete backup, when a backup and no directory exists
+       */
+      if(vagrantError && backupError === null){
+
+        return fs.unlink(vagrantBackup, function(){
+          return deferred.resolve();
+        });
+
+      }
 
       /**
        * Create backup. Id is contained in the .vagrant directory and no backup exists
