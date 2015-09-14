@@ -195,6 +195,10 @@ input{
     padding: 6px 13px;
     border: 1px solid #ddd;
 }
+.cssRemoveButton i:hover{
+    color:#e74c3c;
+}
+
 @media screen and (max-width: 32rem){
     .cssLogo{
         background:url(../img/icon_topf.png) center left no-repeat;
@@ -222,5 +226,89 @@ input{
     .cssToolbar li a {
         font-size:100%;
     }
+}
+.cssSwitchBg{
+
+}
+.cssSwitchBg span {
+    background: white;
+    border-radius: 2em;
+    border: 0.12em solid #e6e6e6;
+    display: block;
+    /* ...So that we can set a height and width */
+    float: left;
+    /* ...So that it doesn't take up the full width of the page */
+    height: 2em;
+    /* You can change this later if you want */
+    position: relative;
+    /* Required to allow the switch to move around */
+    width: 3.5em;
+    /* This can be changed later as well */
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    position: relative;
+    cursor:pointer;
+}
+.cssSwitchBg span.on {
+    background: #00dc61;
+    border-color: #00c356;
+    position:relative;
+}
+.cssSwitchBg span.off {
+    background-color: #f1f1f1;
+    border-color: #e1e1e1;
+    position:relative;
+}
+.cssSwitch {
+    background: white;
+    border-radius: 2em;
+    border: 0.1em solid #d9d9d9;
+    display: block;
+    float: left;
+    height: 1.9em;
+    width: 1.9em;
+    left: -0.1em;
+    position: relative;
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    z-index: 1;
+}
+.cssSwitchBg .on .cssSwitch{
+    box-shadow: -0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), 0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
+}
+.cssSwitch .off {
+    box-shadow: 0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), -0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
+}
+
+.cssSwitchBg .on .cssSwitch {
+    position:absolute;
+    left: 24px;
+    top:-0.5px;
+    color: white;
+    text-shadow: 0 0.1em 0 #00dc61;
+}
+.cssSwitch.off {
+    right: .55em;
+    color: #aaa;
+}
+.cssSwitchBg .on .cssSwitchLabel{
+    position:absolute;
+    top:5px;
+    left:5px;
+    color: white;
+    text-shadow: 0 0.1em 0 #00dc61;
+}
+.cssSwitchBg .off .cssSwitchLabel{
+    position:absolute;
+    top:5px;
+    right:5px;
+
+}
+.cssSwitchBg .off .cssSwitch{
+    box-shadow: 0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), -0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
 }
 
