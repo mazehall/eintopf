@@ -4,11 +4,11 @@ setupModel = require '../../../models/setup/setup.coffee'
 projectsModel = require '../../../models/projects/list.coffee'
 dockerModel = require '../../../models/docker/list.coffee'
 watcherModel = require '../../../models/stores/watcher.coffee'
-recommendationsModel = require '../../../models/stores/recommendations.coffee'
+registryModel = require '../../../models/stores/registry.coffee'
 
 setupModel.run()
 projectsModel.loadProjects()
-recommendationsModel.loadRecommendationsWithInterval()
+registryModel.loadRegistryWithInterval()
 
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 

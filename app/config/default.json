@@ -2,5 +2,9 @@
   "app": {
     "defaultNamespace": "default",
     "pathDefaultVagrantFile": "config/Vagrantfile.default"
+  },
+  "registry": {
+    "url": "http://registry.eintopf.io/files/projects.json",
+    "refreshInterval": "900000"
   }
 }
