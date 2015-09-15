@@ -197,4 +197,19 @@ model.callAction = (project, action, callback) ->
   process.stderr.on "data",(chunk) ->
     watcherModel.log "res:project:action:script:#{project.id}", chunk
 
+watcherModel.propertyToKefir 'containers:list'
+.onValue (value) ->
+
+  findById = (id) ->
+    for container in value.newValue
+      return container if container.name and container.name.indexOf(id) isnt -1
+
+  for project, index in projects
+    path = project.path.split "/"
+    name = path[path.length-1].replace /[^a-zA-Z]/ig, ""
+
+    if (container = findById name)
+      projects[index].state = if container.status.match(/^Up /)? then "running" else "exit"
+    watcherModel.set "projects:list", projects
+
 module.exports = model;
