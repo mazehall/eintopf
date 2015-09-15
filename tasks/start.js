@@ -29,71 +29,26 @@ var checkBackup = function(){
   var deferred = Q.defer();
   var eintopfConfig = getEintopfConfigPath();
   var vagrantFolder = eintopfConfig + "/default/.vagrant";
-  var vagrantBackup = vagrantFolder + ".backup";
+  var vagrantBackup = vagrantFolder + ".bk.asar";
 
   fs.readdir(vagrantFolder +"/machines/eintopf/virtualbox/", function(vagrantError, files){
-
-    if(vagrantError){
-
-      /**
-       * Directory '.vagrant' does not exists (first start?), continue
-       */
-
-    }
-
     fs.access(vagrantBackup, function(backupError){
-
-      /**
-       * Delete backup, when a backup and no directory exists
-       */
       if(vagrantError && backupError === null){
-
         return fs.unlink(vagrantBackup, function(){
           return deferred.resolve();
         });
-
-      }
-
-      /**
-       * Create backup. Id is contained in the .vagrant directory and no backup exists
-       */
-      if(backupError && files.length && files.indexOf("id") !== -1){
+      } else if(backupError && files.length && files.indexOf("id") !== -1){
         asar.createPackage(vagrantFolder, vagrantBackup, function(){
           return deferred.resolve();
         })
-      } else
-
-      /**
-       * Backup available, but the vagrant id is not exists
-       */
-      if(backupError === null && files.indexOf("id") === -1){
-
+      } else if (backupError === null && files.indexOf("id") === -1){
         var packageList = asar.listPackage(vagrantBackup);
         if (packageList.indexOf("/machines/eintopf/virtualbox/id") === -1){
-
-          /**
-           * Id is not contained in the backup, backup is corrupt
-           */
-
           return deferred.resolve();
         }
-
-        if (packageList.indexOf("/machines/eintopf/virtualbox/id") !== 0){
-
-          /**
-           * Restore the backup
-           */
-
-          asar.extractAll(vagrantBackup, vagrantFolder);
-
-          return deferred.resolve();
-        }
+        asar.extractAll(vagrantBackup, vagrantFolder);
+        return deferred.resolve();
       } else {
-
-          /**
-           * No backup or restore called
-           */
-
         return deferred.resolve();
       }
     });
