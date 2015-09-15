@@ -93,10 +93,7 @@ body {
     height:auto;
     min-height:100%;
 }
-input{
-    width:70%;
-    padding: .3rem;
-}
+
 .scroll {
     width: 100%;
     height: 400px;
@@ -117,9 +114,7 @@ input{
 .cssContainer li p, .cssSidebar a p, pre{
     word-wrap: break-word;
 }
-.cssBox:hover{
-    background-color:rgba(215, 228, 219, 1.0)
-}
+
 .cssBorderWhitoutTop{
     border-left: thin solid rgba(228, 240, 232, 1.0);
     border-right: thin solid rgba(228, 240, 232, 1.0);
@@ -235,31 +230,24 @@ input{
     border-radius: 2em;
     border: 0.12em solid #e6e6e6;
     display: block;
-    /* ...So that we can set a height and width */
-    float: left;
-    /* ...So that it doesn't take up the full width of the page */
     height: 2em;
-    /* You can change this later if you want */
     position: relative;
-    /* Required to allow the switch to move around */
     width: 3.5em;
-    /* This can be changed later as well */
     -moz-transition-duration: 0.2s;
     -o-transition-duration: 0.2s;
     -webkit-transition-duration: 0.2s;
     transition-duration: 0.2s;
-    position: relative;
     cursor:pointer;
 }
 .cssSwitchBg span.on {
-    background: #00dc61;
-    border-color: #00c356;
-    position:relative;
+    background: #25ba84;
+    border-color: #22a977;
+
 }
 .cssSwitchBg span.off {
     background-color: #f1f1f1;
     border-color: #e1e1e1;
-    position:relative;
+
 }
 .cssSwitch {
     background: white;
@@ -269,7 +257,6 @@ input{
     float: left;
     height: 1.9em;
     width: 1.9em;
-    left: -0.1em;
     position: relative;
     -moz-transition-duration: 0.2s;
     -o-transition-duration: 0.2s;
@@ -280,16 +267,22 @@ input{
 .cssSwitchBg .on .cssSwitch{
     box-shadow: -0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), 0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
 }
-.cssSwitch .off {
-    box-shadow: 0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), -0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
-}
-
 .cssSwitchBg .on .cssSwitch {
     position:absolute;
-    left: 24px;
+    right: .02rem;
+    text-align: right;
+    float: right;
     top:-0.5px;
     color: white;
     text-shadow: 0 0.1em 0 #00dc61;
+}
+.cssSwitchBg .off .cssSwitch{
+    box-shadow: 0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), -0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
+    top:-0.5px;
+    position:absolute;
+}
+.cssSwitch .off {
+    box-shadow: 0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), -0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
 }
 .cssSwitch.off {
     right: .55em;
@@ -297,18 +290,61 @@ input{
 }
 .cssSwitchBg .on .cssSwitchLabel{
     position:absolute;
-    top:5px;
+    top:7px;
     left:5px;
     color: white;
     text-shadow: 0 0.1em 0 #00dc61;
+    font-size: .6em;
 }
 .cssSwitchBg .off .cssSwitchLabel{
     position:absolute;
-    top:5px;
+    top:7px;
     right:5px;
-
+    color:#ccc;
+    font-size: .6em;
 }
-.cssSwitchBg .off .cssSwitch{
-    box-shadow: 0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), -0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
+.cssPatterns{
+    margin-top:8rem;
+}
+.cssBox .media-footer a:hover, .cssBox .media-footer a:focus{
+    border-color: rgba(19, 103, 112, 1.0);
+    background-color: rgba(19, 103, 112, 1.0);
+    color: #fff;
+    border: 2px solid #02565f;
+    text-decoration: none;
+    text-align: center;
+}
+.cssBox.cssPattern .media-figure{
+    min-height:15rem;
+    margin-right:0;
+    background-color:rgba(228, 240, 232, 1.0);
+}
+.cssBox.cssCreate .media-figure{
+    min-height:10rem;
+    margin-right:0;
+    background-color:rgba(228, 240, 232, 1.0);
+}
+.cssBox .media{
+    position:relative;
+}
+.cssBox .media-footer{
+    position:absolute;
+    bottom:0;
+    right:1rem;
+}
+.cssBox.cssCreate .media-footer{
+    position:absolute;
+    bottom:0;
+    right:1rem;
+}
+.cssBox .media-content{
+    min-height:6rem;
+    max-height:6rem;
+    overflow:hidden;
+}
+.cssBox .media-content-input{
+    min-height:4rem;
+    max-height:4rem;
+
 }
 
