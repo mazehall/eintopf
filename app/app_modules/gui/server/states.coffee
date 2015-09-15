@@ -111,7 +111,12 @@ states = (connections_, rawSocket) ->
     .filter()
     .onValue (val) ->
       watcherModel.set 'res:projects:install', null
-      projectsModel.installProject val
+      projectsModel.installProject val, (err, result) ->
+        res = {}
+        res.errorMessage = err.message if err? && typeof err == 'object'
+        res.status = if err then 'error' else 'success'
+        res.project = result if result?
+        watcherModel.set 'res:projects:install', res
 
     _r.fromEvents socket, 'project:detail'
     .filter()
@@ -127,25 +132,25 @@ states = (connections_, rawSocket) ->
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.startProject project
+      projectsModel.startProject project, () ->
 
     _r.fromEvents socket, 'project:stop'
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.stopProject project
+      projectsModel.stopProject project, () ->
 
     _r.fromEvents socket, 'project:delete'
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.deleteProject project
+      projectsModel.deleteProject project, () ->
 
     _r.fromEvents socket, 'project:update'
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.updateProject project
+      projectsModel.updateProject project, () ->
 
     _r.fromEvents socket, 'project:action:script'
     .filter (x) ->

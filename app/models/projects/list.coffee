@@ -39,14 +39,6 @@ model.getProject = (id) ->
   return null
 
 model.installProject = (gitUrl, callback) ->
-  if ! callback?
-    callback = (err, result) ->
-      res = {}
-      res.errorMessage = err.message if err? && typeof err == 'object'
-      res.status = if err then 'error' else 'success'
-      res.project = result if result?
-      watcherModel.set 'res:projects:install', res
-
   return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
   return callback new Error 'invalid or unsupported git url' if !(projectDir = getProjectNameFromGitUrl(gitUrl))?
 
@@ -56,9 +48,48 @@ model.installProject = (gitUrl, callback) ->
     .then (dir) ->
       git.clone gitUrl, dir.path(projectDir), (err) ->
         return callback new Error err.message if err
-        model.loadProject projectDir, callback
+        model.initProject projectDir, callback
   .fail (err) ->
     callback err
+
+model.copyCertsToProxyFolder = (path, callback) ->
+  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
+
+  jetpack.cwd configModulePath
+  .dirAsync 'proxy'
+  .then (dir) ->
+    dir.dirAsync 'certs'
+    .then (dir) ->
+      jetpack.cwd(path).copyAsync '.', dir.path(), {overwrite:true, matching: ['*.crt', '*.key']}
+      .then () ->
+        callback null, true
+  .fail callback
+
+model.removeCertsFromToBeRemovedProject = (path, callback) ->
+  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
+
+  jetpack.cwd(configModulePath).dirAsync 'proxy'
+  .then (dir) ->
+    dir.dirAsync 'certs'
+    .then (dir) ->
+      jetpack.listAsync path
+      .then (files) ->
+        for own i, file of files
+          dir.remove file if file.match(/.key$/) || file.match(/.crt$/)
+        callback null, true
+  .fail callback
+
+model.initProject = (projectDir, callback) ->
+  return callback new Error 'invalid project dir given' if ! projectDir
+
+  model.loadProject projectDir, (err, project) ->
+    return callback err if err
+
+    certsPath = jetpack.cwd(projectDir, 'certs').path()
+    model.copyCertsToProxyFolder certsPath, (err, result) ->
+      return callback null, project if err && err.code == "ENOENT"
+      return callback err if err
+      callback null, project
 
 model.loadProject = (projectDir, callback) ->
   return callback new Error 'invalid project dir given' if ! projectDir?
@@ -76,7 +107,13 @@ model.loadProject = (projectDir, callback) ->
       project['scripts'] = config.scripts if config.scripts
       project['id'] = config.name
       project['markdowns'] = markdowns
-      projects.push project
+
+      if ! model.getProject project.id
+        projects.push project
+      else
+        for own d, i of projects
+          projects[d] = project if i.id == project.id
+
       watcherModel.set 'projects:list', projects
       callback null, project
   .fail callback
@@ -103,7 +140,6 @@ model.loadProjects = () ->
     projects = foundProjects
     watcherModel.set 'projects:list', projects
 
-#@todo add project running state
 model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 
@@ -126,13 +162,15 @@ model.stopProject = (project, callback) ->
 model.deleteProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 
-  jetpack.removeAsync project.path
-  .fail (error) ->
-    callback error
-  .then ->
-    watcherModel.log 'res:project:delete:' + project.id
-    model.loadProjects()
-    callback null, null
+  certsPath = jetpack.cwd(project.path, 'certs').path()
+  model.removeCertsFromToBeRemovedProject certsPath, (err, result) ->
+    jetpack.removeAsync project.path
+    .fail (error) ->
+      callback error
+    .then ->
+      watcherModel.log 'res:project:delete:' + project.id
+      model.loadProjects()
+      callback null, true
 
 model.updateProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
@@ -143,6 +181,8 @@ model.updateProject = (project, callback) ->
     watcherModel.log "res:project:update:#{project.id}", chunk
   process.stderr.on 'data',(chunk) ->
     watcherModel.log "res:project:update:#{project.id}", chunk
+  process.on 'close', () ->
+    model.initProject project.path, callback
 
 model.callAction = (project, action, callback) ->
   if callback?
