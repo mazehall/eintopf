@@ -10,11 +10,19 @@ watcherModel = require '../stores/watcher.coffee'
 
 projects = []
 
-getRunningContainersOfProject = (project, callback) ->
-  return callback null unless project.path?
-  process = child.exec "docker-compose ps -q | grep '' -c", {cwd: project.path}
+getRunningProjectContainers = (project, callback) ->
+  return callback [] unless project.path?
+  dataset = ""
+  process = child.exec "docker-compose ps", {cwd: project.path}
   process.stdout.on "data",(buffer) ->
-    callback buffer.toString() if callback?
+    dataset += buffer.toString()
+
+  process.on "close", ->
+    dataset = dataset.split(/\n/).slice 2
+    running = dataset.filter (name) ->
+      return name.match(/^\w+/) if name.match /Up /
+
+    callback running if callback?
 
 getProjectNameFromGitUrl = (gitUrl) ->
   return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)?[\/]?$/))?
@@ -207,10 +215,9 @@ watcherModel.propertyToKefir 'containers:list'
 .onValue ->
   for project, index in projects
     ((projectIndex)->
-      getRunningContainersOfProject project, (containers) ->
-        projects[projectIndex].state = if containers > 0 then "running" else "exit"
+      getRunningProjectContainers project, (containers) ->
+        projects[projectIndex].state = if containers.length > 0 then "running" else "exit"
     )(index)
 
-  watcherModel.set "projects:list", projects
-
+    watcherModel.set "projects:list", projects
 module.exports = model;
