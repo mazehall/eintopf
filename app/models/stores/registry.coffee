@@ -1,4 +1,4 @@
-config = require 'config'
+config = require '../stores/config'
 _r = require 'kefir'
 watcherModel = require './watcher.coffee'
 https = require "https"

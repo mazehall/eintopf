@@ -1,5 +1,5 @@
 _r = require 'kefir'
-config = require 'config'
+config = require '../stores/config'
 
 appConfig = config.get 'app'
 utilModel = require "../util"

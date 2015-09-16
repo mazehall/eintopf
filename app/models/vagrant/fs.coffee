@@ -1,4 +1,4 @@
-config = require 'config'
+config = require '../stores/config'
 jetpack = require 'fs-jetpack'
 utilModel = require '../util/'
 appConfig = config.get 'app'
