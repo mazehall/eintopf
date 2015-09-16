@@ -6,7 +6,7 @@ dockerModel = require '../../../models/docker/list.coffee'
 watcherModel = require '../../../models/stores/watcher.coffee'
 registryModel = require '../../../models/stores/registry.coffee'
 
-setupModel.run()
+setupModel.checkBackup().run()
 projectsModel.loadProjects()
 registryModel.loadRegistryWithInterval()
 

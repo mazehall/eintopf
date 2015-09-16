@@ -2,7 +2,9 @@ _r = require 'kefir'
 config = require 'config'
 
 appConfig = config.get 'app'
-
+utilModel = require "../util"
+jetpack = require "fs-jetpack"
+asar = require "asar"
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
 watcherModel = require '../stores/watcher.coffee'
@@ -70,6 +72,43 @@ model.run = () ->
     watcherModel.set 'states:live', states
   .onEnd () ->
     inSetup = false
+
+model.checkBackup = () ->
+  vagrantFolder = jetpack.cwd "#{utilModel.getConfigModulePath()}/.vagrant"
+  vagrantBackup = vagrantFolder.path() + ".backup"
+  folderExists  = jetpack.exists vagrantFolder.path()
+  backupExists  = jetpack.exists vagrantBackup
+
+  if backupExists and folderExists is false
+    console.log "backup:", "vagrant directory does not exists, delete old backup file"
+
+  if folderExists is "dir"
+    match = ["id", "index_uuid"]
+    files = jetpack.find vagrantFolder.path(), {matching: match}, "inspect"
+
+    if files.length is match.length and backupExists is not "file"
+      return asar.createPackage vagrantFolder.path(), vagrantBackup, ->
+        console.log "backup:", "vagrant backup created at:", vagrantBackup
+
+    if files.length isnt match.length
+      console.log "backup:", "vagrant directory '#{vagrantFolder.path()} is corrupt"
+
+      if backupExists is false or backupExists isnt "file"
+        console.log "backup:", "=> no backup found!"
+      else
+        packageList = asar.listPackage(vagrantBackup)
+        packageFile = packageList.filter (file) ->
+          file = file.split "/"
+          return file if file and match.indexOf(file[file.length-1]) isnt -1
+
+        if packageFile and packageFile.length isnt 0
+          asar.extractAll vagrantBackup, vagrantFolder.path()
+          console.log "backup:", "=> vagrant directory restored!"
+        else
+          console.log "backup:", " => invalid backup file, backup deleted!"
+          jetpack.remove vagrantBackup
+
+  return model
 
 watchVagrantSshConfigAndSetIt()
 module.exports = model;
