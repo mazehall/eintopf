@@ -68,7 +68,7 @@ var finalize = function () {
 var packToDebFile = function () {
     var deferred = Q.defer();
 
-    var debFileName = packName + '_amd64.deb';
+    var debFileName = packName + '-'+ process.arch +'.deb';
     var debPath = releasesDir.path(debFileName);
 
     gulpUtil.log('Creating DEB package...');

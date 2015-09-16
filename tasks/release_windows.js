@@ -66,7 +66,7 @@ var finalize = function () {
 };
 
 var renameApp = function() {
-  return readyAppDir.renameAsync('electron.exe', manifest.productName + '.exe');
+  return readyAppDir.renameAsync('electron.exe', manifest.productName + '-'+ process.arch +'.exe');
 }
 
 var createInstaller = function () {
