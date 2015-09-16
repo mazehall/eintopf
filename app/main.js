@@ -4,10 +4,6 @@ var BrowserWindow = require('browser-window');
 var menuEntries = require('./app_modules/gui/public/src/js/services/app-menu');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 
-var fs = require("fs");
-var asar = require("asar");
-var config = require("config");
-
 // Change the current working directory
 process.chdir(app.getAppPath() + (app.getAppPath().indexOf(".asar") > 0 ? ".unpacked/" : ""));
 
@@ -59,46 +55,3 @@ app.on('ready', function () {
 app.on('window-all-closed', function () {
   app.quit();
 });
-
-var getEintopfConfigPath = function(){
-    var home = process.env.HOME;
-
-    if (process.env.EINTOPF_HOME){
-        home = process.env.EINTOPF_HOME;
-    } else if (process.platform == 'win32'){
-        home = process.env.USERPROFILE;
-    }
-
-    return(home + "/.eintopf").replace(/^(~|~\/)/, home);
-};
-
-var checkBackup = function(){
-    var eintopfConfig = getEintopfConfigPath();
-    var vagrantFolder = eintopfConfig + "/"+ config.get("app.defaultNamespace") +"/.vagrant";
-    var vagrantBackup = vagrantFolder + ".asar.bk";
-
-    fs.readdir(vagrantFolder +"/machines/eintopf/virtualbox/", function(vagrantError, files){
-        fs.access(vagrantBackup, function(backupError){
-            if (vagrantError && backupError === null){
-                console.log("unused vagrant backup was deleted");
-                return fs.unlink(vagrantBackup, function(){});
-            } else if(backupError && files.length && files.indexOf("id") !== -1){
-                asar.createPackage(vagrantFolder, vagrantBackup, function(){
-                    console.log("vagrant backup created at:", vagrantBackup);
-                });
-            } else if (backupError === null && files.indexOf("id") === -1){
-                console.log("vagrant directory '", vagrantFolder, "' is corrupt");
-                var packageList = asar.listPackage(vagrantBackup);
-                if (packageList.indexOf("/machines/eintopf/virtualbox/id") === -1){
-                    console.log("corrupt backup was deleted");
-                    fs.unlink(vagrantBackup, function(){});
-                    return;
-                }
-                asar.extractAll(vagrantBackup, vagrantFolder);
-                console.log("vagrant directory restored!");
-            }
-        });
-    });
-};
-
-checkBackup();
