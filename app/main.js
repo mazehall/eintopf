@@ -4,8 +4,7 @@ var BrowserWindow = require('browser-window');
 var menuEntries = require('./app_modules/gui/public/src/js/services/app-menu');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 
-// Change the current working directory
-process.chdir(app.getAppPath() + (app.getAppPath().indexOf(".asar") > 0 ? ".unpacked/" : ""));
+process.cwd = app.getAppPath;
 
 var server = require('./server.js');
 var mainWindow, webContents;

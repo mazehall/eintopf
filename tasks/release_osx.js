@@ -34,9 +34,7 @@ var cleanupRuntime = function () {
 var packageBuiltApp = function () {
   var deferred = Q.defer();
 
-  asar.createPackageWithOptions(projectDir.path('build'), finalAppDir.path('Contents/Resources/app.asar'), {
-    unpack: "*"
-  }, function () {
+  asar.createPackage(projectDir.path('build'), finalAppDir.path('Contents/Resources/app.asar'), function () {
     deferred.resolve();
   });
 
