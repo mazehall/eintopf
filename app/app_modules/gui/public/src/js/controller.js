@@ -164,6 +164,7 @@ angular.module('eintopf')
         });
 
       $scope.install = function(val) {
+        val = val || $scope.newProject;
         if (!val) return false;
         $scope.result = {};
         $scope.loading = true;
