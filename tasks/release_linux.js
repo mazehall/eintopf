@@ -83,6 +83,7 @@ var packToDebFile = function () {
         description: manifest.description,
         version: manifest.version,
         author: manifest.author,
+        architecture: process.arch !== 'x64' ? 'i386' : 'amd64',
         size: appSize
     });
     packDir.write('DEBIAN/control', control);
