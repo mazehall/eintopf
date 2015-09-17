@@ -1,3 +1,5 @@
+[![eintopf](http://mazehall.github.io/eintopf/img/eintopf_logo.png)](http://mazehall.github.io/eintopf)
+
 Eintopf
 ==============
 
