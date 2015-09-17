@@ -1,10 +1,14 @@
 [![eintopf](http://mazehall.github.io/eintopf/img/eintopf_logo.png)](http://mazehall.github.io/eintopf)
 
-Eintopf
-==============
-
 A pot with the mixture of the smart development tools Docker, Vagrant and VirtualBox. Made to ease the chore of the
 daily project works.
+
+[![eintopf](http://mazehall.github.io/eintopf/img/screen_eintopf.png)](http://mazehall.github.io/eintopf)
+
+Download Eintopf
+==============
+[Download the latest version of eintopf] (http://mazehall.github.io/eintopf)
+
 
 # Installation
 
