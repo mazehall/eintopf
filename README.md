@@ -3,7 +3,7 @@
 A pot with the mixture of the smart development tools Docker, Vagrant and VirtualBox. Made to ease the chore of the
 daily project works.
 
-[![eintopf](http://mazehall.github.io/eintopf/img/screen_eintopf.png)](http://mazehall.github.io/eintopf)
+![eintopf](http://mazehall.github.io/eintopf/img/screen_eintopf.png)
 
 Download Eintopf
 ==============
