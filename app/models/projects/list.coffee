@@ -216,6 +216,7 @@ watcherModel.propertyToKefir 'containers:list'
   for project, index in projects
     ((projectIndex)->
       getRunningProjectContainers project, (containers) ->
+        return false if ! projects[projectIndex]
         projects[projectIndex].state = if containers.length > 0 then "running" else "exit"
     )(index)
 
