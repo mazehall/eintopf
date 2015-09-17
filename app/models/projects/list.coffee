@@ -61,10 +61,10 @@ model.installProject = (gitUrl, callback) ->
     dir.dirAsync 'configs'
     .then (dir) ->
       git.clone gitUrl, dir.path(projectDir), (err) ->
-        return callback new Error err.message if err
-        model.initProject projectDir, callback
-  .fail (err) ->
-    callback err
+        return model.initProject projectDir, callback if ! err
+        model.deleteProject {id: projectDir, path: dir.path(projectDir)}, () ->
+          return callback new Error err?.message || 'Error: failed to clone gir repository'
+  .fail callback
 
 model.copyCertsToProxyFolder = (path, callback) ->
   return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
@@ -216,6 +216,7 @@ watcherModel.propertyToKefir 'containers:list'
   for project, index in projects
     ((projectIndex)->
       getRunningProjectContainers project, (containers) ->
+        return false if ! projects[projectIndex]
         projects[projectIndex].state = if containers.length > 0 then "running" else "exit"
     )(index)
 

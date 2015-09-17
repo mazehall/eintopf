@@ -64,13 +64,13 @@ var finalize = function () {
 };
 
 var renameApp = function() {
-  return readyAppDir.renameAsync('electron.exe', manifest.productName + '-'+ process.arch +'.exe');
+  return readyAppDir.renameAsync('electron.exe', manifest.productName + '.exe');
 }
 
 var createInstaller = function () {
     var deferred = Q.defer();
 
-    var finalPackageName = manifest.name + '_' + manifest.version + '.exe';
+    var finalPackageName = manifest.name + '_' + manifest.version + '-' + process.arch + '.exe';
     var installScript = projectDir.read('resources/windows/installer.nsi');
     installScript = utils.replace(installScript, {
         name: manifest.name,
