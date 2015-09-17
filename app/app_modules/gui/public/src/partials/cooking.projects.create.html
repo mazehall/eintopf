@@ -47,37 +47,14 @@
             <div class="bg--off-white p0 m1">
                 <div class="media">
                     <div class="media-figure p1" style="background-color:{{value.mediabg}};">
-
-                        <img src="{{value.src}}" width="50px"/>
+                        <img ng-if="!value.src || value.src == ''" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MzI4MUI1Mjg1MzNCMTFFNThFNkVERDhGMEIzQ0ZBQjUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MzI4MUI1Mjk1MzNCMTFFNThFNkVERDhGMEIzQ0ZBQjUiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDozMjgxQjUyNjUzM0IxMUU1OEU2RUREOEYwQjNDRkFCNSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDozMjgxQjUyNzUzM0IxMUU1OEU2RUREOEYwQjNDRkFCNSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PnetuO8AAAUcSURBVHja3JlZjBRVFIZvVS9DTzOTYTKKK2FENG5Bo0ZRR6Iiog9CfFAjGsBookSiibuiRoxRh7gFl8T4ZARxw4UIbsGARolb9EFjQkDBlRHbpnvsHnu6q/3/6b+w7FR3T4/AVM1NvlSvVee/59xzz73X6u3tNfuqdXZ2juRv+4Mo+KXej2wT/DYOzAYtgRFSLBbrfZ0ArT72nQDuAd2BEZLNZut9PRXcXfXZHLBcAtvCElqLwdF6TcMfAC+BQ8Em8F3QhZwO1oNJYAmYCz4AtzIawQvgajq03k2ioyyChl8J7gIfgQfBhfLIn+B68CrINbrRaAlhvN8IzgKXMDOD98Dh4AewGiwDO7x/KpfLZmBgYPSF0JB8Pm8SiQSNnAguAovATUqvj4OnwVaF1VDLZDK7/18qlfaKkIjuQSNiIqKxx6vl1UEgpGRZVsZxnPdjsdg8sBSf96GnF8oTZnBwcIhm2kiF2OpR5vbJSp0HgoNAB2gHSRDXMxz1cB7053K5TCQSOTYej/dgbklD3HIY/q1CLjsSg6LD/A0NOgScDaaDU8Bh8oCj3navLsZzdZvrIcu27ShapL+/34EIeuU+kAZfgY/BRvA5hdNJuv+IhEwA54BZ4ERwlG72E/gRfAH+UA200+1twNFYkAccjxjLE3otEHIBrteAXv2mS3UVPbsA3K7B7gpbJ2FNCTkVPK/JiA9fAx5RitzpMbJU5YFht2Qy2YfLpQixN3D9TEIjrlBNjueC+epMClul+eX3RhMi318O1oIp4DVwnEqFFWAb+Av87XF30yJUBbN3n0MGW4j3MYRZCV4qyLNpeeFecIxs6pOnVmkc1hXCwfaEwortHfDNnk7D6XTafXknsyt7v7293UCI388p7G2Fs6VxOreRkKwU5/X+MfAkmKHs1CbX/6+G1GtSqRTJI+0+xCyHTOatjhla+8kb8xUhZ8j721XC1B0jDJUbwHgwT2mUE9YV4FcNPhZvW8D3Gug7VE5kFG7lJlJ4Aqk3WSgUoKE4W5lxssbHJA38iZ7OK6ljtzUSQtedDM7zCTlyBOipnrDlQWawXaqLchpLRX1viVb19njNMxMwW3dCRKSJ6YLh+IkST7mWkBka4B1NRIprYKuy3N5ujJI3NU42+I2RNmWJDhP8RhuXehdbXiHX+oRNkFuPbP6PkG4ptEIkxJLN3a4QWyuwFhO+RpuvogZbi5ozTXgbbe+ikJkqR8LaaPssV0hXiIXQ9pm2Bks0xEJYnU+xNcuGvcVtleRhb0VbhZ8TYhEsJH+ztR2ZCbEQ2r7J1lp4e4iFsKRfY2tt8WmIhXDJvNnWmmGFYi2M42PIdrdo/BC8EkIhL8v23dUvlV2nBX5YGm1d7EaSdz2SAveHJBU7sjXlt7Dil8+Ch0MgZJlsdWptB9FNt4CnAjz4XwS3VdtX6+htS4C9cYDfh7WE8AAmElAhPHM8cjhCuLt3UoA9wiXHkkZCuKC/ucH6vbwPjG2UOS8GB1erq15tzalx460qMHnlfhLPN6aaPXfEzWdsBm+xmjWVg6RppnI2E/fxynTvJF4tZJr5d9OrrMzwNXgUvG4q26Buu0ML/8vA+drEsM3wt5TcU66UCteVpnJKVX1sSyHcj+bOYqvuz+dwX2u16z2/vd9d+pJV5TOmcmDvd67HB74ruOHM7f7TwPGmshlt1RHwM/jSVPZw1zeovnkytsBUduMXqfPGaUFou0IsHvmOhWabMdLGjJB/BBgAGIdumYVenrQAAAAASUVORK5CYII="/>
+                        <img src="{{value.src}}" ng-if="value.src" width="50px"/>
                     </div>
                     <div class="media-body p1">
                         <h6 class="m0 py05">{{value.name}}</h6>
                         <p class="m0 p0 small media-content">{{value.description}}</p>
                         <div class="txt--right media-footer my1">
                             <a href="#" class="btn" ng-click="installRecommendation(value)">Create</a>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-        <div class="grd-row-col-2-6--lg cssBox cssPattern">
-            <div class="bg--off-white p0 m1">
-                <div class="media">
-                    <div class="media-figure p1" >
-
-
-                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OTI3ODQ1MjE1MzIxMTFFNThFNkVERDhGMEIzQ0ZBQjUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OTI3ODQ1MjI1MzIxMTFFNThFNkVERDhGMEIzQ0ZBQjUiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5Mjc4NDUxRjUzMjExMUU1OEU2RUREOEYwQjNDRkFCNSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5Mjc4NDUyMDUzMjExMUU1OEU2RUREOEYwQjNDRkFCNSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PmUDf6wAAAVaSURBVHja3Jp7bFNVHMfPvS3dOt2QUQcIbTcRH2BEfESHToMiUWJk0UQNEESjiRAJJj5R1DhjNBAxitHE+KcP8IGvTBSJRmaA+JhuRgObIHOgW+kma2GsrLvX72/3e/Vau65dBuvdST652+3tub/vOed3zu/8TrXYsiXqRJVtSxYP5WtlwAv+yPSQrvK/FIJrQUHeCPEd7cn0sR8UpbFvFngCVOSNkAtqazN9PA08nnJvAVhPgcVuGVorwHT+LYY/A94GQbAT7Mp3IZeBL0AIrAbV4EvwEEiCt8BdIJ6pEu8IixDD7wCPga/Bs+AG9shfYCV4D3QPVtFICZHxfh+YA24BpeBzcAbYBzaBtaDd+SVPMqnGtrWPvBBvIqHK9rWoSHlYjJwAbgTLwf2cXl8Ar4C9HFb95bwtWy0/6EuqkoPR4yLEwzrEiDHEQ9+Tq+Z41tT7DPPsbXV93SXFseJox9aO4JRFx/z+Gs0wIkVdXbezJ9RpTc1q0u6m3BppiAJ0tqjM7eWcOieJDeAUUAJOkqWD7zDYwkfB4Vm1m2PxUwPnRsOhqjGJxKFQQ+P6ybt2/8IhFx9Sb2f5jBg0BVwFKsEl4HT2gBhpOq42ynG1S38PaaapHS4t9SZ9Pk9F/Q8GRNTg9lPgEPgRbJeIBnwnwkEv6x+SkHHgajAPXAjOYWX7QSv4HnQwBorarQ1k+T7GHjAcYjTH0CvoLSycb2ra3YbHs4bPBBhXSc8uBavo7LawzRSWk5BLwetcjOTlH4N1nCKjDiP7Unog69I6Y3oEl1tjgcCHuH5LoR5bKBfHa8BtbEwRtoHry8HU+rSU6FfG/kLwIntkI7v85+GcveoWL4Tn96/F67hmrDxz+47E2EhE+WPxdDFYNVf6EBfLmzgMB1zZxdleoggpnw23CCvm+sT+81EQk9Zvml2pusrK0j0uQ/ZTDmeNflr9v+lz1cUznf+LU4XBDA6pORxeR1hJn2M4DT0K7ulR4YZGIRkNBet7/f7gxOZfW8KNP9mPFHCRlFlxPngezOZ7WxkNd2UaWnb8/xpY5Lgn/f0nnU+Ctz3gNzp6O8OJGBvCzGEK98Ppx8cD44Ol+w8Uc2Ysp3+E6PgT6DeKvim9uGYwH5FWv5wLUyBLg0x2fwdbqZsc4YtN1qvRH6S1T+Y6M44t78mhQ6XBrufEYw40a10J3ueilm2xDSziMDzeRRbbj+gnX6VzdunaJ3MUMVJFbKxxbracQpaBKuWeUkWb/yOkggo1FwnRaHOFLUTnDqxAua+IzXeKBp2zxhXKvUVsD4iQuWCqi4WI7fNsIQEXCxHb5+p0Fq+LhUgoNVXnKuv24hMhiVEgJKkz8DNcLEKi8Tad6ciYi4WI7Tt17oV/d7GQFtmK69xbfONiIZKQaNa5Z3iDY82N/tFvux001oF3XSjkHdr+T/Qryu7hftgtRWxdYY8k536kEzztkqnYoK2d6TZWBpMOz7lAyFraaqQTYg+xB8HLeez8kjR8ONW+gY7e9uRxb0xMd3MgIXIA48lTIXLmeFY2QiTLeFEe94hsOVYPJkQ29A8Msn83T4Cxg82cN4PJqepSd1sLBqh4LwNMuUo+SXKy09TwHXHLO5qB/KqgTVkHSZKYlrMZX5peqXQu4qlCZqp/k14mZ4YGZSWRP1BWGtQuj3DjL8cQ1zGJoavsU0r2KVcnA9c3lXVKlfo7DxFyr7Iyi0WsX94jea1Ndu950wytLn4oUeWryjqwT3euJy/cQiThLOl+yZifr6xktJZBwAFQD3Yo68cCmaJvORlbqqyc9HI2XiE3hLotRDNNU42GoqtRUkaNkL8FGAAgEGG/480jfAAAAABJRU5ErkJggg=="/>
-
-
-
-                    </div>
-                    <div class="media-body p1">
-                        <h6 class="m0 py05">Testprojekt</h6>
-                        <p class="m0 p0 small media-content">Das ist das Design, wenn kein Bild oder Backgriund mitgeliefert wurde.</p>
-                        <div class="txt--right media-footer my1">
-                            <a href="#" class="btn" >Create</a>
                         </div>
                     </div>
 
