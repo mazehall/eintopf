@@ -85,6 +85,24 @@ textarea {
 .cssFontGreen{
     color: rgb(2, 86, 95);
 }
+.cssBtnRed{
+    background-color: rgba(240, 106, 98, 1.0);
+    border:0;
+    color:#fff;
+    border-radius:40px;
+    padding:25px 30px;
+}
+.cssBtnRed:hover{
+    background-color: rgba(222, 99, 91, 1.0);
+    border: 0;
+    color:#fff;
+}
+.media .media-figure{
+    margin: 2em 0 0 10em;
+}
+.cssBrdBtm{
+    border-bottom: 1px solid #f1f1f1;
+}
 /* ==========================================================================
    Browser Upgrade Prompt
    ========================================================================== */
