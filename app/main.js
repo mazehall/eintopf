@@ -1,13 +1,13 @@
 var app = require('app');
+var shell = require('shell');
 var BrowserWindow = require('browser-window');
 var menuEntries = require('./app_modules/gui/public/src/js/services/app-menu');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 
-// Change the current working directory
-process.chdir(app.getAppPath() + (app.getAppPath().indexOf(".asar") > 0 ? ".unpacked/" : ""));
+process.cwd = app.getAppPath;
 
 var server = require('./server.js');
-var mainWindow;
+var mainWindow, webContents;
 var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
 var port = process.env.PORT = process.env.PORT || 31313;
 // Preserver of the window size and position between app launches.
@@ -24,13 +24,21 @@ app.on('ready', function () {
     width: mainWindowState.width,
     height: mainWindowState.height
   });
+  webContents = mainWindow.webContents;
 
   if (mainWindowState.isMaximized) {
     mainWindow.maximize();
   }
 
   process.on('app:serverstarted', function() {
-    mainWindow.loadUrl('http://localhost:' + port, {userAgent: "electron"});
+    var appUrl = "http://localhost:" + port;
+    mainWindow.loadUrl(appUrl, {userAgent: "electron"});
+    webContents.on("will-navigate", function(event, targetUrl){
+        if (targetUrl.indexOf(appUrl) === -1){
+            shell.openExternal(targetUrl);
+            event.preventDefault();
+        }
+    });
   });
   process.emit('app:startserver', port);
 
@@ -42,7 +50,6 @@ app.on('ready', function () {
 
 
 });
-
 
 app.on('window-all-closed', function () {
   app.quit();

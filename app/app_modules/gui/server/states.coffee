@@ -1,14 +1,14 @@
 _r = require 'kefir'
 
-utils = require '../../../models/util/index.coffee'
-
 setupModel = require '../../../models/setup/setup.coffee'
 projectsModel = require '../../../models/projects/list.coffee'
 dockerModel = require '../../../models/docker/list.coffee'
-watcherModel =require '../../../models/stores/watcher.coffee'
+watcherModel = require '../../../models/stores/watcher.coffee'
+registryModel = require '../../../models/stores/registry.coffee'
 
-setupModel.run()
+setupModel.checkBackup().run()
 projectsModel.loadProjects()
+registryModel.loadRegistryWithInterval()
 
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 
@@ -61,6 +61,12 @@ states = (connections_, rawSocket) ->
   .onValue (val) ->
     rawSocket.emit val.name, val.newValue[val.newValue.length-1]
 
+  watcherModel.toKefir()
+  .filter (x) ->
+    x.name.match /^res:project:action:script:/
+  .onValue (val) ->
+    rawSocket.emit val.name, val.newValue[val.newValue.length-1]
+
   # emit apps changes
   watcherModel.propertyToKefir 'apps:list'
   .onValue (val) ->
@@ -70,6 +76,11 @@ states = (connections_, rawSocket) ->
   watcherModel.propertyToKefir 'settings:list'
   .onValue (val) ->
     rawSocket.emit 'res:settings:list', val.newValue
+
+  # emit recommendations changes
+  watcherModel.propertyToKefir 'recommendations:list'
+  .onValue (val) ->
+    rawSocket.emit 'res:recommendations:list', val.newValue
 
   connections_.onValue (socket) ->
     socket.emit 'states:live', watcherModel.get 'states:live'
@@ -100,7 +111,12 @@ states = (connections_, rawSocket) ->
     .filter()
     .onValue (val) ->
       watcherModel.set 'res:projects:install', null
-      projectsModel.installProject val
+      projectsModel.installProject val, (err, result) ->
+        res = {}
+        res.errorMessage = err.message if err? && typeof err == 'object'
+        res.status = if err then 'error' else 'success'
+        res.project = result if result?
+        watcherModel.set 'res:projects:install', res
 
     _r.fromEvents socket, 'project:detail'
     .filter()
@@ -116,34 +132,39 @@ states = (connections_, rawSocket) ->
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.startProject project
+      projectsModel.startProject project, () ->
 
     _r.fromEvents socket, 'project:stop'
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.stopProject project
+      projectsModel.stopProject project, () ->
 
     _r.fromEvents socket, 'project:delete'
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.deleteProject project
+      projectsModel.deleteProject project, () ->
 
     _r.fromEvents socket, 'project:update'
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.updateProject project
+      projectsModel.updateProject project, () ->
+
+    _r.fromEvents socket, 'project:action:script'
+    .filter (x) ->
+      x if x.id? and x.action?
+    .onValue (project) ->
+      projectsModel.callAction project, project.action
 
     _r.fromEvents socket, 'settings:list'
     .onValue () ->
       socket.emit 'res:settings:list', watcherModel.get 'settings:list'
 
-    _r.fromEvents socket, 'openExternalUrl'
-    .filter()
+    _r.fromEvents socket, 'recommendations:list'
     .onValue (url) ->
-      utils.openExternalUrl url
+      socket.emit 'res:recommendations:list', watcherModel.get 'recommendations:list'
 
     _r.fromEvents socket, 'container:start'
     .filter (x) ->

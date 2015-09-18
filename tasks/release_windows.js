@@ -34,9 +34,7 @@ var cleanupRuntime = function() {
 var packageBuiltApp = function () {
     var deferred = Q.defer();
 
-    asar.createPackageWithOptions(projectDir.path('build'), readyAppDir.path('resources/app.asar'), {
-        unpack: "*"
-    }, function() {
+    asar.createPackage(projectDir.path('build'), readyAppDir.path('resources/app.asar'), function() {
         deferred.resolve();
     });
 
@@ -72,7 +70,7 @@ var renameApp = function() {
 var createInstaller = function () {
     var deferred = Q.defer();
 
-    var finalPackageName = manifest.name + '_' + manifest.version + '.exe';
+    var finalPackageName = manifest.name + '_' + manifest.version + '-' + process.arch + '.exe';
     var installScript = projectDir.read('resources/windows/installer.nsi');
     installScript = utils.replace(installScript, {
         name: manifest.name,

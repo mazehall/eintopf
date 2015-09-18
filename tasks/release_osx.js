@@ -34,9 +34,7 @@ var cleanupRuntime = function () {
 var packageBuiltApp = function () {
   var deferred = Q.defer();
 
-  asar.createPackageWithOptions(projectDir.path('build'), finalAppDir.path('Contents/Resources/app.asar'), {
-    unpack: "*"
-  }, function () {
+  asar.createPackage(projectDir.path('build'), finalAppDir.path('Contents/Resources/app.asar'), function () {
     deferred.resolve();
   });
 
@@ -85,7 +83,7 @@ var packToDmgFile = function () {
   var deferred = Q.defer();
 
   var appdmg = require('appdmg');
-  var dmgName = manifest.name + '_' + manifest.version + '.dmg';
+  var dmgName = manifest.name + '_' + manifest.version + '-'+ process.arch +'.dmg';
 
   // Prepare appdmg config
   var dmgManifest = projectDir.read('resources/osx/appdmg.json');

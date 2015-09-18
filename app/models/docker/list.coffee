@@ -92,7 +92,9 @@ model.loadContainers = () ->
     foundContainers.push push
   .onEnd () ->
     foundContainers.sort (a, b) ->
-      a.name > b.name ? -1 : 0
+      return -1 if a.name < b.name
+      return 1 if a.name > b.name
+      return 0;
     watcherModel.set 'containers:list', foundContainers
     loadApps()
 

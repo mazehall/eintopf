@@ -44,7 +44,6 @@ body {
     line-height:60px;
     border-radius:0;
 }
-
 .cssHeader ul li:hover, .cssHeader ul li.active{
     border-bottom:2px solid #f2695e;
 }
@@ -94,10 +93,7 @@ body {
     height:auto;
     min-height:100%;
 }
-input{
-    width:70%;
-    padding: .3rem;
-}
+
 .scroll {
     width: 100%;
     height: 400px;
@@ -118,9 +114,7 @@ input{
 .cssContainer li p, .cssSidebar a p, pre{
     word-wrap: break-word;
 }
-.cssBox:hover{
-    background-color:rgba(215, 228, 219, 1.0)
-}
+
 .cssBorderWhitoutTop{
     border-left: thin solid rgba(228, 240, 232, 1.0);
     border-right: thin solid rgba(228, 240, 232, 1.0);
@@ -196,6 +190,10 @@ input{
     padding: 6px 13px;
     border: 1px solid #ddd;
 }
+.cssRemoveButton i:hover{
+    color:#e74c3c;
+}
+
 @media screen and (max-width: 32rem){
     .cssLogo{
         background:url(../img/icon_topf.png) center left no-repeat;
@@ -223,5 +221,130 @@ input{
     .cssToolbar li a {
         font-size:100%;
     }
+}
+.cssSwitchBg{
+
+}
+.cssSwitchBg span {
+    background: white;
+    border-radius: 2em;
+    border: 0.12em solid #e6e6e6;
+    display: block;
+    height: 2em;
+    position: relative;
+    width: 3.5em;
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    cursor:pointer;
+}
+.cssSwitchBg span.on {
+    background: #25ba84;
+    border-color: #22a977;
+
+}
+.cssSwitchBg span.off {
+    background-color: #f1f1f1;
+    border-color: #e1e1e1;
+
+}
+.cssSwitch {
+    background: white;
+    border-radius: 2em;
+    border: 0.1em solid #d9d9d9;
+    display: block;
+    float: left;
+    height: 1.9em;
+    width: 1.9em;
+    position: relative;
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    z-index: 1;
+}
+.cssSwitchBg .on .cssSwitch{
+    box-shadow: -0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), 0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
+}
+.cssSwitchBg .on .cssSwitch {
+    position:absolute;
+    right: .02rem;
+    text-align: right;
+    float: right;
+    top:-0.5px;
+    color: white;
+    text-shadow: 0 0.1em 0 #00dc61;
+}
+.cssSwitchBg .off .cssSwitch{
+    box-shadow: 0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), -0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
+    top:-0.5px;
+    position:absolute;
+}
+.cssSwitch .off {
+    box-shadow: 0.2em 0.2em 0.5em rgba(0, 0, 0, 0.06), -0.4em 0.4em 1.5em rgba(0, 0, 0, 0.08);
+}
+.cssSwitch.off {
+    right: .55em;
+    color: #aaa;
+}
+.cssSwitchBg .on .cssSwitchLabel{
+    position:absolute;
+    top:7px;
+    left:5px;
+    color: white;
+    text-shadow: 0 0.1em 0 #00dc61;
+    font-size: .6em;
+}
+.cssSwitchBg .off .cssSwitchLabel{
+    position:absolute;
+    top:7px;
+    right:5px;
+    color:#ccc;
+    font-size: .6em;
+}
+.cssPatterns{
+    margin-top:8rem;
+}
+.cssBox .media-footer a:hover, .cssBox .media-footer a:focus{
+    border-color: rgba(19, 103, 112, 1.0);
+    background-color: rgba(19, 103, 112, 1.0);
+    color: #fff;
+    border: 2px solid #02565f;
+    text-decoration: none;
+    text-align: center;
+}
+.cssBox.cssPattern .media-figure{
+    min-height:15rem;
+    margin-right:0;
+    background-color:rgba(228, 240, 232, 1.0);
+}
+.cssBox.cssCreate .media-figure{
+    min-height:10rem;
+    margin-right:0;
+    background-color:rgba(228, 240, 232, 1.0);
+}
+.cssBox .media{
+    position:relative;
+}
+.cssBox .media-footer{
+    position:absolute;
+    bottom:0;
+    right:1rem;
+}
+.cssBox.cssCreate .media-footer{
+    position:absolute;
+    bottom:0;
+    right:1rem;
+}
+.cssBox .media-content{
+    min-height:6rem;
+    max-height:6rem;
+    overflow:hidden;
+}
+.cssBox .media-content-input{
+    min-height:4rem;
+    max-height:4rem;
+
 }
 

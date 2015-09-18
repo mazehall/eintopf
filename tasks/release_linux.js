@@ -38,9 +38,7 @@ var cleanupRuntime = function() {
 var packageBuiltApp = function () {
     var deferred = Q.defer();
 
-    asar.createPackageWithOptions(projectDir.path('build'), readyAppDir.path('resources/app.asar'), {
-        unpack: "*"
-    }, function() {
+    asar.createPackage(projectDir.path('build'), readyAppDir.path('resources/app.asar'), function() {
         deferred.resolve();
     });
 
@@ -68,7 +66,7 @@ var finalize = function () {
 var packToDebFile = function () {
     var deferred = Q.defer();
 
-    var debFileName = packName + '_amd64.deb';
+    var debFileName = packName + '-'+ process.arch +'.deb';
     var debPath = releasesDir.path(debFileName);
 
     gulpUtil.log('Creating DEB package...');
@@ -83,6 +81,7 @@ var packToDebFile = function () {
         description: manifest.description,
         version: manifest.version,
         author: manifest.author,
+        architecture: process.arch !== 'x64' ? 'i386' : 'amd64',
         size: appSize
     });
     packDir.write('DEBIAN/control', control);

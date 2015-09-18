@@ -38,7 +38,14 @@ angular.module('eintopf')
   .controller('containersCtrl',
   ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
     function($scope, resContainersList, reqContainerActions, resContainersLog) {
-      resContainersList.$assignProperty($scope, 'containers');
+      resContainersList
+        .map(function(x) {
+          x.forEach(function(container) {
+            container.running = /^up/i.test(container.status);
+          });
+          return x;
+        })
+        .$assignProperty($scope, 'containers');
 
       $scope.logs = [];
       resContainersLog
@@ -67,12 +74,16 @@ angular.module('eintopf')
   .controller('appsCtrl',
   ['$scope', 'resAppsList',
     function($scope, resAppsList) {
+      $scope.isElectron = false;
+      if (navigator.userAgent && navigator.userAgent.match(/^electron/)) {
+        $scope.isElectron = true;
+      }
       resAppsList.$assignProperty($scope, 'apps');
     }
   ])
   .controller('recipeCtrl',
-  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject',
-    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject) {
+  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction',
+    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction) {
       $scope.project = {
         id: $stateParams.id
       };
@@ -127,12 +138,20 @@ angular.module('eintopf')
               return $scope.currentTab = "protocol";
           }
       });
+
+      $scope.doAction = function(project, action){
+        project.action = action;
+        reqProjectStartAction.emit(project);
+        resProjectStartAction.fromProject($stateParams.id);
+      };
     }
   ])
   .controller('createProjectCtrl',
-  ['$scope', '$state', 'reqProjectsInstall', 'resProjectsInstall',
-    function($scope, $state, reqProjectsInstall, resProjectsInstall) {
+  ['$scope', '$state', 'reqProjectsInstall', 'resProjectsInstall', 'resRecommendationsList',
+    function($scope, $state, reqProjectsInstall, resProjectsInstall, resRecommendationsList) {
+      resRecommendationsList.$assignProperty($scope, 'recommendations');
       resProjectsInstall.$assignProperty($scope, 'result');
+
       $scope.$fromWatch('result')
         .filter(function(val) {
           if (val.newValue && typeof val.newValue == "object" && val.newValue.status) return true;
@@ -145,11 +164,18 @@ angular.module('eintopf')
         });
 
       $scope.install = function(val) {
+        val = val || $scope.newProject;
         if (!val) return false;
         $scope.result = {};
         $scope.loading = true;
         reqProjectsInstall.emit(val);
-      }
+      };
+
+      $scope.installRecommendation = function(project) {
+        if (!project || typeof project != "object" || !project.url) return false;
+        $scope.newProject = project.url;
+        $scope.install(project.url);
+      };
     }
   ])
   .controller('settingsCtrl',

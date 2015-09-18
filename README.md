@@ -56,6 +56,36 @@ Please use the Git clone way to participate.
  __31313__ | [_31313_] |        | Eintopf GUI server currently host only version
 
 
+# Configuration
+
+
+## User configuration
+
+You can configure your Eintopf through a config file in eintopfHome/eintopfNamespace/config.json (default: ~/.eintopf/default/config.json).
+The configuration works partially, so you only have to set what you want to overwrite.
+
+    {
+      "app": {
+        "defaultNamespace": "default", # default Namespace for eintopf home
+        "pathDefaultVagrantFile": "config/Vagrantfile.default" # relative path to the Vagrant configuration
+      },
+      "registry": {
+        "url": "http://registry.eintopf.io/files/projects.json", # set your own registry definition url here 
+        "refreshInterval": "900000" # set the interval in milliseconds to load the registry
+      }
+    }
+
+
+## Vagrant file
+
+The used vagrant file is located in eintopfHome/eintopfNamespace/Vagrantfile (default: ~/.eintopf/default/Vagrantfile). You can set your own Vagrantfile there.
+
+The following settings are necessary so that Eintopf can use Vagrant :
+
+- Mount eintopfHome/eintopfNamespace/ in /vagrant
+- Mount Eintopf projects in /projects
+- Installed and running Docker with forwarded port 2375
+- Use of compatible Proxy container like mkodockx/docker-nginx-proxy with forwarded port 4480 and 4443
 
 
 # Development
@@ -84,6 +114,12 @@ Sits on path: `eintopf/app/package.json`. This is **real** manifest of the appli
 - `resources` - resources for particular operating system.
 - `tasks` - build and development environment scripts.
 
+
+### Environment variables
+
+- EINTOPF_HOME # set this to use a custom Eintopf home folder
+- REGISTRY_INTERVAL # set your own registry definition url here
+- REGISTRY_URL # set the interval in milliseconds to load the registry
 
 
 ## Installation

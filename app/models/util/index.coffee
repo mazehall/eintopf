@@ -1,6 +1,5 @@
-config = require 'config'
+config = require '../stores/config'
 jetpack = require 'fs-jetpack'
-shell = require 'shell'
 
 appConfig = config.get 'app'
 
@@ -21,7 +20,3 @@ module.exports.getConfigPath = () ->
 module.exports.getConfigModulePath = () ->
   return null if ! (configPath = @getConfigPath())? || ! appConfig.defaultNamespace
   return jetpack.cwd(configPath).path appConfig.defaultNamespace
-
-module.exports.openExternalUrl = (url) ->
-  return false if ! url
-  shell.openExternal url

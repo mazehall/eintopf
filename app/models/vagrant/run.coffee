@@ -1,4 +1,4 @@
-config = require 'config'
+config = require '../stores/config'
 _r = require 'kefir'
 vagrant = require 'node-vagrant'
 fsModel = require './fs.coffee'
