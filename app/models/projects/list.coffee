@@ -141,7 +141,7 @@ model.loadProjects = () ->
     projects = foundProjects
   .flatMap mazehall.readPackageJson
   .filter (x) ->
-    x.pkg.mazehall && x.pkg.eintopf && typeof x.pkg.eintopf is "object"
+    x.pkg.eintopf && typeof x.pkg.eintopf is "object"
   .onValue (val) ->
     jetpack.cwd(val.path).findAsync val.path, {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
     .then (markdowns) ->
