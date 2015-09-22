@@ -85,6 +85,9 @@ textarea {
 .cssFontGreen{
     color: rgb(2, 86, 95);
 }
+.cssFontRed{
+    color: rgb(242, 105, 94);
+}
 .cssBtnRed{
     background-color: rgba(240, 106, 98, 1.0);
     border:0;
@@ -98,7 +101,7 @@ textarea {
     color:#fff;
 }
 .media .media-figure{
-    margin: 2em 0 0 10em;
+    margin: 2em 0 0 1em;
 }
 .cssBrdBtm{
     border-bottom: 1px solid #f1f1f1;
