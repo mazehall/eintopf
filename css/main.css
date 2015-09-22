@@ -103,6 +103,9 @@ textarea {
 .media .media-figure{
     margin: 2em 0 0 1em;
 }
+.media .media-figure.left{
+    margin: 0 1em 0 0;
+}
 .cssBrdBtm{
     border-bottom: 1px solid #f1f1f1;
 }
