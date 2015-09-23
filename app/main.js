@@ -26,7 +26,7 @@ initMenu = function () {
       submenu: [
         {
           label: "About", click: function () {
-          shell.openExternal('https://github.com/mazehall/eintopf')
+          shell.openExternal('https://github.com/mazehall/eintopf');
         }
         },
         {type: "separator"},
@@ -42,8 +42,11 @@ initMenu = function () {
         }
         }
       ]
-    },
-    {
+    }
+  ];
+
+  if (process.platform == 'darwin') { // set edit actions for OS X
+    template.push({
       label: "Edit",
       submenu: [
         {label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:"},
@@ -54,8 +57,8 @@ initMenu = function () {
         {label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:"},
         {label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:"}
       ]
-    }
-  ];
+    });
+  }
 
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 };
