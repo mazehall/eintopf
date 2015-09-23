@@ -3,6 +3,7 @@ var shell = require('shell');
 var BrowserWindow = require('browser-window');
 var menuEntries = require('./app_modules/gui/public/src/js/services/app-menu');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
+var Menu = require('menu');
 
 process.cwd = app.getAppPath;
 
@@ -16,7 +17,51 @@ var mainWindowState = windowStateKeeper('main', {
   height: 600
 });
 
+initMenu = function () {
+  //if (Menu.getApplicationMenu()) return; // ignore if menu is present
+
+  var template = [
+    {
+      label: "Eintopf",
+      submenu: [
+        {
+          label: "About", click: function () {
+          shell.openExternal('https://github.com/mazehall/eintopf')
+        }
+        },
+        {type: "separator"},
+        {
+          label: "Reload", accelerator: "CmdOrCtrl+R", click: function (item, focusedWindow) {
+          if (focusedWindow) focusedWindow.reload();
+        }
+        },
+        {type: "separator"},
+        {
+          label: "Quit", accelerator: "CmdOrCtrl+Q", click: function () {
+          app.quit();
+        }
+        }
+      ]
+    },
+    {
+      label: "Edit",
+      submenu: [
+        {label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:"},
+        {label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:"},
+        {type: "separator"},
+        {label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:"},
+        {label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:"},
+        {label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:"},
+        {label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:"}
+      ]
+    }
+  ];
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+};
+
 app.on('ready', function () {
+  initMenu();
 
   mainWindow = new BrowserWindow({
     x: mainWindowState.x,
@@ -30,14 +75,14 @@ app.on('ready', function () {
     mainWindow.maximize();
   }
 
-  process.on('app:serverstarted', function() {
+  process.on('app:serverstarted', function () {
     var appUrl = "http://localhost:" + port;
     mainWindow.loadUrl(appUrl, {userAgent: "electron"});
-    webContents.on("will-navigate", function(event, targetUrl){
-        if (targetUrl.indexOf(appUrl) === -1){
-            shell.openExternal(targetUrl);
-            event.preventDefault();
-        }
+    webContents.on("will-navigate", function (event, targetUrl) {
+      if (targetUrl.indexOf(appUrl) === -1) {
+        shell.openExternal(targetUrl);
+        event.preventDefault();
+      }
     });
   });
   process.emit('app:startserver', port);
@@ -47,7 +92,6 @@ app.on('ready', function () {
   mainWindow.on('close', function () {
     mainWindowState.saveState(mainWindow);
   });
-
 
 });
 
