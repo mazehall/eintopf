@@ -7,8 +7,7 @@ child = require 'child_process'
 
 utilModel = require '../util/'
 watcherModel = require '../stores/watcher.coffee'
-
-projects = []
+watcherModel.set 'projects:list', []
 
 getRunningProjectContainers = (project, callback) ->
   return callback [] unless project.path?
@@ -23,11 +22,6 @@ getRunningProjectContainers = (project, callback) ->
       return name.match(/^\w+/) if name.match /Up /
 
     callback running if callback?
-
-getProjectNameFromGitUrl = (gitUrl) ->
-  return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)?[\/]?$/))?
-  return projectName[1].substr(0, projectName[1].length-4) if projectName[1].match /\.git$/i
-  return projectName[1]
 
 # emit subdirectory content through emitter
 dirEmitter = (path) ->
@@ -45,26 +39,26 @@ dirEmitter = (path) ->
 
 model = {};
 model.getList = () ->
-  return projects
+  return watcherModel.get 'projects:list'
 
 model.getProject = (id) ->
-  for own d, i of projects
+  for own d, i of watcherModel.get 'projects:list'
     return i if i.id == id
   return null
 
 model.installProject = (gitUrl, callback) ->
-  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
-  return callback new Error 'invalid or unsupported git url' if !(projectDir = getProjectNameFromGitUrl(gitUrl))?
+  return callback new Error 'could not resolve config path' if ! (projectsPath = utilModel.getProjectsPath())?
+  return callback new Error 'invalid or unsupported git url' if !(projectId = utilModel.getProjectNameFromGitUrl(gitUrl))?
+  return callback new Error 'Project already exists' if utilModel.isProjectInstalled projectId
 
-  jetpack.dirAsync configModulePath
-  .then (dir) ->
-    dir.dirAsync 'configs'
-    .then (dir) ->
-      git.clone gitUrl, dir.path(projectDir), (err) ->
-        return model.initProject projectDir, callback if ! err
-        model.deleteProject {id: projectDir, path: dir.path(projectDir)}, () ->
-          return callback new Error err?.message || 'Error: failed to clone gir repository'
+  projectDir = jetpack.cwd projectsPath, projectId
+  jetpack.dirAsync projectsPath
   .fail callback
+  .then (dir) ->
+    git.clone gitUrl, projectDir.path(), (err) ->
+      return model.initProject projectDir.path(), callback if ! err
+      model.deleteProject {id: projectId, path: projectDir.path()}, () ->
+        return callback new Error err?.message || 'Error: failed to clone gir repository'
 
 model.copyCertsToProxyFolder = (path, callback) ->
   return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
@@ -99,6 +93,14 @@ model.initProject = (projectDir, callback) ->
   model.loadProject projectDir, (err, project) ->
     return callback err if err
 
+    projects = watcherModel.get 'projects:list'
+    if ! model.getProject project.id
+      projects.push project
+    else
+      for own d, i of projects
+        projects[d] = project if i.id == project.id
+    watcherModel.set 'projects:list', projects
+
     certsPath = jetpack.cwd(projectDir, 'certs').path()
     model.copyCertsToProxyFolder certsPath, (err, result) ->
       return callback null, project if err && err.code == "ENOENT"
@@ -107,12 +109,12 @@ model.initProject = (projectDir, callback) ->
 
 model.loadProject = (projectDir, callback) ->
   return callback new Error 'invalid project dir given' if ! projectDir?
-  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
 
-  dst = jetpack.cwd configModulePath, 'configs', projectDir
+  dst = jetpack.cwd projectDir
   dst.readAsync 'package.json', 'json'
+  .fail callback
   .then (config) ->
-    return callback new Error 'package does not seem to be a eintopf project' if ! config.eintopf?
+    return callback new Error 'package does not seem to be a eintopf project' if ! config?.eintopf
 
     project = config.eintopf
     jetpack.findAsync dst.path(), {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
@@ -121,38 +123,24 @@ model.loadProject = (projectDir, callback) ->
       project['scripts'] = config.scripts if config.scripts
       project['id'] = config.name
       project['markdowns'] = markdowns
-
-      if ! model.getProject project.id
-        projects.push project
-      else
-        for own d, i of projects
-          projects[d] = project if i.id == project.id
-
-      watcherModel.set 'projects:list', projects
       callback null, project
-  .fail callback
 
 model.loadProjects = () ->
-  return false if ! (configModulePath = utilModel.getConfigModulePath())?
+  return false if ! (projectsPath = utilModel.getProjectsPath())?
   foundProjects = []
 
-  _r.stream dirEmitter jetpack.cwd(configModulePath, 'configs').path()
-  .onError () -> #@todo remove in release - this is only for dev
-    projects = foundProjects
-  .flatMap mazehall.readPackageJson
-  .filter (x) ->
-    x.pkg.eintopf && typeof x.pkg.eintopf is "object"
-  .onValue (val) ->
-    jetpack.cwd(val.path).findAsync val.path, {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
-    .then (markdowns) ->
-      val.pkg.eintopf['path'] = val.path
-      val.pkg.eintopf['scripts'] = val.pkg.scripts
-      val.pkg.eintopf['id'] = val.pkg.name
-      val.pkg.eintopf['markdowns'] = markdowns
-      foundProjects.push val.pkg.eintopf
+  _r.stream dirEmitter projectsPath
+  .onError () ->
+    watcherModel.set 'projects:list', foundProjects
+  .filter (project) ->
+    project if project.path?
+  .flatMap (project) ->
+    _r.fromNodeCallback (cb) ->
+      model.loadProject project.path, cb
+  .onValue (project) ->
+    foundProjects.push(project)
   .onEnd () ->
-    projects = foundProjects
-    watcherModel.set 'projects:list', projects
+    watcherModel.set 'projects:list', foundProjects
 
 model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
@@ -213,6 +201,7 @@ model.callAction = (project, action, callback) ->
 
 watcherModel.propertyToKefir 'containers:list'
 .onValue ->
+  projects = watcherModel.get 'projects:list'
   for project, index in projects
     ((projectIndex)->
       getRunningProjectContainers project, (containers) ->
@@ -221,4 +210,5 @@ watcherModel.propertyToKefir 'containers:list'
     )(index)
 
     watcherModel.set "projects:list", projects
+
 module.exports = model;

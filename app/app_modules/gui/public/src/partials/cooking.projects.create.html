@@ -54,7 +54,8 @@
                         <h6 class="m0 py05">{{value.name}}</h6>
                         <p class="m0 p0 small media-content">{{value.description}}</p>
                         <div class="txt--right media-footer my1">
-                            <a href="#" class="btn" ng-click="installRecommendation(value)">Create</a>
+                            <!--@todo design button <a href="#" class="btn" ng-click="installRecommendation(value)" ng-disabled="value.installed">Create</a> -->
+                            <button class="btn" ng-click="installRecommendation(value)" ng-disabled="value.installed" ng-class="{disabled: value.installed}">Create</button>
                         </div>
                     </div>
 

@@ -1,15 +1,23 @@
-config = require '../stores/config'
 _r = require 'kefir'
-watcherModel = require './watcher.coffee'
 https = require "https"
 http = require "http"
 url = require 'url'
 
+config = require '../stores/config'
+watcherModel = require './watcher.coffee'
 defaultRegistry = require '../../config/default.registry.json'
+utilsModel = require '../util/index'
 
 registryConfig = config.get 'registry'
 loadingTimeout = process.env.REGISTRY_INTERVAL || registryConfig.refreshInterval || 3600000
 registryUrl = process.env.REGISTRY_URL || registryConfig.url || null
+
+mapRegistryData = (registryData) ->
+  return registryData if ! utilsModel.typeIsArray registryData
+  for registry in registryData
+    registry.id = if registry.url then utilsModel.getProjectNameFromGitUrl registry.url else null
+    registry.installed = if utilsModel.isProjectInstalled registry.id then true else false
+  return registryData
 
 model = {}
 
@@ -47,14 +55,21 @@ model.loadRegistryWithInterval = () ->
       emitter.emit result
   .onValue (val) ->
     return watcherModel.set 'recommendations:list', [] if ! val
-    watcherModel.set 'recommendations:list', val
+    watcherModel.set 'recommendations:list', mapRegistryData val
   .onError (err) ->
     if ! watcherModel.get 'recommendations:list' # set default data if nothing is set
       watcherModel.set 'recommendations:list', defaultRegistry
 
 # initial registry load - sets default data on fail
+defaultRegistry = mapRegistryData defaultRegistry
 model.loadRegistry (err, result) ->
   return watcherModel.set 'recommendations:list', defaultRegistry if err
-  watcherModel.set 'recommendations:list', result
+  watcherModel.set 'recommendations:list', mapRegistryData result
+
+# reevaluate recommendations -> projects mapping
+watcherModel.propertyToKefir 'projects:list'
+.throttle(200)
+.onValue ->
+  watcherModel.set "recommendations:list", mapRegistryData watcherModel.get "recommendations:list"
 
 module.exports = model;
