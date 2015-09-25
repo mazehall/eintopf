@@ -156,8 +156,9 @@ model.loadProjects = () ->
 
 model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+  return watcherModel.log "res:project:start:#{project.id}", "script start does not exist\n" unless project.scripts["start"]
 
-  process = child.exec 'npm start', {cwd: project.path}
+  process = child.exec project.scripts["start"], {cwd: project.path}
   process.stdout.on 'data',(chunk) ->
     watcherModel.log 'res:project:start:' + project.id, chunk
   process.stderr.on 'data',(chunk) ->
@@ -166,8 +167,9 @@ model.startProject = (project, callback) ->
 
 model.stopProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+  return watcherModel.log "res:project:stop:#{project.id}", "script stop does not exist\n" unless project.scripts["stop"]
 
-  process = child.exec 'npm stop', {cwd: project.path}
+  process = child.exec project.scripts["stop"], {cwd: project.path}
   process.stdout.on 'data',(chunk) ->
     watcherModel.log 'res:project:stop:' + project.id, chunk
   process.stderr.on 'data',(chunk) ->
@@ -205,7 +207,7 @@ model.callAction = (project, action, callback) ->
 
   return watcherModel.log "res:project:action:script:#{project.id}", "script '#{action.script}' does not exists\n" unless project.scripts[action.script]
 
-  process = child.exec "npm run #{action.script}", {cwd: project.path}
+  process = child.exec project.scripts[action.script], {cwd: project.path}
   process.stdout.on "data",(chunk) ->
     watcherModel.log "res:project:action:script:#{project.id}", chunk if chunk
   process.stderr.on "data",(chunk) ->
