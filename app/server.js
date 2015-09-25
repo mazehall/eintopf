@@ -1,21 +1,15 @@
+var _r = require('kefir');
 var mazehall = require('mazehall');
 var server = require('./app.js');
 
-var guiLoaded = false;
-var serverStarted = false;
+serverStream = _r.fromEvents(process, 'app:startserver').filter();
+guiStream = mazehall.moduleStream.filter(function(val) { if(val.module == 'gui') return val; });
 
-mazehall.moduleStream.onValue(function(val) {
-  if(val.module != 'gui') return false;
-
-  guiLoaded = true;
-  if(serverStarted) process.emit('app:serverstarted'); //emit server start when server already listens
-});
-
-process.on('app:startserver', function(port) {
+_r.zip([guiStream, serverStream])
+.onValue(function(val) {
+  var port = val[1];
   server.listen(port, function() {
     console.log('server listen on port: ' + port);
-
-    serverStarted = true;
-    if(guiLoaded) process.emit('app:serverstarted'); //emit server start when gui module was already loaded
+    process.emit('app:serverstarted');
   });
 });
