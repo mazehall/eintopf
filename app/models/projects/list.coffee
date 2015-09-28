@@ -10,30 +10,6 @@ watcherModel = require '../stores/watcher.coffee'
 
 projects = []
 
-runCmd = (cmd, config, logName, callback) ->
-  config = {} if ! config
-  output = ''
-
-  sh = 'sh'
-  shFlag = '-c'
-
-  if process.platform == 'win32'
-    sh = process.env.comspec || 'cmd'
-    shFlag = '/d /s /c'
-    config.windowsVerbatimArguments = true
-
-  proc = child.spawn sh, [shFlag, cmd], config
-  proc.on 'error', (err) ->
-    return callback err if callback
-  proc.on 'close', (code, signal) ->
-    return callback null, output if callback
-  proc.stdout.on 'data', (chunk) ->
-    watcherModel.log logName, chunk.toString() if logName
-    output += chunk.toString()
-  proc.stderr.on 'data', (chunk) ->
-    watcherModel.log logName, chunk.toString() if logName
-    output += chunk.toString()
-
 getRunningProjectContainers = (project, callback) ->
   return callback [] unless project.path?
   dataset = ""
@@ -196,21 +172,21 @@ model.startProject = (project, callback) ->
   logName = "res:project:start:#{project.id}"
 
   return watcherModel.log logName, "script start does not exist\n" unless project.scripts["start"]
-  runCmd project.scripts["start"], {cwd: project.path}, logName
+  utilModel.runCmd project.scripts["start"], {cwd: project.path}, logName
 
 model.stopProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:stop:#{project.id}"
 
   return watcherModel.log logName, "script stop does not exist\n" unless project.scripts["stop"]
-  runCmd project.scripts["stop"], {cwd: project.path}, logName
+  utilModel.runCmd project.scripts["stop"], {cwd: project.path}, logName
 
 model.updateProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:update:#{project.id}"
 
   watcherModel.log logName, ["Start pulling...\n"]
-  runCmd "git pull", {cwd: project.path}, logName, (err, result) ->
+  utilModel.runCmd "git pull", {cwd: project.path}, logName, (err, result) ->
     return callback err if err
     model.initProject project.path, callback
 
@@ -221,7 +197,7 @@ model.callAction = (project, action, callback) ->
   logName = "res:project:action:script:#{project.id}"
 
   return watcherModel.log logName, "script '#{action.script}' does not exists\n" unless project.scripts[action.script]
-  runCmd project.scripts[action.script], {cwd: project.path}, logName
+  utilModel.runCmd project.scripts[action.script], {cwd: project.path}, logName
 
 watcherModel.propertyToKefir 'containers:list'
 .onValue ->
