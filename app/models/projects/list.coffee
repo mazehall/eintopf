@@ -10,6 +10,30 @@ watcherModel = require '../stores/watcher.coffee'
 
 projects = []
 
+runCmd = (cmd, config, logName, callback) ->
+  config = {} if ! config
+  output = ''
+
+  sh = 'sh'
+  shFlag = '-c'
+
+  if process.platform == 'win32'
+    sh = process.env.comspec || 'cmd'
+    shFlag = '/d /s /c'
+    config.windowsVerbatimArguments = true
+
+  proc = child.spawn sh, [shFlag, cmd], config
+  proc.on 'error', (err) ->
+    return callback err if callback
+  proc.on 'close', (code, signal) ->
+    return callback null, output if callback
+  proc.stdout.on 'data', (chunk) ->
+    watcherModel.log logName, chunk.toString() if logName
+    output += chunk.toString()
+  proc.stderr.on 'data', (chunk) ->
+    watcherModel.log logName, chunk.toString() if logName
+    output += chunk.toString()
+
 getRunningProjectContainers = (project, callback) ->
   return callback [] unless project.path?
   dataset = ""
@@ -154,27 +178,6 @@ model.loadProjects = () ->
     projects = foundProjects
     watcherModel.set 'projects:list', projects
 
-model.startProject = (project, callback) ->
-  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
-  return watcherModel.log "res:project:start:#{project.id}", "script start does not exist\n" unless project.scripts["start"]
-
-  process = child.exec project.scripts["start"], {cwd: project.path}
-  process.stdout.on 'data',(chunk) ->
-    watcherModel.log 'res:project:start:' + project.id, chunk
-  process.stderr.on 'data',(chunk) ->
-    watcherModel.log 'res:project:start:' + project.id, chunk
-
-
-model.stopProject = (project, callback) ->
-  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
-  return watcherModel.log "res:project:stop:#{project.id}", "script stop does not exist\n" unless project.scripts["stop"]
-
-  process = child.exec project.scripts["stop"], {cwd: project.path}
-  process.stdout.on 'data',(chunk) ->
-    watcherModel.log 'res:project:stop:' + project.id, chunk
-  process.stderr.on 'data',(chunk) ->
-    watcherModel.log 'res:project:stop:' + project.id, chunk
-
 model.deleteProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 
@@ -188,30 +191,37 @@ model.deleteProject = (project, callback) ->
       model.loadProjects()
       callback null, true
 
+model.startProject = (project, callback) ->
+  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+  logName = "res:project:start:#{project.id}"
+
+  return watcherModel.log logName, "script start does not exist\n" unless project.scripts["start"]
+  runCmd project.scripts["start"], {cwd: project.path}, logName
+
+model.stopProject = (project, callback) ->
+  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+  logName = "res:project:stop:#{project.id}"
+
+  return watcherModel.log logName, "script stop does not exist\n" unless project.scripts["stop"]
+  runCmd project.scripts["stop"], {cwd: project.path}, logName
+
 model.updateProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+  logName = "res:project:update:#{project.id}"
 
-  watcherModel.log "res:project:update:#{project.id}", ["Start pulling...\n"]
-  process = child.exec "git pull", {cwd: project.path}
-  process.stdout.on 'data',(chunk) ->
-    watcherModel.log "res:project:update:#{project.id}", chunk
-  process.stderr.on 'data',(chunk) ->
-    watcherModel.log "res:project:update:#{project.id}", chunk
-  process.on 'close', () ->
+  watcherModel.log logName, ["Start pulling...\n"]
+  runCmd "git pull", {cwd: project.path}, logName, (err, result) ->
+    return callback err if err
     model.initProject project.path, callback
 
 model.callAction = (project, action, callback) ->
   if callback?
     return callback new Error 'invalid project given' if typeof project != "object" || ! project.path? || ! action?
     return callback new Error 'invalid script name' if project.scripts? or action.script? or project.scripts[action.script]?
+  logName = "res:project:action:script:#{project.id}"
 
-  return watcherModel.log "res:project:action:script:#{project.id}", "script '#{action.script}' does not exists\n" unless project.scripts[action.script]
-
-  process = child.exec project.scripts[action.script], {cwd: project.path}
-  process.stdout.on "data",(chunk) ->
-    watcherModel.log "res:project:action:script:#{project.id}", chunk if chunk
-  process.stderr.on "data",(chunk) ->
-    watcherModel.log "res:project:action:script:#{project.id}", chunk
+  return watcherModel.log logName, "script '#{action.script}' does not exists\n" unless project.scripts[action.script]
+  runCmd project.scripts[action.script], {cwd: project.path}, logName
 
 watcherModel.propertyToKefir 'containers:list'
 .onValue ->
