@@ -16,8 +16,7 @@ Please use the Git clone way to participate.
 
 * VirtualBox
 * Vagrant >= 1.7
-* Git
-* (currently) NodeJS
+* Git + Gitbash (must be installed with the environment variables option)
 
 
 ```
