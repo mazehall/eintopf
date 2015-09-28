@@ -22,8 +22,7 @@ Please use the Git clone way to participate.
 
 * VirtualBox
 * Vagrant >= 1.7
-* Git
-* (currently) NodeJS
+* Git + Gitbash (must be installed with the environment variables option)
 
 
 ```
@@ -49,11 +48,18 @@ Please use the Git clone way to participate.
 
 ## Ports and Proxy magic
 
- host port | vm port   | docker expose | description |
----|---|---|---
- __4480__  | __4480__  | __80__ | Proxy that provides all started docker container
- __4443__  | __4443__  |        | Proxy SSL termination point __cumming soon__
- __31313__ | [_31313_] |        | Eintopf GUI server currently host only version
+ host port | vm port   | description |
+---|---|---
+ __4480__  | __4480__  | Proxy that provides all started docker container
+ __4443__  | __4443__  | Proxy SSL termination point
+ __31313__ | [_31313_] | Eintopf GUI server currently host only version
+
+
+The containers being proxied must [expose](https://docs.docker.com/reference/run/#expose-incoming-ports) the port to be proxied, either by using the `EXPOSE` directive in their `Dockerfile` or by using the `--expose` flag to `docker run` or `docker create`.
+
+Provided your DNS is setup to forward foo.bar.com to the a host running nginx-proxy, the request will be routed to a container with the VIRTUAL_HOST env var set.
+
+For more information see [Proxy compatibility](#proxy-compatibility) or see the proxy [documentation](https://github.com/jwilder/nginx-proxy)
 
 
 # Configuration
@@ -152,6 +158,157 @@ npm run app-install -- name_of_npm_module
 ```
 Of course this method works also for pure-js modules, so you can use it all the time if you're able to remember such an ugly command.
 
+# Pattern Development
+
+A pattern is a project configuration which can be used by Eintopf.
+
+Minimal file system:
+
+    example-pattern/
+      package.json
+
+The file package.json defines this package as a Eintopf pattern. Minimal package.json:
+
+    {
+      "name": "example-pattern", # pattern id
+      "eintopf": {
+        "name": "Example-pattern", # pattern name
+        "description": "This is my example-pattern. It can be used as ..." # pattern description
+      }
+    }
+
+## Set your start and stop action
+
+To make Eintopf actually do things you have to set a start and stop action of the pattern. In this case we want to execute simple sh scripts.
+
+File system:
+
+    example-pattern/
+      package.json
+      start.sh
+      stop.sh
+
+Example package.json:
+
+    {
+      ...
+      "scripts": {
+        "start": "sh ./start.sh",
+        "stop": "sh ./stop.sh"
+      },
+      ...
+    }
+
+Example start.sh:
+
+    #/bin/sh
+    
+    docker run -d --name examplepatterndev -e VIRTUAL_HOST=example-pattern.dev nginx
+
+Example stop.sh
+
+    #/bin/sh
+    
+    docker stop examplepatterndev
+
+
+## Custom actions
+
+You can set custom actions which can be used in the Eintopf gui.
+
+File system:
+
+    example-pattern/
+      package.json
+      start.sh
+      stop.sh
+      customaction1.sh
+      customaction2.sh
+      
+Example package.json:
+
+    {
+      ...
+      "scripts": {
+        "start": "sh ./start.sh",
+        "stop": "sh ./stop.sh",
+        "action1": "sh ./customaction1.sh",
+        "action2": "sh ./customaction2.sh"
+      },
+      "eintopf": {
+        "name": "Example-pattern",
+        "description": "This is my example-pattern. It can be used as ...",
+        "actions": [
+        {
+          "name": "customaction1",
+          "script": "action1" # maps to scripts.action1
+        },
+        {
+          "name": "customaction2",
+          "warning": "my custom action 2. This should execute script customaction2.sh",
+          "script": "action2" # maps to scripts.action2
+        }
+      ]
+      ...
+    }
+
+## Proxy compatibility
+
+The full proxy documentation can be found [here](https://github.com/jwilder/nginx-proxy).
+
+The containers being proxied must [expose](https://docs.docker.com/reference/run/#expose-incoming-ports) the port to be proxied, either by using the `EXPOSE` directive in their `Dockerfile` or by using the `--expose` flag to `docker run` or `docker create`.
+
+Provided your DNS is setup to forward foo.bar.com to the a host running nginx-proxy, the request will be routed to a container with the VIRTUAL_HOST env var set.
+
+### Multiple Ports
+
+If your container exposes multiple ports, the proxy will default to the service running on port 80.  If you need to specify a different port, you can set a VIRTUAL_PORT env var to select a different one.  If your container only exposes one port and it has a VIRTUAL_HOST env var set, that port will be selected.
+
+### Multiple Hosts
+
+If you need to support multiple virtual hosts for a container, you can separate each entry with commas.  For example, `foo.bar.com,baz.bar.com,bar.com` and each host will be setup the same.
+
+### Wildcard Hosts
+
+You can also use wildcards at the beginning and the end of host name, like `*.bar.com` or `foo.bar.*`. Or even a regular expression, which can be very useful in conjunction with a wildcard DNS service like [xip.io](http://xip.io), using `~^foo\.bar\..*\.xip\.io` will match `foo.bar.127.0.0.1.xip.io`, `foo.bar.10.0.2.2.xip.io` and all other given IPs. More information about this topic can be found in the nginx documentation about [`server_names`](http://nginx.org/en/docs/http/server_names.html).
+
+
+Examples:
+    
+    docker run -d --name examplepatterndev -e VIRTUAL_HOST=example-pattern.dev nginx
+    docker run -d --name examplepatterndev2 -e VIRTUAL_HOST=*.example-pattern.dev --expose 3000 nodejs # supports wildcard certificates
+    docker run -d --name examplepatterndev3 -e VIRTUAL_HOST=example-pattern3.dev --expose 3000 nodejs
+
+Example docker-compose.yml:
+
+    examplepatterndev:
+      image: nginx
+      environment:
+        - VIRTUAL_HOST=example-pattern.dev
+    ...
+
+## SSL certificates
+
+You can add your own ssl certificates which will be used by the proxy. The certificate files have to match the VIRTUAL_HOST name and have to end with .key and .crt.
+
+The files will be updated on pattern installation and on pattern update. They will be removed on pattern deletion. If the container was already running while installing the certs, you have to restart the container.
+
+All certificates are collected in eintopfHome/eintopfNamespace/proxy/certs/ (default: ~/.eintopf/default/proxy/certs/)
+
+File system:
+
+    configs/
+      example-pattern/
+        package.json
+        start.sh
+        stop.sh
+        certs/
+          example-pattern.dev.key
+          example-pattern.dev.crt
+    proxy/
+      certs/ # certificates are collected here
+        example-pattern.dev.key
+        example-pattern.dev.crt
 
 # Making a release
 
