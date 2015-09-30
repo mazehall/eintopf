@@ -50,6 +50,27 @@ module.exports.loadJsonAsync = (path, callback) ->
   .then (json) ->
     callback null, json
 
+module.exports.getProjectsPath = () ->
+  return null if ! (configModulePath = @getConfigModulePath())
+  return jetpack.cwd(configModulePath).path('configs')
+
+module.exports.getProjectNameFromGitUrl = (gitUrl) ->
+  return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)?[\/]?$/))?
+  return projectName[1].substr(0, projectName[1].length-4) if projectName[1].match /\.git$/i
+  return projectName[1]
+
+module.exports.typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
+
+module.exports.folderExists = (path) ->
+  return null if ! path
+  return true if jetpack.exists(path) == "dir"
+  return false
+
+#@todo refactoring: use clear naming (renaming project|recommendations and not just here)
+module.exports.isProjectInstalled = (projectId) ->
+  return null if ! projectId || ! (projectsPath = @getProjectsPath())
+  return @folderExists jetpack.cwd(projectsPath).path(projectId)
+
 module.exports.runCmd = (cmd, config, logName, callback) ->
   config = {} if ! config
   output = ''
