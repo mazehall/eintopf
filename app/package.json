@@ -14,6 +14,9 @@
   "config": {
     "target": "development"
   },
+  "scripts": {
+    "test": "node_modules/.bin/jasmine-node spec"
+  },
   "dependencies": {
     "asar": "^0.8.0",
     "body-parser": "1.13.1",
@@ -33,6 +36,7 @@
     "watchjs": "0.0.0"
   },
   "devDependencies": {
+    "jasmine-node": "^1.14.5",
     "gulp": "^3.8.11",
     "gulp-bower": "0.0.10",
     "gulp-clean": "^0.3.1",
