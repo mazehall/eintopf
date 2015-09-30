@@ -183,11 +183,9 @@ angular.module('eintopf.services.socket.states', [])
   }])
 
   .factory('resContainersList', ['socket', 'reqContainersList', function (socket, reqContainersList) {
-    var containerList_ = Kefir.fromEvent(socket, 'res:containers:list')
-      .toProperty();
+    var containerList_ = Kefir.fromEvent(socket, 'res:containers:list').toProperty();
     reqContainersList.emit();
-    Kefir.fromPoll(2000, reqContainersList.emit)
-      .onValue(function() {});
+    containerList_.onValue(function() {});
     return containerList_;
   }])
 
@@ -200,11 +198,9 @@ angular.module('eintopf.services.socket.states', [])
   }])
 
   .factory('resAppsList', ['socket', 'reqAppsList', function (socket, reqAppsList) {
-    var appList_ = Kefir.fromEvent(socket, 'res:apps:list')
-      .toProperty();
+    var appList_ = Kefir.fromEvent(socket, 'res:apps:list').toProperty();
     reqAppsList.emit();
-    Kefir.fromPoll(2000, reqAppsList.emit)
-      .onValue(function() {});
+    appList_.onValue(function() {});
     return appList_;
   }])
 

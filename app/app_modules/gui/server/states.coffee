@@ -99,12 +99,10 @@ states = (connections_, rawSocket) ->
 
     _r.fromEvents socket, 'containers:list'
     .onValue () ->
-      dockerModel.loadContainers()
       socket.emit 'res:containers:list', watcherModel.get 'containers:list'
 
     _r.fromEvents socket, 'apps:list'
     .onValue () ->
-      dockerModel.loadContainers()
       socket.emit 'res:apps:list', watcherModel.get 'apps:list'
 
     _r.fromEvents socket, 'projects:install'
