@@ -3,7 +3,7 @@ var serveStatic = require("serve-static");
 var _r = require("kefir");
 
 var statesSocket = require("./server/states.coffee");
-var handlerModel =  require("../../models/handler/index.coffee");
+var handlerModel =  require("./server/handler.coffee");
 
 var env = process.env.NODE_ENV || "development";
 

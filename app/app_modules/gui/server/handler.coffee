@@ -1,4 +1,4 @@
-utilModel = require "../util/index.coffee"
+utilModel = require "../../../models/util/index.coffee"
 fs = require "fs"
 
 handler = module.exports
