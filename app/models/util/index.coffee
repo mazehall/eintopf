@@ -50,9 +50,20 @@ module.exports.loadJsonAsync = (path, callback) ->
   .then (json) ->
     callback null, json
 
+module.exports.loadCertsFiles = (path, callback) ->
+  jetpack.findAsync path, {matching: ['*.crt', '*.key'], absolutePath: true}, "inspect"
+  .fail (err) ->
+    callback err
+  .then (certs) ->
+    callback null, certs
+
 module.exports.getProjectsPath = () ->
   return null if ! (configModulePath = @getConfigModulePath())
   return jetpack.cwd(configModulePath).path('configs')
+
+module.exports.getProxyCertsPath = () ->
+  return null if ! (configModulePath = @getConfigModulePath())
+  return jetpack.cwd(configModulePath).path('proxy/certs')
 
 module.exports.getProjectNameFromGitUrl = (gitUrl) ->
   return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)?[\/]?$/))?
