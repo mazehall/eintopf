@@ -50,6 +50,20 @@ module.exports.loadJsonAsync = (path, callback) ->
   .then (json) ->
     callback null, json
 
+module.exports.loadMarkdowns = (path, callback) ->
+  jetpack.findAsync path, {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
+  .fail (err) ->
+    callback err
+  .then (markdowns) ->
+    callback null, markdowns
+
+module.exports.loadCertFiles = (path, callback) ->
+  jetpack.findAsync path, {matching: ['*.crt', '*.key'], absolutePath: true}, "inspect"
+  .fail (err) ->
+    callback err
+  .then (certs) ->
+    callback null, certs
+
 module.exports.getProjectsPath = () ->
   return null if ! (configModulePath = @getConfigModulePath())
   return jetpack.cwd(configModulePath).path('configs')

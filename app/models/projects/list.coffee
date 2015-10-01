@@ -107,23 +107,40 @@ model.initProject = (projectDir, callback) ->
       return callback err if err
       callback null, project
 
-model.loadProject = (projectDir, callback) ->
-  return callback new Error 'invalid project dir given' if ! projectDir?
+model.loadProject = (projectPath, callback) ->
+  return callback new Error 'invalid project dir given' if ! projectPath?
+  projectDir = jetpack.cwd projectPath
 
-  dst = jetpack.cwd projectDir
-  dst.readAsync 'package.json', 'json'
-  .fail callback
-  .then (config) ->
-    return callback new Error 'package does not seem to be a eintopf project' if ! config?.eintopf
+  packageStream = _r.fromNodeCallback (cb) ->
+    utilModel.loadJsonAsync projectDir.path("package.json"), cb
+  markDownStream = _r.fromNodeCallback (cb) ->
+    utilModel.loadMarkdowns projectPath, (err, result) ->
+      return cb null, [] if err
+      cb null, result
+  certsStream = _r.fromNodeCallback (cb) ->
+    utilModel.loadCertFiles projectDir.path("certs"), (err, result) ->
+      return cb null, [] if err
+      cb null, result
+
+  _r.zip [packageStream, markDownStream, certsStream]
+  .endOnError()
+  .onError callback
+  .onValue (result) ->
+    config = result[0]
+    return callback new Error 'Package does not seem to be a eintopf project' if ! config?.eintopf
 
     project = config.eintopf
-    jetpack.findAsync dst.path(), {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
-    .then (markdowns) ->
-      project['path'] = dst.path()
-      project['scripts'] = config.scripts if config.scripts
-      project['id'] = config.name
-      project['markdowns'] = markdowns
-      callback null, project
+    project['path'] = projectPath
+    project['scripts'] = config.scripts if config.scripts
+    project['id'] = config.name
+    project['markdowns'] = result[1] if result[1]
+
+    if result[2]
+      for file in result[2]
+        file.host = file.name.slice(0, -4)
+    project['certs'] = result[2] if result[2]
+
+    callback null, project
 
 model.loadProjects = () ->
   return false if ! (projectsPath = utilModel.getProjectsPath())?
@@ -198,5 +215,10 @@ watcherModel.propertyToKefir 'containers:list'
     )(index)
 
     watcherModel.set "projects:list", projects
+
+# reload projects every minute
+projectsEventStream = _r.interval(60000, 'reload')
+.onValue () ->
+  model.loadProjects()
 
 module.exports = model;
