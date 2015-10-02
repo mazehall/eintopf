@@ -156,7 +156,7 @@ dockerEventsStream.throttle 1000
   model.loadContainers()
 
 # check proxy container state
-dockerEventsStream.throttle 60000
+dockerEventsStream.throttle 10000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
     return cb new Error "proxy deployment is already running" if runningProxyDeployment == true
