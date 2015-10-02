@@ -306,7 +306,14 @@ body {
 .cssPatterns{
     margin-top:8rem;
 }
-.cssBox .media-footer a:hover, .cssBox .media-footer a:focus{
+.cssBox .media-footer button.btn{
+    padding:.25rem 1rem;
+    background:none;
+}
+.cssBox .media-footer button.btn.disabled, .cssBox .media-footer button.btn.disabled:hover{
+    display:none;
+}
+.cssBox .media-footer a:hover, .cssBox .media-footer a:focus, .cssBox .media-footer button.btn:hover, .cssBox .media-footer button.btn:focus{
     border-color: rgba(19, 103, 112, 1.0);
     background-color: rgba(19, 103, 112, 1.0);
     color: #fff;
@@ -314,6 +321,7 @@ body {
     text-decoration: none;
     text-align: center;
 }
+
 .cssBox.cssPattern .media-figure{
     min-height:15rem;
     margin-right:0;
@@ -326,6 +334,11 @@ body {
 }
 .cssBox .media{
     position:relative;
+}
+.cssBox .media.disabled{
+    background:url("../img/installed.png") no-repeat 100% 90%;
+    max-width:85%;
+
 }
 .cssBox .media-footer{
     position:absolute;

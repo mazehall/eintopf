@@ -8,15 +8,15 @@
 
             </span>
     </li>
-    <li class="grd-row py1" ng-repeat="(key, value) in apps" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
-        <div class="mx1 grd-row-col-3-6">
-            <a href="http://{{value}}:4480" target="{{isElectron? '' : '_blank'}}">
-                http://{{value}}:4480
+    <li class="grd-row py1" ng-repeat="app in apps" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+        <div class="mx1 grd-row-col-3-6" ng-if="app.https != true">
+            <a href="http://{{app.host}}:4480" target="{{isElectron? '' : '_blank'}}">
+                http://{{app.host}}:4480
             </a>
         </div>
-        <div class="mx1 grd-row-col-3-6">
-            <a href="https://{{value}}:4443" target="{{isElectron? '' : '_blank'}}">
-                https://{{value}}:4443
+        <div class="mx1 grd-row-col-3-6" ng-if="app.https == true">
+            <a href="https://{{app.host}}:4443" target="{{isElectron? '' : '_blank'}}">
+                https://{{app.host}}:4443
             </a>
         </div>
         <!--<div class="mx1 txt&#45;&#45;right grd-row-col-3-6">-->

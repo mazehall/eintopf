@@ -7,8 +7,7 @@ child = require 'child_process'
 
 utilModel = require '../util/'
 watcherModel = require '../stores/watcher.coffee'
-
-projects = []
+watcherModel.set 'projects:list', []
 
 getRunningProjectContainers = (project, callback) ->
   return callback [] unless project.path?
@@ -23,11 +22,6 @@ getRunningProjectContainers = (project, callback) ->
       return name.match(/^\w+/) if name.match /Up /
 
     callback running if callback?
-
-getProjectNameFromGitUrl = (gitUrl) ->
-  return null if !(projectName = gitUrl.match(/^[:]?(?:.*)[\/](.*)(?:s|.git)?[\/]?$/))?
-  return projectName[1].substr(0, projectName[1].length-4) if projectName[1].match /\.git$/i
-  return projectName[1]
 
 # emit subdirectory content through emitter
 dirEmitter = (path) ->
@@ -45,127 +39,103 @@ dirEmitter = (path) ->
 
 model = {};
 model.getList = () ->
-  return projects
+  return watcherModel.get 'projects:list'
 
 model.getProject = (id) ->
-  for own d, i of projects
+  for own d, i of watcherModel.get 'projects:list'
     return i if i.id == id
   return null
 
 model.installProject = (gitUrl, callback) ->
-  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
-  return callback new Error 'invalid or unsupported git url' if !(projectDir = getProjectNameFromGitUrl(gitUrl))?
+  return callback new Error 'could not resolve config path' if ! (projectsPath = utilModel.getProjectsPath())?
+  return callback new Error 'invalid or unsupported git url' if !(projectId = utilModel.getProjectNameFromGitUrl(gitUrl))?
+  return callback new Error 'Project already exists' if utilModel.isProjectInstalled projectId
 
-  jetpack.dirAsync configModulePath
-  .then (dir) ->
-    dir.dirAsync 'configs'
-    .then (dir) ->
-      git.clone gitUrl, dir.path(projectDir), (err) ->
-        return model.initProject projectDir, callback if ! err
-        model.deleteProject {id: projectDir, path: dir.path(projectDir)}, () ->
-          return callback new Error err?.message || 'Error: failed to clone gir repository'
-  .fail callback
-
-model.copyCertsToProxyFolder = (path, callback) ->
-  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
-
-  jetpack.cwd configModulePath
-  .dirAsync 'proxy'
-  .then (dir) ->
-    dir.dirAsync 'certs'
-    .then (dir) ->
-      jetpack.cwd(path).copyAsync '.', dir.path(), {overwrite:true, matching: ['*.crt', '*.key']}
-      .then () ->
-        callback null, true
-  .fail callback
-
-model.removeCertsFromToBeRemovedProject = (path, callback) ->
-  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
-
-  jetpack.cwd(configModulePath).dirAsync 'proxy'
-  .then (dir) ->
-    dir.dirAsync 'certs'
-    .then (dir) ->
-      jetpack.listAsync path
-      .then (files) ->
-        for own i, file of files
-          dir.remove file if file.match(/.key$/) || file.match(/.crt$/)
-        callback null, true
-  .fail callback
-
-model.initProject = (projectDir, callback) ->
-  return callback new Error 'invalid project dir given' if ! projectDir
-
-  model.loadProject projectDir, (err, project) ->
-    return callback err if err
-
-    certsPath = jetpack.cwd(projectDir, 'certs').path()
-    model.copyCertsToProxyFolder certsPath, (err, result) ->
-      return callback null, project if err && err.code == "ENOENT"
-      return callback err if err
+  projectDir = jetpack.cwd projectsPath, projectId
+  _r.fromPromise jetpack.dirAsync projectsPath
+  .flatMap (cb) ->
+    _r.fromNodeCallback (cb) ->
+      git.clone gitUrl, projectDir.path(), cb
+  .flatMap () ->
+    _r.fromNodeCallback (cb) ->
+      return model.loadProject projectDir.path(), cb
+  .onValue (project) ->
+    model.loadProjects () ->
       callback null, project
+  .onError (err) ->
+    model.deleteProject {id: projectId, path: projectDir.path()}, () ->
+      return callback new Error err?.message || 'Error: failed to clone git repository'
 
-model.loadProject = (projectDir, callback) ->
-  return callback new Error 'invalid project dir given' if ! projectDir?
-  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
+model.loadProject = (projectPath, callback) ->
+  return callback new Error 'invalid project dir given' if ! projectPath?
+  projectDir = jetpack.cwd projectPath
 
-  dst = jetpack.cwd configModulePath, 'configs', projectDir
-  dst.readAsync 'package.json', 'json'
-  .then (config) ->
-    return callback new Error 'package does not seem to be a eintopf project' if ! config.eintopf?
+  packageStream = _r.fromNodeCallback (cb) ->
+    utilModel.loadJsonAsync projectDir.path("package.json"), cb
+  markDownStream = _r.fromNodeCallback (cb) ->
+    utilModel.loadMarkdowns projectPath, (err, result) ->
+      return cb null, [] if err
+      cb null, result
+  certsStream = _r.fromNodeCallback (cb) ->
+    utilModel.loadCertFiles projectDir.path("certs"), (err, result) ->
+      return cb null, [] if err
+      cb null, result
+
+  _r.zip [packageStream, markDownStream, certsStream]
+  .endOnError()
+  .onError callback
+  .onValue (result) ->
+    config = result[0]
+    return callback new Error 'Package does not seem to be a eintopf project' if ! config?.eintopf
 
     project = config.eintopf
-    jetpack.findAsync dst.path(), {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
-    .then (markdowns) ->
-      project['path'] = dst.path()
-      project['scripts'] = config.scripts if config.scripts
-      project['id'] = config.name
-      project['markdowns'] = markdowns
+    project['path'] = projectPath
+    project['scripts'] = config.scripts if config.scripts
+    project['id'] = config.name
+    project['markdowns'] = result[1] if result[1]
 
-      if ! model.getProject project.id
-        projects.push project
-      else
-        for own d, i of projects
-          projects[d] = project if i.id == project.id
+    # keep existing running states
+    (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in watcherModel.get 'projects:list'
 
-      watcherModel.set 'projects:list', projects
-      callback null, project
-  .fail callback
+    if result[2]
+      for file in result[2]
+        file.host = file.name.slice(0, -4)
+    project['certs'] = result[2] if result[2]
 
-model.loadProjects = () ->
-  return false if ! (configModulePath = utilModel.getConfigModulePath())?
+    callback null, project
+
+# main implementation to load projects
+model.loadProjects = (callback) ->
+  return false if ! (projectsPath = utilModel.getProjectsPath())?
   foundProjects = []
+  projectCerts = []
 
-  _r.stream dirEmitter jetpack.cwd(configModulePath, 'configs').path()
-  .onError () -> #@todo remove in release - this is only for dev
-    projects = foundProjects
-  .flatMap mazehall.readPackageJson
-  .filter (x) ->
-    x.pkg.eintopf && typeof x.pkg.eintopf is "object"
-  .onValue (val) ->
-    jetpack.cwd(val.path).findAsync val.path, {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
-    .then (markdowns) ->
-      val.pkg.eintopf['path'] = val.path
-      val.pkg.eintopf['scripts'] = val.pkg.scripts
-      val.pkg.eintopf['id'] = val.pkg.name
-      val.pkg.eintopf['markdowns'] = markdowns
-      foundProjects.push val.pkg.eintopf
+  _r.stream dirEmitter projectsPath
+  .onError () ->
+    watcherModel.set 'projects:list', foundProjects
+  .filter (project) ->
+    project if project.path?
+  .flatMap (project) ->
+    _r.fromNodeCallback (cb) ->
+      model.loadProject project.path, cb
+  .onValue (project) ->
+    foundProjects.push(project)
+    projectCerts = projectCerts.concat project.certs if project.certs
   .onEnd () ->
-    projects = foundProjects
-    watcherModel.set 'projects:list', projects
+    watcherModel.set 'projects:certs', projectCerts
+    watcherModel.set 'projects:list', foundProjects
+    return callback null, [foundProjects, projectCerts] if callback
 
 model.deleteProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 
-  certsPath = jetpack.cwd(project.path, 'certs').path()
-  model.removeCertsFromToBeRemovedProject certsPath, (err, result) ->
-    jetpack.removeAsync project.path
-    .fail (error) ->
-      callback error
-    .then ->
-      watcherModel.log 'res:project:delete:' + project.id
-      model.loadProjects()
-      callback null, true
+  jetpack.removeAsync project.path
+  .fail (error) ->
+    callback error
+  .then ->
+    watcherModel.log 'res:project:delete:' + project.id
+    model.loadProjects()
+    callback null, true
 
 model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
@@ -188,7 +158,7 @@ model.updateProject = (project, callback) ->
   watcherModel.log logName, ["Start pulling...\n"]
   utilModel.runCmd "git pull", {cwd: project.path}, logName, (err, result) ->
     return callback err if err
-    model.initProject project.path, callback
+    model.loadProjects callback
 
 model.callAction = (project, action, callback) ->
   if callback?
@@ -199,8 +169,12 @@ model.callAction = (project, action, callback) ->
   return watcherModel.log logName, "script '#{action.script}' does not exists\n" unless project.scripts[action.script]
   utilModel.runCmd project.scripts[action.script], {cwd: project.path}, logName
 
+module.exports = model;
+
 watcherModel.propertyToKefir 'containers:list'
+.throttle 5000
 .onValue ->
+  projects = watcherModel.get 'projects:list'
   for project, index in projects
     ((projectIndex)->
       getRunningProjectContainers project, (containers) ->
@@ -209,4 +183,17 @@ watcherModel.propertyToKefir 'containers:list'
     )(index)
 
     watcherModel.set "projects:list", projects
-module.exports = model;
+
+# monitor certificate changes and sync them accordingly
+_r.merge [watcherModel.propertyToKefir('projects:certs'), watcherModel.propertyToKefir('proxy:certs')]
+.throttle 5000
+.onValue (val) ->
+  return false if ! (proxyCertsPath = utilModel.getProxyCertsPath())?
+  projectCerts = if val.name == 'projects:certs' then val.newValue else watcherModel.get 'projects:certs'
+
+  utilModel.syncCerts proxyCertsPath, projectCerts, ->
+
+# reload projects every minute
+projectsEventStream = _r.interval(60000, 'reload')
+.onValue () ->
+  model.loadProjects()

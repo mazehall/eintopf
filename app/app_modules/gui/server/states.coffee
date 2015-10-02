@@ -6,7 +6,7 @@ dockerModel = require '../../../models/docker/list.coffee'
 watcherModel = require '../../../models/stores/watcher.coffee'
 registryModel = require '../../../models/stores/registry.coffee'
 
-setupModel.checkBackup().run()
+setupModel.run()
 projectsModel.loadProjects()
 registryModel.loadRegistryWithInterval()
 
@@ -89,22 +89,16 @@ states = (connections_, rawSocket) ->
       .onValue () ->
         socket.emit 'res:projects:list', watcherModel.get 'projects:list'
 
-    _r.fromEvents socket, 'projects:list:refresh'
-    .onValue () ->
-      projectsModel.loadProjects()
-
     _r.fromEvents socket, 'states:restart'
     .onValue () ->
       setupModel.restart()
 
     _r.fromEvents socket, 'containers:list'
     .onValue () ->
-      dockerModel.loadContainers()
       socket.emit 'res:containers:list', watcherModel.get 'containers:list'
 
     _r.fromEvents socket, 'apps:list'
     .onValue () ->
-      dockerModel.loadContainers()
       socket.emit 'res:apps:list', watcherModel.get 'apps:list'
 
     _r.fromEvents socket, 'projects:install'

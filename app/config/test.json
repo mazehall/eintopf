@@ -1,0 +1,9 @@
+{
+  "registry": {
+    "url": "",
+    "refreshInterval": "900000"
+  },
+  "test": {
+    "key": "value"
+  }
+}
