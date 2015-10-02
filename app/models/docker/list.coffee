@@ -3,6 +3,7 @@ Dockerrode = require 'dockerode'
 DockerEvents = require 'docker-events'
 watcherModel = require '../stores/watcher.coffee'
 config = require '../stores/config.coffee'
+utilModel = require '../util/index.coffee'
 
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
@@ -37,8 +38,25 @@ loadApps = () ->
         virtualHosts = container.virtualHost.split(",")
         virtualHosts.forEach (virtualHost) ->
           return false if virtualHost.match /^\*/ # ignore wildcards
-          foundApps.push virtualHost
+          certs = getCerts virtualHost, container.certName
+          app =
+            host: virtualHost
+            certs: certs if certs
+            https: true if certs
+          foundApps.push app
+
   watcherModel.set 'apps:list', foundApps
+
+getCerts = (host, certName) ->
+  certs = watcherModel.get 'proxy:certs'
+  return certs[certName] if certName && certs?[certName]
+  return certs[host] if certs?[host]
+
+  resolveWildcard = host
+  while (n = resolveWildcard.indexOf ".") && n > 0
+    resolveWildcard = resolveWildcard.substr n + 1
+    return certs[resolveWildcard] if certs?[resolveWildcard]
+  return null;
 
 model = {}
 
@@ -114,10 +132,12 @@ model.loadContainers = () ->
       status: val.info.Status
       name: val.inspect.Name.replace(/\//g, '') # strip docker-compose slashes
       virtualHost: null
+      certName: null
 
     if typeIsArray val.inspect.Config.Env
       val.inspect.Config.Env.forEach (env) ->
         push.virtualHost = match[1] if (match = env.match /^VIRTUAL_HOST=(.*)/)?
+        push.certName = match[1] if (match = env.match /^CERT_NAME=(.*)/)?
     foundContainers.push push
   .onEnd () ->
     foundContainers.sort (a, b) ->
@@ -136,7 +156,7 @@ dockerEventsStream.throttle 1000
   model.loadContainers()
 
 # check proxy container state
-dockerEventsStream.throttle 60000
+dockerEventsStream.throttle 10000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
     return cb new Error "proxy deployment is already running" if runningProxyDeployment == true
@@ -144,5 +164,21 @@ dockerEventsStream.throttle 60000
     model.deployProxy cb
 .onAny (val) ->
   runningProxyDeployment = false if val.type != "error" || val.value.message != "proxy deployment is already running"
+
+# persist available ssl certs
+proxyCertsStream = _r.interval 5000, 'reload'
+.flatMap () ->
+  _r.fromNodeCallback (cb) ->
+    return cb new Error 'Could not get proxy certs path' if ! (proxyCertsPath = utilModel.getProxyCertsPath())
+    utilModel.loadCertFiles proxyCertsPath, cb
+.map (certFiles) ->
+  certs = {}
+  for file in certFiles
+    file.host = file.name.slice(0, -4)
+    certs[file.host] = {files: []} if ! certs[file.host]
+    certs[file.host]['files'].push file
+  return certs
+.onValue (certs) ->
+  watcherModel.set 'proxy:certs', certs
 
 module.exports = model;
