@@ -170,7 +170,7 @@ proxyCertsStream = _r.interval 5000, 'reload'
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
     return cb new Error 'Could not get proxy certs path' if ! (proxyCertsPath = utilModel.getProxyCertsPath())
-    utilModel.loadCertsFiles proxyCertsPath, cb
+    utilModel.loadCertFiles proxyCertsPath, cb
 .map (certFiles) ->
   certs = {}
   for file in certFiles
