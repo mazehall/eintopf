@@ -52,60 +52,19 @@ model.installProject = (gitUrl, callback) ->
   return callback new Error 'Project already exists' if utilModel.isProjectInstalled projectId
 
   projectDir = jetpack.cwd projectsPath, projectId
-  jetpack.dirAsync projectsPath
-  .fail callback
-  .then (dir) ->
-    git.clone gitUrl, projectDir.path(), (err) ->
-      return model.initProject projectDir.path(), callback if ! err
-      model.deleteProject {id: projectId, path: projectDir.path()}, () ->
-        return callback new Error err?.message || 'Error: failed to clone gir repository'
-
-model.copyCertsToProxyFolder = (path, callback) ->
-  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
-
-  jetpack.cwd configModulePath
-  .dirAsync 'proxy'
-  .then (dir) ->
-    dir.dirAsync 'certs'
-    .then (dir) ->
-      jetpack.cwd(path).copyAsync '.', dir.path(), {overwrite:true, matching: ['*.crt', '*.key']}
-      .then () ->
-        callback null, true
-  .fail callback
-
-model.removeCertsFromToBeRemovedProject = (path, callback) ->
-  return callback new Error 'could not resolve config path' if ! (configModulePath = utilModel.getConfigModulePath())?
-
-  jetpack.cwd(configModulePath).dirAsync 'proxy'
-  .then (dir) ->
-    dir.dirAsync 'certs'
-    .then (dir) ->
-      jetpack.listAsync path
-      .then (files) ->
-        for own i, file of files
-          dir.remove file if file.match(/.key$/) || file.match(/.crt$/)
-        callback null, true
-  .fail callback
-
-model.initProject = (projectDir, callback) ->
-  return callback new Error 'invalid project dir given' if ! projectDir
-
-  model.loadProject projectDir, (err, project) ->
-    return callback err if err
-
-    projects = watcherModel.get 'projects:list'
-    if ! model.getProject project.id
-      projects.push project
-    else
-      for own d, i of projects
-        projects[d] = project if i.id == project.id
-    watcherModel.set 'projects:list', projects
-
-    certsPath = jetpack.cwd(projectDir, 'certs').path()
-    model.copyCertsToProxyFolder certsPath, (err, result) ->
-      return callback null, project if err && err.code == "ENOENT"
-      return callback err if err
+  _r.fromPromise jetpack.dirAsync projectsPath
+  .flatMap (cb) ->
+    _r.fromNodeCallback (cb) ->
+      git.clone gitUrl, projectDir.path(), cb
+  .flatMap () ->
+    _r.fromNodeCallback (cb) ->
+      return model.loadProject projectDir.path(), cb
+  .onValue (project) ->
+    model.loadProjects () ->
       callback null, project
+  .onError (err) ->
+    model.deleteProject {id: projectId, path: projectDir.path()}, () ->
+      return callback new Error err?.message || 'Error: failed to clone git repository'
 
 model.loadProject = (projectPath, callback) ->
   return callback new Error 'invalid project dir given' if ! projectPath?
@@ -142,9 +101,11 @@ model.loadProject = (projectPath, callback) ->
 
     callback null, project
 
-model.loadProjects = () ->
+# main implementation to load projects
+model.loadProjects = (callback) ->
   return false if ! (projectsPath = utilModel.getProjectsPath())?
   foundProjects = []
+  projectCerts = []
 
   _r.stream dirEmitter projectsPath
   .onError () ->
@@ -156,21 +117,22 @@ model.loadProjects = () ->
       model.loadProject project.path, cb
   .onValue (project) ->
     foundProjects.push(project)
+    projectCerts = projectCerts.concat project.certs if project.certs
   .onEnd () ->
+    watcherModel.set 'projects:certs', projectCerts
     watcherModel.set 'projects:list', foundProjects
+    return callback null, [foundProjects, projectCerts] if callback
 
 model.deleteProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
 
-  certsPath = jetpack.cwd(project.path, 'certs').path()
-  model.removeCertsFromToBeRemovedProject certsPath, (err, result) ->
-    jetpack.removeAsync project.path
-    .fail (error) ->
-      callback error
-    .then ->
-      watcherModel.log 'res:project:delete:' + project.id
-      model.loadProjects()
-      callback null, true
+  jetpack.removeAsync project.path
+  .fail (error) ->
+    callback error
+  .then ->
+    watcherModel.log 'res:project:delete:' + project.id
+    model.loadProjects()
+    callback null, true
 
 model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
@@ -193,7 +155,7 @@ model.updateProject = (project, callback) ->
   watcherModel.log logName, ["Start pulling...\n"]
   utilModel.runCmd "git pull", {cwd: project.path}, logName, (err, result) ->
     return callback err if err
-    model.initProject project.path, callback
+    model.loadProjects callback
 
 model.callAction = (project, action, callback) ->
   if callback?
@@ -203,6 +165,9 @@ model.callAction = (project, action, callback) ->
 
   return watcherModel.log logName, "script '#{action.script}' does not exists\n" unless project.scripts[action.script]
   utilModel.runCmd project.scripts[action.script], {cwd: project.path}, logName
+
+module.exports = model;
+
 
 watcherModel.propertyToKefir 'containers:list'
 .onValue ->
@@ -216,9 +181,16 @@ watcherModel.propertyToKefir 'containers:list'
 
     watcherModel.set "projects:list", projects
 
+# monitor certificate changes and sync them accordingly
+_r.merge [watcherModel.propertyToKefir('projects:certs'), watcherModel.propertyToKefir('proxy:certs')]
+.throttle 1000
+.onValue (val) ->
+  return false if ! (proxyCertsPath = utilModel.getProxyCertsPath())?
+  projectCerts = if val.name == 'projects:certs' then val.newValue else watcherModel.get 'projects:certs'
+
+  utilModel.syncCerts proxyCertsPath, projectCerts, ->
+
 # reload projects every minute
 projectsEventStream = _r.interval(60000, 'reload')
 .onValue () ->
   model.loadProjects()
-
-module.exports = model;
