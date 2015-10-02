@@ -89,10 +89,6 @@ states = (connections_, rawSocket) ->
       .onValue () ->
         socket.emit 'res:projects:list', watcherModel.get 'projects:list'
 
-    _r.fromEvents socket, 'projects:list:refresh'
-    .onValue () ->
-      projectsModel.loadProjects()
-
     _r.fromEvents socket, 'states:restart'
     .onValue () ->
       setupModel.restart()

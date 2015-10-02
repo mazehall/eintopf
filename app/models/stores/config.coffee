@@ -3,6 +3,8 @@ jetpack = require 'fs-jetpack'
 
 utilsModel = require '../util/index.coffee'
 
+process.env.DOCKER_HOST = 'tcp://127.0.0.1:2375'
+
 mergeConfigsAndReturnIt = (userConfig) ->
   customConfig = {}
   config.util.extendDeep customConfig, config, userConfig
