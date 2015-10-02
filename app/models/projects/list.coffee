@@ -94,6 +94,9 @@ model.loadProject = (projectPath, callback) ->
     project['id'] = config.name
     project['markdowns'] = result[1] if result[1]
 
+    # keep existing running states
+    (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in watcherModel.get 'projects:list'
+
     if result[2]
       for file in result[2]
         file.host = file.name.slice(0, -4)
@@ -168,8 +171,8 @@ model.callAction = (project, action, callback) ->
 
 module.exports = model;
 
-
 watcherModel.propertyToKefir 'containers:list'
+.throttle 5000
 .onValue ->
   projects = watcherModel.get 'projects:list'
   for project, index in projects
@@ -183,7 +186,7 @@ watcherModel.propertyToKefir 'containers:list'
 
 # monitor certificate changes and sync them accordingly
 _r.merge [watcherModel.propertyToKefir('projects:certs'), watcherModel.propertyToKefir('proxy:certs')]
-.throttle 1000
+.throttle 5000
 .onValue (val) ->
   return false if ! (proxyCertsPath = utilModel.getProxyCertsPath())?
   projectCerts = if val.name == 'projects:certs' then val.newValue else watcherModel.get 'projects:certs'
