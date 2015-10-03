@@ -8,7 +8,9 @@
   "author": "Jens Klose <jens.klose@mazehall.com>",
   "maintainers": [
     "jens klose <jens.klose@mazehall.com>",
-    "marcel kilian <marcel.kilian@mazehall.com>"
+    "marcel kilian <marcel.kilian@mazehall.com>",
+    "ronny eisenkolb <ronny.eisenkolb@mazehall.com>",add
+    "katja patzelt <katja.patzelt@mazehall.com>"
   ],
   "main": "main.js",
   "config": {
