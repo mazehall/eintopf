@@ -1,23 +1,13 @@
 'use strict';
 
 rewire = require 'rewire'
-Q = require 'q'
 
-async = (run) ->
-  return () ->
-    done = false
-    waitsFor () -> return done
-    run () -> done = true
 
 fromPromise = (value) ->
-  deferred = Q.defer()
-  deferred.resolve value
-  return deferred.promise
+  return new Promise (resolve) -> resolve value
 
 failFromPromise = (error) ->
-  deferred = Q.defer()
-  deferred.reject(new Error(error))
-  return deferred.promise
+  return new Promise (resolve, reject) -> reject new Error error
 
 describe "check backup", ->
 
@@ -29,14 +19,14 @@ describe "check backup", ->
     model.__set__ "model.createBackup", (backupPath, restorePath, callback) -> return callback null, true
     model.__set__ "model.restoreBackup", (backupPath, restorePath, callback) -> return callback null, true
 
-  it 'should fail without config module path', async (done)->
+  it 'should fail without config module path', (done)->
     model.__set__ "utilModel.getConfigModulePath", -> return null
 
     model.checkBackup (err, result) ->
       expect(err.message).toBe("backup failed: invalid config path");
       done()
 
-  it 'should not call create or restore backup when config path failure', async (done)->
+  it 'should not call create or restore backup when config path failure', (done)->
     model.__set__ "utilModel.getConfigModulePath", -> return null
 
     spyOn model, "restoreBackup"
@@ -47,7 +37,7 @@ describe "check backup", ->
       expect(model.createBackup.wasCalled).toBeFalsy();
       done()
 
-  it 'should only call restore backup with params when no vagrant files found', async (done)->
+  it 'should only call restore backup with params when no vagrant files found', (done)->
     model.__set__ "jetpack.findAsync", () -> return fromPromise []
 
     spyOn(model, "restoreBackup").andCallThrough()
@@ -58,7 +48,7 @@ describe "check backup", ->
       expect(model.createBackup.wasCalled).toBeFalsy();
       done()
 
-  it 'should call jetpack.findAsync with parameter', async (done) ->
+  it 'should call jetpack.findAsync with parameter', (done) ->
     path = "/tmp/eintopf/default/.vagrant"
     model.__set__ "jetpack.findAsync", jasmine.createSpy('findAsync').andCallFake () -> return fromPromise ["one", "two"]
 
@@ -66,7 +56,7 @@ describe "check backup", ->
       expect(model.__get__ "jetpack.findAsync").toHaveBeenCalledWith(path, jasmine.any(Object), "inspect")
       done()
 
-  it 'should fail when jetpack.findAsync fails', async (done) ->
+  it 'should fail when jetpack.findAsync fails', (done) ->
     path = "/tmp/eintopf/default/.vagrant"
     model.__set__ "jetpack.findAsync", jasmine.createSpy('findAsync').andCallFake () -> return failFromPromise "promise failure"
 
@@ -74,7 +64,7 @@ describe "check backup", ->
       expect(err.message).toBe("promise failure")
       done()
 
-  it 'should only call restore backup when vagrant files do not match', async (done)->
+  it 'should only call restore backup when vagrant files do not match', (done)->
     model.__set__ "jetpack.findAsync", () -> return fromPromise ["one"]
 
     spyOn(model, "restoreBackup").andCallThrough()
@@ -85,7 +75,7 @@ describe "check backup", ->
       expect(model.createBackup.wasCalled).toBeFalsy();
       done()
 
-  it 'should only call create backup with params when vagrant files match', async (done)->
+  it 'should only call create backup with params when vagrant files match', (done)->
     model.__set__ "jetpack.findAsync", () -> return fromPromise ["one", "two"]
 
     spyOn(model, "restoreBackup").andCallThrough()
@@ -96,7 +86,7 @@ describe "check backup", ->
       expect(model.restoreBackup.wasCalled).toBeFalsy();
       done()
 
-  it 'should return error when create backup failed', async (done)->
+  it 'should return error when create backup failed', (done)->
     model.__set__ "jetpack.findAsync", () -> return fromPromise ["one", "two"]
 
     spyOn(model, "createBackup").andCallFake (backupPath, restorePath, callback) ->
@@ -107,7 +97,7 @@ describe "check backup", ->
       expect(err).toBeTruthy()
       done()
 
-  it 'should return error when restore backup failed', async (done)->
+  it 'should return error when restore backup failed', (done)->
     model.__set__ "jetpack.findAsync", () -> return fromPromise []
 
     spyOn(model, "restoreBackup").andCallFake (backupPath, restorePath, callback) ->
@@ -118,7 +108,7 @@ describe "check backup", ->
       expect(err).toBeTruthy()
       done()
 
-  it 'should return true when create backup succeeded', async (done)->
+  it 'should return true when create backup succeeded', (done)->
     model.__set__ "jetpack.findAsync", () -> return fromPromise ["one", "two"]
 
     spyOn(model, "createBackup").andCallFake (backupPath, restorePath, callback) ->
@@ -130,7 +120,7 @@ describe "check backup", ->
       expect(result).toBeTruthy()
       done()
 
-  it 'should return true when restore backup succeeded', async (done)->
+  it 'should return true when restore backup succeeded', (done)->
     model.__set__ "jetpack.findAsync", () -> return fromPromise []
 
     spyOn(model, "restoreBackup").andCallFake (backupPath, restorePath, callback) ->
@@ -151,19 +141,19 @@ describe "create Backup", ->
     model.__set__ "utilModel.getConfigModulePath", -> return "/tmp/eintopf/default"
     model.__set__ "asar.createPackage", (restorePath, backupPath, callback) -> return callback null, true
 
-  it 'should fail without a path parameter', async (done) ->
+  it 'should fail without a path parameter', (done) ->
     model.createBackup null, 'test', (err) ->
       expect(err.message).toBe("Invalid paths given to create backup");
       done()
 
-  it 'should call asar.createPackage with parameters', async (done) ->
+  it 'should call asar.createPackage with parameters', (done) ->
     model.__set__ "asar.createPackage", jasmine.createSpy('removeAsync').andCallFake (restorePath, backupPath, callback) -> return callback null, true
 
     model.createBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(model.__get__ "asar.createPackage").toHaveBeenCalledWith("/tmp/eintopf/default/.vagrant", "/tmp/eintopf/default/.vagrant.backup", jasmine.any(Function));
       done()
 
-  it 'should return true after creating the package', async (done) ->
+  it 'should return true after creating the package', (done) ->
     model.createBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(err).toBeFalsy()
       expect(result).toBeTruthy()
@@ -182,19 +172,19 @@ describe "restore backup", ->
     model.__set__ "asar.listPackage", (backupPath) ->
       return ["/machines/eintopf/virtualbox/id", "/machines/eintopf/virtualbox/index_uuid"]
 
-  it 'should fail without a path parameter', async (done) ->
+  it 'should fail without a path parameter', (done) ->
     model.restoreBackup null, null, (err, result) ->
       expect(err.message).toBe("Invalid paths given to restore backup")
       done()
 
-  it 'should fail without an existing backup file', async (done) ->
+  it 'should fail without an existing backup file', (done) ->
     model.__set__ "jetpack.exists", (backupPath) -> return false
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(err.message).toBe("Restoring backup failed due to missing Backup")
       done()
 
-  it 'should only call remove backup with parameters when filtered vagrant files are empty', async (done) ->
+  it 'should only call remove backup with parameters when filtered vagrant files are empty', (done) ->
     model.__set__ "asar.listPackage", jasmine.createSpy('listPackage').andCallFake (backupPath) ->
       return []
     model.__set__ "asar.extractAll", jasmine.createSpy('extractAll').andCallThrough()
@@ -205,14 +195,14 @@ describe "restore backup", ->
       expect(model.__get__("asar.extractAll").wasCalled).toBeFalsy();
       done()
 
-  it 'should return static error after removing the backup', async (done) ->
+  it 'should return static error after removing the backup', (done) ->
     model.__set__ "asar.listPackage", jasmine.createSpy('listPackage').andCallFake (backupPath) -> return []
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(err.message).toBe("Restore backup failed due to faulty backup");
       done()
 
-  it 'should call only asar.extractAll with parameters when vagrant files match all', async (done) ->
+  it 'should call only asar.extractAll with parameters when vagrant files match all', (done) ->
     model.__set__ "asar.extractAll", jasmine.createSpy('extractAll').andCallFake (backupPath, restorePath) -> return true
     model.__set__ "utilModel.removeFileAsync", jasmine.createSpy('removeFileAsync').andCallFake (backupPath, callback) -> return callback null, true
 
@@ -221,7 +211,7 @@ describe "restore backup", ->
       expect(model.__get__("utilModel.removeFileAsync").wasCalled).toBeFalsy();
       done()
 
-  it 'should call only asar.extractAll with parameters when at least on vagrant file matches', async (done) ->
+  it 'should call only asar.extractAll with parameters when at least on vagrant file matches', (done) ->
     model.__set__ "asar.listPackage", (backupPath) -> return ["/machines/eintopf/virtualbox/id"]
     model.__set__ "asar.extractAll", jasmine.createSpy('extractAll').andCallFake (backupPath, restorePath) -> return true
     model.__set__ "utilModel.removeFileAsync", jasmine.createSpy('removeFileAsync').andCallFake (backupPath, callback) -> return callback null, true
@@ -231,7 +221,7 @@ describe "restore backup", ->
       expect(model.__get__("utilModel.removeFileAsync").wasCalled).toBeFalsy();
       done()
 
-  it 'should return true in callback on success', async (done) ->
+  it 'should return true in callback on success', (done) ->
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(result).toBeTruthy()
       expect(err).toBeFalsy();

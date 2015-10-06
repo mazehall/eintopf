@@ -2,23 +2,13 @@
 
 config = require 'config'
 rewire = require 'rewire'
-Q = require 'q'
 
-async = (run) ->
-  return () ->
-    done = false
-    waitsFor () -> return done
-    run () -> done = true
 
 fromPromise = (value) ->
-  deferred = Q.defer()
-  deferred.resolve value
-  return deferred.promise
+  return new Promise (resolve) -> resolve value
 
 failFromPromise = (error) ->
-  deferred = Q.defer()
-  deferred.reject(new Error(error))
-  return deferred.promise
+  return new Promise (resolve, reject) -> reject new Error error
 
 describe "set config", ->
 
@@ -60,12 +50,12 @@ describe "remove file async", ->
     model.__set__ "model.getConfigModulePath", -> return "/tmp/eintopf/default"
     model.__set__ "jetpack.removeAsync", () -> return fromPromise true
 
-  it 'should fail without path parameter', async (done) ->
+  it 'should fail without path parameter', (done) ->
     model.removeFileAsync null, (err) ->
       expect(err.message).toBe("Invalid path");
       done()
 
-  it 'should call jetpack.removeAsync with parameter', async (done) ->
+  it 'should call jetpack.removeAsync with parameter', (done) ->
     path = "/tmp/eintopf/default/.vagrant.backup"
     model.__set__ "jetpack.removeAsync", jasmine.createSpy('removeAsync').andCallFake () -> return fromPromise true
 
@@ -73,14 +63,14 @@ describe "remove file async", ->
       expect(model.__get__ "jetpack.removeAsync").toHaveBeenCalledWith(path)
       done()
 
-  it 'should return error on remove failure', async (done) ->
+  it 'should return error on remove failure', (done) ->
     model.__set__ "jetpack.removeAsync", jasmine.createSpy('removeAsync').andCallFake () -> return failFromPromise "promise failure"
 
     model.removeFileAsync "/tmp/eintopf/default/.vagrant.backup", (err) ->
       expect(err.message).toBe("promise failure")
       done()
 
-  it 'should return true on removal success', async (done) ->
+  it 'should return true on removal success', (done) ->
     model.removeFileAsync "/tmp/eintopf/default/.vagrant.backup", (err, result) ->
       expect(err).toBeFalsy()
       expect(result).toBeTruthy()
