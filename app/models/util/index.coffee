@@ -137,4 +137,12 @@ model.syncCerts = (path, files, callback) ->
   .onEnd () ->
     return callback null, true
 
+model.removeFileAsync = (path, callback) ->
+  return callback new Error 'Invalid path' if ! path
+
+  _r.fromPromise jetpack.removeAsync path
+  .onError callback
+  .onValue (val) ->
+    return callback null, true
+
 module.exports = model
