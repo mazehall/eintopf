@@ -4,7 +4,7 @@
   "productName": "Eintopf",
   "identifier": "com.mazehall.eintopf",
   "description": "Manage your development projects with docker.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Jens Klose <jens.klose@mazehall.com>",
   "maintainers": [
     "jens klose <jens.klose@mazehall.com>",
@@ -17,7 +17,7 @@
     "target": "development"
   },
   "scripts": {
-    "test": "node_modules/.bin/jasmine-node spec"
+    "test": "node_modules/.bin/jasmine-node --coffee tests/spec"
   },
   "dependencies": {
     "asar": "^0.8.0",
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",
+    "rewire": "^2.3.4",
     "gulp": "^3.8.11",
     "gulp-bower": "0.0.10",
     "gulp-clean": "^0.3.1",

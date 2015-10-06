@@ -1,13 +1,14 @@
 _r = require 'kefir'
-config = require '../stores/config'
-
-appConfig = config.get 'app'
-utilModel = require "../util"
 jetpack = require "fs-jetpack"
 asar = require "asar"
+
+config = require '../stores/config'
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
+vagrantBackupModel = require '../vagrant/backup.coffee'
 watcherModel = require '../stores/watcher.coffee'
+
+appConfig = config.get 'app'
 
 defaultStates =
   vagrantFile: false
@@ -55,7 +56,7 @@ model.run = () ->
     vagrantFsModel.copyVagrantFile cb
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      model.checkBackup cb
+      vagrantBackupModel.checkBackup (err, result) -> cb null, true
   .flatMap () ->
     states.vagrantFile = true
     watcherModel.set 'states:live', states
@@ -75,41 +76,6 @@ model.run = () ->
     watcherModel.set 'states:live', states
   .onEnd () ->
     inSetup = false
-
-model.checkBackup = (callback) ->
-  vagrantFolder = jetpack.cwd "#{utilModel.getConfigModulePath()}/.vagrant"
-  vagrantBackup = vagrantFolder.path() + ".backup"
-  folderExists  = jetpack.exists vagrantFolder.path()
-  backupExists  = jetpack.exists vagrantBackup
-
-  if backupExists and folderExists is false
-    console.log "backup:", "vagrant directory does not exists, delete old backup file"
-
-  if folderExists is "dir"
-    match = ["id", "index_uuid"]
-    files = jetpack.find vagrantFolder.path(), {matching: match}, "inspect"
-
-  if files.length is match.length and backupExists is not "file"
-    asar.createPackage vagrantFolder.path(), vagrantBackup, ->
-      console.log "backup:", "vagrant backup created at:", vagrantBackup
-  else if files.length isnt match.length
-    console.log "backup:", "vagrant directory '#{vagrantFolder.path()} is corrupt"
-
-    if backupExists is false or backupExists isnt "file"
-      console.log "backup:", "=> no backup found!"
-    else
-      packageList = asar.listPackage(vagrantBackup)
-      packageFile = packageList.filter (file) ->
-        file = file.split "/"
-        return file if file and match.indexOf(file[file.length-1]) isnt -1
-
-      if packageFile and packageFile.length isnt 0
-        asar.extractAll vagrantBackup, vagrantFolder.path()
-        console.log "backup:", "=> vagrant directory restored!"
-      else
-        console.log "backup:", " => invalid backup file, backup deleted!"
-        jetpack.remove vagrantBackup
-  callback null, true
 
 watchVagrantSshConfigAndSetIt()
 module.exports = model;
