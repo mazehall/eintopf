@@ -143,6 +143,7 @@ angular.module('eintopf')
         project.action = action;
         reqProjectStartAction.emit(project);
         resProjectStartAction.fromProject($stateParams.id);
+        $scope.currentTab = "protocol"
       };
     }
   ])
