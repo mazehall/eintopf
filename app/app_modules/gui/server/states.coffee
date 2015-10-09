@@ -16,6 +16,13 @@ states = (connections_, rawSocket) ->
   # emit changes in project list
   watcherModel.propertyToKefir 'projects:list'
   .onValue (val) ->
+
+    hashes = {}
+    hashes[value.id] = value.hash for value in val.oldValue
+
+    for project in val.newValue
+      rawSocket.emit "res:project:detail:#{project.id}", project if hashes[project.id] != project.hash
+
     rawSocket.emit 'res:projects:list', val.newValue
 
   # emit changes in live states
@@ -120,7 +127,7 @@ states = (connections_, rawSocket) ->
       if typeIsArray projects
         for x,i in projects
           project = x if x.id == id
-      socket.emit 'res:project:detail', project
+      socket.emit "res:project:detail:#{id}", project
 
     _r.fromEvents socket, 'project:start'
     .filter (x) ->
