@@ -17,17 +17,19 @@ model.restoreBackup = (backupPath, restorePath, callback) ->
     file = file.split "/"
     return file if file and match.indexOf(file[file.length-1]) isnt -1
 
-  return callback new Error 'Restore backup failed due to faulty backup' if packageFile.length == 0
+  removeBackup = (backupPath, callback) ->
+    utilModel.removeFileAsync backupPath, ->
+      model.needBackup = true
+      callback? new Error 'Restore backup failed due to faulty backup'
+
+  return removeBackup backupPath, callback if packageFile.length is 0
 
   machineId = asar.extractFile backupPath, packageFile[0].slice 1
   utilModel.machineIdRegistered machineId.toString(), (error) ->
-    if error
-      return utilModel.removeFileAsync backupPath, ->
-        model.needBackup = true
-        callback? error
+    return removeBackup backupPath, callback if error
 
     asar.extractAll backupPath, restorePath
-    callback? arguments...
+    callback? null, true
 
 model.createBackup = (backupPath, restorePath, callback) ->
   return callback new Error 'Invalid paths given to create backup' if ! backupPath || ! restorePath
