@@ -6,7 +6,9 @@ utilModel = require "../util/index.coffee"
 match = ["id", "index_uuid"]
 
 model = {}
+model.needBackup = false
 model.restoreBackup = (backupPath, restorePath, callback) ->
+  model.needBackup = if jetpack.exists backupPath then false else true
   return callback new Error 'Invalid paths given to restore backup' if ! backupPath || ! restorePath
   return callback new Error "Restoring backup failed due to missing Backup" if ! jetpack.exists backupPath
 
@@ -15,12 +17,19 @@ model.restoreBackup = (backupPath, restorePath, callback) ->
     file = file.split "/"
     return file if file and match.indexOf(file[file.length-1]) isnt -1
 
-  if packageFile.length == 0 # remove invalid backup
-    return utilModel.removeFileAsync backupPath, () ->
-      return callback new Error 'Restore backup failed due to faulty backup'
+  removeBackup = (backupPath, callback) ->
+    utilModel.removeFileAsync backupPath, ->
+      model.needBackup = true
+      callback? new Error 'Restore backup failed due to faulty backup'
 
-  asar.extractAll backupPath, restorePath
-  return callback null, true
+  return removeBackup backupPath, callback if packageFile.length is 0
+
+  machineId = asar.extractFile backupPath, packageFile[0].slice 1
+  utilModel.machineIdRegistered machineId.toString(), (error) ->
+    return removeBackup backupPath, callback if error
+
+    asar.extractAll backupPath, restorePath
+    callback? null, true
 
 model.createBackup = (backupPath, restorePath, callback) ->
   return callback new Error 'Invalid paths given to create backup' if ! backupPath || ! restorePath
