@@ -68,6 +68,7 @@ model.run = () ->
     states.running = true
     states.state = "cooking"
     watcherModel.set 'states:live', states
+    vagrantBackupModel.checkBackup -> return if vagrantBackupModel.needBackup is true
   .onError (err) ->
     states.vagrantFile = "failed" if states.vagrantFile == false
     states.vagrantRun = "failed" if states.vagrantRun == false
