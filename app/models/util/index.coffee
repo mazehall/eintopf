@@ -157,4 +157,17 @@ model.machineIdRegistered = (uuid, callback) ->
   proc.stderr.on "data", (chunk) -> stderr += chunk.toString()
   proc
 
+model.fetchEintopfMachineId = (callback) ->
+  vagrantPath = "#{@getConfigModulePath()}/.vagrant"
+  machineName = jetpack.find vagrantPath, {matching: ["machines/*"]}, "inspect"
+  machineName = machineName?[0]?.name
+
+  return callback new Error "No machine or vagrant directory found" if not @folderExists vagrantPath or not machineName
+
+  loadMachineId = _r.fromNodeCallback (cb) -> model.machineIdRegistered machineName, cb
+  loadMachineId.onError -> callback
+  loadMachineId.onValue (stdout) ->
+    machineId = (match = stdout.match /uuid="(.*)"/i) and match?.length is 2 and match[1]
+    return callback null, machineId, machineName, stdout
+
 module.exports = model
