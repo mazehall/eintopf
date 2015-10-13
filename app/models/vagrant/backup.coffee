@@ -16,6 +16,10 @@ model.restoreMachineId = (backupPath, restorePath, callback) ->
     writePath = "#{machineId.path()}/#{structure.join('/')}"
     machineId = machineId.dir path for path in structure if not jetpack.exists writePath
 
+    if asar.listPackage(backupPath).join().indexOf("machines/#{name}/virtualbox/private_key") isnt -1
+      hasPrivatekey = asar.extractFile backupPath, "machines/#{name}/virtualbox/private_key"
+      jetpack.writeAsync "#{writePath}/private_key", hasPrivatekey, {atomic: true}
+
     write = jetpack.writeAsync "#{writePath}/id", uuid, {atomic: true}
     write.then -> callback? null, true
     write.fail -> callback? arguments...
