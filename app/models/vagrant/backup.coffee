@@ -34,9 +34,10 @@ model.restoreBackup = (backupPath, restorePath, callback) ->
     callback? null, true
 
   restoreMachineId = ->
+    model.needBackup = true
     model.restoreMachineId backupPath, restorePath, (error) ->
-      return removeBackup() if error
-      return callback? null, true
+      removeBackup()
+      callback? error, true
 
   packageList = asar.listPackage(backupPath)
   packageFile = packageList.filter (file) ->
