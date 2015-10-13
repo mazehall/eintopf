@@ -22,15 +22,12 @@ inSetup = false
 
 states = JSON.parse(JSON.stringify(defaultStates));
 
-watchVagrantSshConfigAndSetIt = () ->
-  _r.withInterval 5000, (emitter) ->
-    vagrantRunModel.getSshConfig (err, result) ->
-      return emitter.error err if err
-      emitter.emit result
+getVagrantSshConfigAndSetIt = (callback) ->
+  _r.fromNodeCallback (cb) -> vagrantRunModel.getSshConfig cb
   .onValue (val) ->
     watcherModel.setProperty 'settings:list', 'vagrantSshConfig', val
-  .onError (err) ->
-    watcherModel.setProperty 'settings:list', 'vagrantSshConfig', {}
+  .onEnd ->
+    callback? null
 
 model = {};
 model.getState = () ->
@@ -63,11 +60,15 @@ model.run = () ->
     return _r
     .fromNodeCallback (cb) ->
       vagrantRunModel.run cb
+  .flatMap ->
+    _r.fromCallback (cb) ->
+      getVagrantSshConfigAndSetIt cb
   .onValue () ->
     states.vagrantRun = true
     states.running = true
     states.state = "cooking"
     watcherModel.set 'states:live', states
+    vagrantBackupModel.checkBackup -> return if vagrantBackupModel.needBackup is true
   .onError (err) ->
     states.vagrantFile = "failed" if states.vagrantFile == false
     states.vagrantRun = "failed" if states.vagrantRun == false
@@ -77,5 +78,4 @@ model.run = () ->
   .onEnd () ->
     inSetup = false
 
-watchVagrantSshConfigAndSetIt()
 module.exports = model;

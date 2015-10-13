@@ -4,6 +4,7 @@ jetpack = require 'fs-jetpack'
 mazehall = require 'mazehall/lib/modules'
 fs = require 'fs'
 child = require 'child_process'
+crypto = require "crypto"
 
 utilModel = require '../util/'
 watcherModel = require '../stores/watcher.coffee'
@@ -93,6 +94,7 @@ model.loadProject = (projectPath, callback) ->
     project['scripts'] = config.scripts if config.scripts
     project['id'] = config.name
     project['markdowns'] = result[1] if result[1]
+    project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
 
     # keep existing running states
     (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in watcherModel.get 'projects:list'

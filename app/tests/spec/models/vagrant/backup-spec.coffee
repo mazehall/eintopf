@@ -195,6 +195,18 @@ describe "restore backup", ->
       expect(model.__get__("asar.extractAll").wasCalled).toBeFalsy();
       done()
 
+  it 'should only call remove backup when uuid is not registered', (done) ->
+    model.__set__ "utilModel.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback true
+    model.__set__ "utilModel.removeFileAsync", createSpy().andCallFake (backup, callback) -> callback null, true
+    model.__set__ "asar.extractFile", -> "uuid#00000"
+    model.__set__ "asar.extractAll", createSpy().andCallThrough()
+
+    model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", ->
+      expect(model.__get__("utilModel.machineIdRegistered")).toHaveBeenCalled()
+      expect(model.__get__("utilModel.removeFileAsync")).toHaveBeenCalledWith "/tmp/eintopf/default/.vagrant.backup", any Function
+      expect(model.__get__("asar.extractAll").wasCalled).toBeFalsy()
+      done()
+
   it 'should return static error after removing the backup', (done) ->
     model.__set__ "asar.listPackage", jasmine.createSpy('listPackage').andCallFake (backupPath) -> return []
 
@@ -205,6 +217,8 @@ describe "restore backup", ->
   it 'should call only asar.extractAll with parameters when vagrant files match all', (done) ->
     model.__set__ "asar.extractAll", jasmine.createSpy('extractAll').andCallFake (backupPath, restorePath) -> return true
     model.__set__ "utilModel.removeFileAsync", jasmine.createSpy('removeFileAsync').andCallFake (backupPath, callback) -> return callback null, true
+    model.__set__ "utilModel.machineIdRegistered", (uuid, callback) -> callback null, null
+    model.__set__ "asar.extractFile", -> "uuid#00000"
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(model.__get__("asar.extractAll")).toHaveBeenCalledWith("/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant")
@@ -215,10 +229,13 @@ describe "restore backup", ->
     model.__set__ "asar.listPackage", (backupPath) -> return ["/machines/eintopf/virtualbox/id"]
     model.__set__ "asar.extractAll", jasmine.createSpy('extractAll').andCallFake (backupPath, restorePath) -> return true
     model.__set__ "utilModel.removeFileAsync", jasmine.createSpy('removeFileAsync').andCallFake (backupPath, callback) -> return callback null, true
+    model.__set__ "utilModel.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback null
+    model.__set__ "asar.extractFile", -> "uuid#00000"
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(model.__get__("asar.extractAll")).toHaveBeenCalledWith("/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant")
       expect(model.__get__("utilModel.removeFileAsync").wasCalled).toBeFalsy();
+      expect(model.__get__("utilModel.machineIdRegistered")).toHaveBeenCalledWith "uuid#00000", any Function
       done()
 
   it 'should return true in callback on success', (done) ->
@@ -227,3 +244,18 @@ describe "restore backup", ->
       expect(err).toBeFalsy();
       done()
 
+  it "should check if the archived uuid registered in virtualbox", (done) ->
+    model.__set__ "asar.extractFile", -> "uuid#00000"
+    model.__set__ "utilModel.machineIdRegistered", (uuid) ->
+      done expect(uuid).toEqual "uuid#00000"
+
+    model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", -> return
+
+  it "should return false for the default needBackup value", (done) ->
+    done expect(model.__get__("model.needBackup")).toEqual false
+
+  it "should set the needBackup flag when a existing backup file was removed", (done) ->
+    model.__set__ "utilModel.removeFileAsync", createSpy().andCallFake (path, callback) -> callback null
+    model.__set__ "asar.listPackage", createSpy().andCallFake -> []
+    model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", ->
+      done expect(model.__get__("model.needBackup")).toBeTruthy()

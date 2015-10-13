@@ -1,9 +1,15 @@
-utilModel = require "../../../models/util/index.coffee"
 fs = require "fs"
+
+utilModel = require "../../../models/util/index.coffee"
+projectsModel = require "../../../models/projects/list.coffee"
 
 handler = module.exports
 handler.projectResource = (req, res, next) ->
-  file = "#{utilModel.getConfigModulePath()}/configs/#{req.params.project}/#{req.params.resource}"
+  notFound = () -> res.status(404).send({"message": "File not found"})
 
-  return res.status(404).send({"message": "file not found"}) unless fs.existsSync file
+  project = projectsModel.getProject req.params.project
+  return notFound() if ! project || ! project.path
+
+  file = "#{project.path}/#{req.params.resource}"
+  return notFound() if ! req.params.resource || ! fs.existsSync file
   return res.sendfile file
