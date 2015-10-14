@@ -150,6 +150,8 @@ model.machineIdRegistered = (uuid, callback) ->
   stderr = ""
 
   proc = spawn "VBoxManage", ["showvminfo", "--machinereadable", uuid]
+  proc.on 'error', (err) ->
+    return callback null, false
   proc.on "close", ->
     error = if stderr then new Error stderr else null
     callback? error, stdout

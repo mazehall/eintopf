@@ -26,6 +26,7 @@ model.restoreBackup = (backupPath, restorePath, callback) ->
 
   machineId = asar.extractFile backupPath, packageFile[0].slice 1
   utilModel.machineIdRegistered machineId.toString(), (error) ->
+    #@todo better error handling - removing the backup should only happen when id not found - not on every error
     return removeBackup backupPath, callback if error
 
     asar.extractAll backupPath, restorePath
