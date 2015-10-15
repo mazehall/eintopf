@@ -91,7 +91,7 @@ angular.module('eintopf')
 
       resProjectStart.fromProject($stateParams.id);
       resProjectStop.fromProject($stateParams.id);
-      resProjectDetail.$assignProperty($scope, 'project');
+      resProjectDetail.fromProject($stateParams.id).$assignProperty($scope, 'project');
       reqProjectDetail.emit($stateParams.id);
 
       $scope.startProject = function(project) {
@@ -143,6 +143,7 @@ angular.module('eintopf')
         project.action = action;
         reqProjectStartAction.emit(project);
         resProjectStartAction.fromProject($stateParams.id);
+        $scope.currentTab = "protocol"
       };
     }
   ])
