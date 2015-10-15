@@ -10,27 +10,14 @@ Download Eintopf
 [Download the latest version of eintopf] (http://mazehall.github.io/eintopf)
 
 
-# Installation
 
-Currently the project is in a very early stage and in heavy development. There are release scripts for
-MacOS, Linux and Windows to build the native application.
-
-Please use the Git clone way to participate.
-
-
-## Prerequisites
+# Prerequisites
 
 * VirtualBox
 * Vagrant >= 1.7
-* Git + Gitbash (must be installed with the environment variables option)
+* Git
+* WindowsOS: Gitbash (must be installed with the "set environment variables" option)
 
-
-```
-    git clone https://github.com/mazehall/eintopf.git
-    cd eintopf
-    npm install
-    npm start
-```
 
 
 # How does it work?
