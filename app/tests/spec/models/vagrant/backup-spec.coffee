@@ -308,3 +308,60 @@ describe "restore backup", ->
     model.__set__ "asar.listPackage", createSpy().andCallFake -> []
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", ->
       done expect(model.__get__("model.needBackup")).toBeTruthy()
+
+describe "restore eintopf machine", ->
+  model = null
+  beforeEach ->
+    model = rewire "../../../../models/util/index.coffee"
+    model.__set__ "model.getConfigModulePath", -> "."
+    model.ID_OR_DIRECTORY_NOT_FOUND = "No machine or vagrant directory found"
+
+  it "should return an error when no machine name was found", (done) ->
+    model.__set__ "jetpack.find", -> []
+    model.__set__ "jetpack.exists", -> null
+    model.fetchEintopfMachineId (error) ->
+      expect(error).toEqual any Error
+      expect(error.message).toBe model.ID_OR_DIRECTORY_NOT_FOUND
+      done()
+
+  it "should return an error when the vagrant directory not exists", (done) ->
+    model.__set__ "model.folderExists", -> false
+    model.fetchEintopfMachineId (error) ->
+      expect(error).toEqual any Error
+      expect(error.message).toBe model.ID_OR_DIRECTORY_NOT_FOUND
+      done()
+
+  it "should return an error when the machine id is not registered", (done) ->
+    model.__set__ "model.machineIdRegistered", (uuid, callback) -> callback new Error "not found"
+    model.fetchEintopfMachineId (error) ->
+      expect(error).toEqual any Error
+      expect(error.message).toBe model.ID_OR_DIRECTORY_NOT_FOUND
+      done()
+
+  it "should call machineIdRegistered with detected machine name", (done) ->
+    model.__set__ "jetpack.find", -> [{name: "vmname1"}]
+    model.__set__ "model.folderExists", -> true
+    model.__set__ "model.machineIdRegistered", createSpy().andCallFake (uuid, callback) ->
+      setTimeout ->
+        callback null, "name=\n\nuuid=\"1234\"\ntest1"
+      , 1
+
+    model.fetchEintopfMachineId ->
+      expect(model.__get__ "model.machineIdRegistered").toHaveBeenCalledWith "vmname1", any Function
+      done()
+
+  it "should return the detected vm name with uuid", (done) ->
+    testUuid = "uuid#00000"
+    testName = "vmname0"
+
+    model.__set__ "model.machineIdRegistered", createSpy().andCallFake (uuid, callback) ->
+      setTimeout ->
+        callback null, "name=\n\nuuid=\"#{testUuid}\"\ntest1"
+      , 0
+
+    model.__set__ "jetpack.find", -> [{name: testName}]
+    model.__set__ "model.folderExists", -> true
+    model.fetchEintopfMachineId (error, uuid, name) ->
+      expect(error).toBeFalsy()
+      expect([uuid, name]).toEqual [testUuid, testName]
+      done()
