@@ -198,21 +198,21 @@ describe "restore backup", ->
       done()
 
   it 'should only call remove backup when uuid is not registered', (done) ->
-    model.__set__ "utilModel.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback true
     model.__set__ "utilModel.removeFileAsync", createSpy().andCallFake (backup, callback) -> callback null, true
+    model.__set__ "model.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback true
     model.__set__ "model.restoreMachineId", (backupPath, restorePath, callback) -> callback null
     model.__set__ "asar.extractAll", createSpy().andCallThrough()
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", ->
-      expect(model.__get__("utilModel.machineIdRegistered")).toHaveBeenCalled()
+      expect(model.__get__("model.machineIdRegistered")).toHaveBeenCalled()
       expect(model.__get__("utilModel.removeFileAsync")).toHaveBeenCalledWith "/tmp/eintopf/default/.vagrant.backup", any Function
       expect(model.__get__("asar.extractAll").wasCalled).toBeFalsy()
       done()
 
   it 'should return error no eintopf machine was found', (done) ->
-    model.__set__ "utilModel.fetchEintopfMachineId", (callback) -> callback new Error "id not found"
+    model.__set__ "model.fetchEintopfMachineId", (callback) -> callback new Error "id not found"
     model.__set__ "model.restoreMachineId", (backupPath, restorePath, callback) -> callback null
-    model.__set__ "utilModel.machineIdRegistered", (uuid, callback) -> callback null
+    model.__set__ "model.machineIdRegistered", (uuid, callback) -> callback null
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (error) ->
       expect(error).toBeFalsy();
@@ -220,20 +220,20 @@ describe "restore backup", ->
 
   it 'should return error when no eintopf machine was found', (done) ->
     spyOn(model, "restoreMachineId").andCallThrough()
-    model.__set__ "utilModel.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback new Error "not registered"
-    model.__set__ "utilModel.fetchEintopfMachineId", (callback) -> callback new Error "eintopf id not found"
+    model.__set__ "model.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback new Error "not registered"
+    model.__set__ "model.fetchEintopfMachineId", (callback) -> callback new Error "eintopf id not found"
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (error) ->
-      expect(model.__get__("utilModel.machineIdRegistered")).toHaveBeenCalled()
+      expect(model.__get__("model.machineIdRegistered")).toHaveBeenCalled()
       expect(model.restoreMachineId).toHaveBeenCalled()
       expect(error.message).toBe("Restore backup failed due to faulty backup");
       done()
 
   it 'should call only asar.extractAll with parameters when vagrant files match all', (done) ->
     model.__set__ "model.restoreMachineId", (backupPath, restorePath, callback) -> callback null
-    model.__set__ "utilModel.machineIdRegistered", (uuid, callback) -> callback null
+    model.__set__ "model.machineIdRegistered", (uuid, callback) -> callback null
+    model.__set__ "model.removeFileAsync", jasmine.createSpy('removeFileAsync').andCallFake (backupPath, callback) -> return callback null, true
     model.__set__ "asar.extractAll", jasmine.createSpy('extractAll').andCallFake (backupPath, restorePath) -> return true
-    model.__set__ "utilModel.removeFileAsync", jasmine.createSpy('removeFileAsync').andCallFake (backupPath, callback) -> return callback null, true
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(model.__get__("asar.extractAll")).toHaveBeenCalledWith("/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant")
@@ -244,22 +244,25 @@ describe "restore backup", ->
     model.__set__ "asar.listPackage", (backupPath) -> return ["/machines/eintopf/virtualbox/id"]
     model.__set__ "asar.extractAll", jasmine.createSpy('extractAll').andCallFake (backupPath, restorePath) -> return true
     model.__set__ "utilModel.removeFileAsync", jasmine.createSpy('removeFileAsync').andCallFake (backupPath, callback) -> return callback null, true
-    model.__set__ "utilModel.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback null
+    model.__set__ "model.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback null
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(model.__get__("asar.extractAll")).toHaveBeenCalledWith("/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant")
       expect(model.__get__("utilModel.removeFileAsync").wasCalled).toBeFalsy();
-      expect(model.__get__("utilModel.machineIdRegistered")).toHaveBeenCalledWith "uuid#00000", any Function
+      expect(model.__get__("model.machineIdRegistered")).toHaveBeenCalledWith "uuid#00000", any Function
       done()
 
   it 'should return true in callback on success', (done) ->
+    model.__set__ "model.restoreMachineId", (backup, restore, callback) -> callback null
+    model.__set__ "model.machineIdRegistered", (uuid, callback) -> callback null
+
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(result).toBeTruthy()
       expect(err).toBeFalsy();
       done()
 
   it "should check if the archived uuid registered in virtualbox", (done) ->
-    model.__set__ "utilModel.machineIdRegistered", (uuid) ->
+    model.__set__ "model.machineIdRegistered", (uuid) ->
       done expect(uuid).toEqual "uuid#00000"
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", -> return
@@ -278,24 +281,18 @@ describe "restore backup", ->
     model.__set__ "asar.listPackage", (backupPath) -> return ["/machines/eintopf/virtualbox/id"]
     model.__set__ "asar.extractAll", jasmine.createSpy('extractAll').andCallFake (backupPath, restorePath) -> return true
     model.__set__ "utilModel.removeFileAsync", jasmine.createSpy('removeFileAsync').andCallFake (backupPath, callback) -> return callback null, true
-    model.__set__ "utilModel.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback null
+    model.__set__ "model.machineIdRegistered", createSpy().andCallFake (uuid, callback) -> callback null
     model.__set__ "asar.extractFile", -> "uuid#00000"
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
       expect(model.__get__("asar.extractAll")).toHaveBeenCalledWith("/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant")
       expect(model.__get__("utilModel.removeFileAsync").wasCalled).toBeFalsy();
-      expect(model.__get__("utilModel.machineIdRegistered")).toHaveBeenCalledWith "uuid#00000", any Function
-      done()
-
-  it 'should return true in callback on success', (done) ->
-    model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", (err, result) ->
-      expect(result).toBeTruthy()
-      expect(err).toBeFalsy();
+      expect(model.__get__("model.machineIdRegistered")).toHaveBeenCalledWith "uuid#00000", any Function
       done()
 
   it "should check if the archived uuid registered in virtualbox", (done) ->
     model.__set__ "asar.extractFile", -> "uuid#00000"
-    model.__set__ "utilModel.machineIdRegistered", (uuid) ->
+    model.__set__ "model.machineIdRegistered", (uuid) ->
       done expect(uuid).toEqual "uuid#00000"
 
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", -> return
@@ -305,6 +302,7 @@ describe "restore backup", ->
 
   it "should set the needBackup flag when a existing backup file was removed", (done) ->
     model.__set__ "utilModel.removeFileAsync", createSpy().andCallFake (path, callback) -> callback null
+    model.__set__ "model.restoreMachineId", (backup, restore, callback) -> callback null
     model.__set__ "asar.listPackage", createSpy().andCallFake -> []
     model.restoreBackup "/tmp/eintopf/default/.vagrant.backup", "/tmp/eintopf/default/.vagrant", ->
       done expect(model.__get__("model.needBackup")).toBeTruthy()
@@ -312,8 +310,8 @@ describe "restore backup", ->
 describe "restore eintopf machine", ->
   model = null
   beforeEach ->
-    model = rewire "../../../../models/util/index.coffee"
-    model.__set__ "model.getConfigModulePath", -> "."
+    model = rewire "../../../../models/vagrant/backup.coffee"
+    model.__set__ "utilModel.getConfigModulePath", -> "."
     model.ID_OR_DIRECTORY_NOT_FOUND = "No machine or vagrant directory found"
 
   it "should return an error when no machine name was found", (done) ->
@@ -325,7 +323,7 @@ describe "restore eintopf machine", ->
       done()
 
   it "should return an error when the vagrant directory not exists", (done) ->
-    model.__set__ "model.folderExists", -> false
+    model.__set__ "utilModel.folderExists", -> false
     model.fetchEintopfMachineId (error) ->
       expect(error).toEqual any Error
       expect(error.message).toBe model.ID_OR_DIRECTORY_NOT_FOUND
@@ -340,7 +338,7 @@ describe "restore eintopf machine", ->
 
   it "should call machineIdRegistered with detected machine name", (done) ->
     model.__set__ "jetpack.find", -> [{name: "vmname1"}]
-    model.__set__ "model.folderExists", -> true
+    model.__set__ "utilModel.folderExists", -> true
     model.__set__ "model.machineIdRegistered", createSpy().andCallFake (uuid, callback) ->
       setTimeout ->
         callback null, "name=\n\nuuid=\"1234\"\ntest1"
@@ -360,7 +358,7 @@ describe "restore eintopf machine", ->
       , 0
 
     model.__set__ "jetpack.find", -> [{name: testName}]
-    model.__set__ "model.folderExists", -> true
+    model.__set__ "utilModel.folderExists", -> true
     model.fetchEintopfMachineId (error, uuid, name) ->
       expect(error).toBeFalsy()
       expect([uuid, name]).toEqual [testUuid, testName]

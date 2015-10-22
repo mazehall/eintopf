@@ -1,6 +1,7 @@
 _r = require 'kefir'
 jetpack = require "fs-jetpack"
 asar = require "asar"
+spawn = require('child_process').spawn
 
 utilModel = require "../util/index.coffee"
 match = ["id", "index_uuid"]
@@ -8,7 +9,7 @@ match = ["id", "index_uuid"]
 model = {}
 model.needBackup = false
 model.restoreMachineId = (backupPath, restorePath, callback) ->
-  utilModel.fetchEintopfMachineId (error, uuid, name) ->
+  @fetchEintopfMachineId (error, uuid, name) ->
     return callback? error if error
 
     structure = ["machines", name, "virtualbox"];
@@ -53,7 +54,7 @@ model.restoreBackup = (backupPath, restorePath, callback) ->
 
   # restore backup when archived id is registered in virtualbox
   machineId = asar.extractFile backupPath, packageFile[0].slice 1
-  utilModel.machineIdRegistered machineId.toString(), (error) ->
+  @machineIdRegistered machineId.toString(), (error) ->
     return restoreMachineId() if error
     return restoreBackup()
 
@@ -78,5 +79,32 @@ model.checkBackup = (callback) ->
   .onError callback
   .onValue () ->
     callback null, true
+
+
+model.machineIdRegistered = (uuid, callback) ->
+  stdout = ""
+  stderr = ""
+
+  proc = spawn "VBoxManage", ["showvminfo", "--machinereadable", uuid]
+  proc.on "close", ->
+    error = if stderr then new Error stderr else null
+    callback? error, stdout
+  proc.stdout.on "data", (chunk) -> stdout += chunk.toString()
+  proc.stderr.on "data", (chunk) -> stderr += chunk.toString()
+  proc
+
+model.fetchEintopfMachineId = (callback) ->
+  vagrantPath = "#{utilModel.getConfigModulePath()}/.vagrant"
+  machineName = jetpack.find vagrantPath, {matching: ["machines/*"]}, "inspect"
+  machineName = machineName?[0]?.name
+
+  return callback new Error "No machine or vagrant directory found" if not utilModel.folderExists vagrantPath or not machineName
+
+  loadMachineId = _r.fromNodeCallback (cb) -> model.machineIdRegistered machineName, cb
+  loadMachineId.onError -> callback
+  loadMachineId.onValue (stdout) ->
+    machineId = (match = stdout.match /uuid="(.*)"/i) and match?.length is 2 and match[1]
+    return callback null, machineId, machineName, stdout
+
 
 module.exports = model;
