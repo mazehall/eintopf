@@ -31,7 +31,7 @@ model.restoreBackup = (backupPath, restorePath, callback) ->
 
   removeBackup = ->
     model.needBackup = true
-    utilModel.removeFileAsync backupPath, -> callback? new Error 'Restore backup failed due to faulty backup' if jetpack.exists backupPath
+    utilModel.removeFileAsync backupPath, -> return if jetpack.exists backupPath
 
   restoreBackup = ->
     asar.extractAll backupPath, restorePath
@@ -41,6 +41,7 @@ model.restoreBackup = (backupPath, restorePath, callback) ->
     model.needBackup = true
     model.restoreMachineId backupPath, restorePath, (error) ->
       removeBackup()
+      error = new Error 'Restore backup failed due to faulty backup' if error
       callback? error, true
 
   packageList = asar.listPackage(backupPath)
