@@ -82,8 +82,8 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-          ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction', 'resContainersList',
-            function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction, resContainersList) {
+          ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction', 'resContainersList', 'reqContainerActions',
+            function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction, resContainersList, reqContainerActions) {
       $scope.project = {
         id: $stateParams.id
       };
@@ -148,6 +148,22 @@ angular.module('eintopf')
         reqProjectStartAction.emit(project);
         resProjectStartAction.fromProject($stateParams.id);
         $scope.currentTab = "protocol"
+      };
+
+              $scope.logs = [];
+              $scope.startContainer = function (container) {
+                if (typeof container.id != "string") return false;
+                reqContainerActions.start(container.id);
+              };
+
+              $scope.stopContainer = function (container) {
+                if (typeof container.id != "string") return false;
+                reqContainerActions.stop(container.id);
+              };
+
+              $scope.removeContainer = function (container) {
+                if (typeof container.id != "string") return false;
+                reqContainerActions.remove(container.id);
       };
     }
   ])
