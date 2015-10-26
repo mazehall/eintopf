@@ -40,9 +40,7 @@ angular.module('eintopf.services.socket.states', [])
 
   .factory('resProjectsInstall', ['socket', function (socket) {
     return Kefir.fromEvent(socket, 'res:projects:install');
-  }])
-
-        .factory('resProjectDetail', ['socket', 'resContainersList', function (socket, resContainersList) {
+  }]).factory('resProjectDetail', ['socket', 'resContainersList', 'resContainersLog', function (socket, resContainersList, resContainersLog) {
     return {
       fromProject: function (project) {
         return Kefir.fromEvent(socket, 'res:project:detail:' + project);
@@ -53,9 +51,16 @@ angular.module('eintopf.services.socket.states', [])
           return container.name;
         });
 
+        resContainersLog.filter(function (x) {
+          if (x.message) return x;
+        }).onValue(function (val) {
+          val.read = false;
+          $scope.logs.push(val);
+        });
+
         return resContainersList.map(function (containers) {
           return containers.filter(function (container) {
-            if (projectContainers.indexOf(container.name) > 0) {
+            if (projectContainers.indexOf(container.name) >= 0) {
               container.running = (/^Up /).test(container.status) ? true : false;
               return container;
             }
@@ -66,13 +71,6 @@ angular.module('eintopf.services.socket.states', [])
             asObject[containers[index].name] = containers[index];
           }
           return asObject;
-        }).map(function (containers) {
-          for (var index in projectContainers) {
-            var name = projectContainers[index];
-            if (containers[name]) continue;
-            containers[name] = {name: name, running: false, status: "Exited"};
-          }
-          return containers;
         }).$assignProperty($scope, "containers");
       }
     }
