@@ -82,8 +82,8 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction',
-    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction) {
+          ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction', 'resContainersList',
+            function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction, resContainersList) {
       $scope.project = {
         id: $stateParams.id
       };
@@ -112,6 +112,10 @@ angular.module('eintopf')
         });
       };
 
+              $scope.$watch("project.name", function () {
+                resProjectDetail.listContainers($scope);
+              });
+
       $scope.updateProject = function(project){
         reqProjectUpdate.emit(project);
         resProjectUpdate.fromProject($stateParams.id);
@@ -119,7 +123,7 @@ angular.module('eintopf')
       currentProject.setProjectId($stateParams.id);
 
       /**
-       * Log section
+       * Tab section
        */
 
       $scope.currentTab = storage.get("frontend.tabs"+ $stateParams.id+ ".lastActive") || "readme";

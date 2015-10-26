@@ -42,10 +42,38 @@ angular.module('eintopf.services.socket.states', [])
     return Kefir.fromEvent(socket, 'res:projects:install');
   }])
 
-  .factory('resProjectDetail', ['socket', function (socket) {
+        .factory('resProjectDetail', ['socket', 'resContainersList', function (socket, resContainersList) {
     return {
       fromProject: function (project) {
         return Kefir.fromEvent(socket, 'res:project:detail:' + project);
+      },
+      listContainers: function ($scope) {
+        if (!$scope.project.containers) return false;
+        var projectContainers = $scope.project.containers.map(function (container) {
+          return container.name;
+        });
+
+        return resContainersList.map(function (containers) {
+          return containers.filter(function (container) {
+            if (projectContainers.indexOf(container.name) > 0) {
+              container.running = (/^Up /).test(container.status) ? true : false;
+              return container;
+            }
+          });
+        }).map(function (containers) {
+          var asObject = {};
+          for (var index in containers) {
+            asObject[containers[index].name] = containers[index];
+          }
+          return asObject;
+        }).map(function (containers) {
+          for (var index in projectContainers) {
+            var name = projectContainers[index];
+            if (containers[name]) continue;
+            containers[name] = {name: name, running: false, status: "Exited"};
+          }
+          return containers;
+        }).$assignProperty($scope, "containers");
       }
     }
   }])

@@ -56,6 +56,10 @@
                 <li class="grd-row-col-1-6" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.markdowns[0]">
                     <p class="txt--center m0">Readme</p>
                 </li>
+                <li class="grd-row-col-1-6" ng-click="onClickTab('containers')"
+                    ng-class="{cssActive: currentTab =='containers'}" ng-if="project.containers[0]">
+                    <p class="txt--center m0">Containers</p>
+                </li>
             </ul>
             <div class="grd-row p0 m0 cssBorderWhitoutTop">
                 <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-glue ng-show="currentTab == 'protocol'">
@@ -78,6 +82,10 @@
                             </div>
                         </li>
                     </ul>
+                </div>
+
+                <div class="grd-row-col-6 p1" ng-show="currentTab == 'containers'">
+                    <div ng-include="'/partials/cooking.containers.html'"></div>
                 </div>
             </div>
         </div>

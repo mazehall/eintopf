@@ -10,19 +10,24 @@ utilModel = require '../util/'
 watcherModel = require '../stores/watcher.coffee'
 watcherModel.set 'projects:list', []
 
-getRunningProjectContainers = (project, callback) ->
+getProjectContainers = (project, callback) ->
   return callback [] unless project.path?
+  running = []
   dataset = ""
   process = child.exec "docker-compose ps", {cwd: project.path}
   process.stdout.on "data",(buffer) ->
     dataset += buffer.toString()
+  containers = []
 
   process.on "close", ->
     dataset = dataset.split(/\n/).slice 2
-    running = dataset.filter (name) ->
-      return name.match(/^\w+/) if name.match /Up /
+    for container in dataset
+      continue if not container or (name = container.match(/^(\w+[^ ])/)) and not name[1]
+      upState = /[ ]Up[ ]/.test(container)
+      containers.push {name: name[1], state: upState}
+      running.push name[1] if upState is true
 
-    callback running if callback?
+    callback? containers, running
 
 # emit subdirectory content through emitter
 dirEmitter = (path) ->
@@ -179,9 +184,10 @@ watcherModel.propertyToKefir 'containers:list'
   projects = watcherModel.get 'projects:list'
   for project, index in projects
     ((projectIndex)->
-      getRunningProjectContainers project, (containers) ->
+      getProjectContainers project, (containers, running) ->
         return false if ! projects[projectIndex]
-        projects[projectIndex].state = if containers.length > 0 then "running" else "exit"
+        projects[projectIndex].containers = if containers.length > 0 then containers else []
+        projects[projectIndex].state = if running.length > 0 then "running" else "exit"
     )(index)
 
     watcherModel.set "projects:list", projects
