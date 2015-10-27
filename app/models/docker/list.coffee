@@ -40,6 +40,7 @@ loadApps = () ->
           return false if virtualHost.match /^\*/ # ignore wildcards
           certs = getCerts virtualHost, container.certName
           app =
+            name: container.name
             host: virtualHost
             certs: certs if certs
             https: true if certs

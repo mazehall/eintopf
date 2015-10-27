@@ -40,7 +40,7 @@ angular.module('eintopf.services.socket.states', [])
 
   .factory('resProjectsInstall', ['socket', function (socket) {
     return Kefir.fromEvent(socket, 'res:projects:install');
-  }]).factory('resProjectDetail', ['socket', 'resContainersList', 'resContainersLog', function (socket, resContainersList, resContainersLog) {
+  }]).factory('resProjectDetail', ['socket', 'resContainersList', 'resContainersLog', 'resAppsList', function (socket, resContainersList, resContainersLog, resAppsList) {
     return {
       fromProject: function (project) {
         return Kefir.fromEvent(socket, 'res:project:detail:' + project);
@@ -72,6 +72,18 @@ angular.module('eintopf.services.socket.states', [])
           }
           return asObject;
         }).$assignProperty($scope, "containers");
+      },
+      listApps: function($scope){
+        if (!$scope.project.containers) return false;
+        var projectContainers = $scope.projectContainers || $scope.project.containers.map(function (container) {
+          return container.name;
+        });
+
+        resAppsList.map(function(apps){
+          return apps.filter(function(app) {
+            if (projectContainers.indexOf(app.name) >= 0) return app;
+          });
+        }).$assignProperty($scope, "apps");
       }
     }
   }])

@@ -82,12 +82,14 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-          ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction', 'resContainersList', 'reqContainerActions',
-            function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction, resContainersList, reqContainerActions) {
+  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction', 'resContainersList', 'reqContainerActions',
+    function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction, resContainersList, reqContainerActions) {
       $scope.project = {
-        id: $stateParams.id
+        id: $stateParams.id,
+        containers: []
       };
       $scope.loading = false;
+      $scope.logs = [];
 
       resProjectStart.fromProject($stateParams.id);
       resProjectStop.fromProject($stateParams.id);
@@ -112,9 +114,10 @@ angular.module('eintopf')
         });
       };
 
-              $scope.$watch("project.name", function () {
-                resProjectDetail.listContainers($scope);
-              });
+      $scope.$watch("project.name", function (){
+        resProjectDetail.listContainers($scope);
+        resProjectDetail.listApps($scope);
+      });
 
       $scope.updateProject = function(project){
         reqProjectUpdate.emit(project);
@@ -150,20 +153,19 @@ angular.module('eintopf')
         $scope.currentTab = "protocol"
       };
 
-              $scope.logs = [];
-              $scope.startContainer = function (container) {
-                if (typeof container.id != "string") return false;
-                reqContainerActions.start(container.id);
-              };
+      $scope.startContainer = function (container) {
+        if (typeof container.id != "string") return false;
+        reqContainerActions.start(container.id);
+      };
 
-              $scope.stopContainer = function (container) {
-                if (typeof container.id != "string") return false;
-                reqContainerActions.stop(container.id);
-              };
+      $scope.stopContainer = function (container) {
+        if (typeof container.id != "string") return false;
+        reqContainerActions.stop(container.id);
+      };
 
-              $scope.removeContainer = function (container) {
-                if (typeof container.id != "string") return false;
-                reqContainerActions.remove(container.id);
+      $scope.removeContainer = function (container) {
+        if (typeof container.id != "string") return false;
+        reqContainerActions.remove(container.id);
       };
     }
   ])
