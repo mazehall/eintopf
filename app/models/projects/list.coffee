@@ -12,22 +12,21 @@ watcherModel.set 'projects:list', []
 
 getProjectContainers = (project, callback) ->
   return callback [] unless project.path?
-  running = []
+  containers = []
+  runningApp = []
   dataset = ""
   process = child.exec "docker-compose ps", {cwd: project.path}
   process.stdout.on "data",(buffer) ->
     dataset += buffer.toString()
-  containers = []
 
   process.on "close", ->
     dataset = dataset.split(/\n/).slice 2
     for container in dataset
       continue if not container or (name = container.match(/^(\w+[^ ])/)) and not name[1]
-      upState = /[ ]Up[ ]/.test(container)
-      containers.push {name: name[1], state: upState}
-      running.push name[1] if upState is true
+      containers.push name[1]
+      runningApp.push name[1] if /[ ]Up[ ]/.test(container) is true
 
-    callback? containers, running
+    callback? containers, runningApp
 
 # emit subdirectory content through emitter
 dirEmitter = (path) ->

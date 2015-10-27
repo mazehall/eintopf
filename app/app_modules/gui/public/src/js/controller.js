@@ -120,6 +120,7 @@ angular.module('eintopf')
       });
 
       $scope.updateProject = function(project){
+        if (!$scope.project.containers || !$scope.project.containers.length) return;
         reqProjectUpdate.emit(project);
         resProjectUpdate.fromProject($stateParams.id);
       };
