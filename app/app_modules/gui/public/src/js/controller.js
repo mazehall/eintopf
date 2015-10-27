@@ -85,8 +85,7 @@ angular.module('eintopf')
   ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction', 'resContainersList', 'reqContainerActions',
     function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction, resContainersList, reqContainerActions) {
       $scope.project = {
-        id: $stateParams.id,
-        containers: []
+        id: $stateParams.id
       };
       $scope.loading = false;
       $scope.logs = [];
@@ -115,6 +114,7 @@ angular.module('eintopf')
       };
 
       $scope.$watch("project.name", function (){
+        if (!Array.isArray($scope.project.containers)) return;
         resProjectDetail.listContainers($scope);
         resProjectDetail.listApps($scope);
       });
