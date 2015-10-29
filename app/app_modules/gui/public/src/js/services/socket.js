@@ -40,12 +40,40 @@ angular.module('eintopf.services.socket.states', [])
 
   .factory('resProjectsInstall', ['socket', function (socket) {
     return Kefir.fromEvent(socket, 'res:projects:install');
-  }])
-
-  .factory('resProjectDetail', ['socket', function (socket) {
+  }]).factory('resProjectDetail', ['socket', 'resContainersList', 'resContainersLog', 'resAppsList', function (socket, resContainersList, resContainersLog, resAppsList) {
     return {
       fromProject: function (project) {
         return Kefir.fromEvent(socket, 'res:project:detail:' + project);
+      },
+      listContainers: function ($scope) {
+        resContainersLog.filter(function (x) {
+          if (x.message) return x;
+        }).onValue(function (val) {
+          val.read = false;
+          $scope.logs.push(val);
+        });
+
+        return resContainersList.map(function (containers) {
+          return containers.filter(function (container) {
+            if ($scope.project.containers.indexOf(container.name) >= 0) {
+              container.running = (/^Up /).test(container.status) ? true : false;
+              return container;
+            }
+          });
+        }).map(function (containers) {
+          var asObject = {};
+          for (var index in containers) {
+            asObject[containers[index].name] = containers[index];
+          }
+          return asObject;
+        }).$assignProperty($scope, "containers");
+      },
+      listApps: function($scope){
+        resAppsList.map(function(apps){
+          return apps.filter(function(app) {
+            if ($scope.project.containers.indexOf(app.name) >= 0) return app;
+          });
+        }).$assignProperty($scope, "apps");
       }
     }
   }])

@@ -36,12 +36,12 @@
         </div>
         <div class="mx1 txt--right grd-row-col-1-6">
             <div class="grd-row">
-                <div class="cssSwitchBg grd-row-col-5-6 px1" ng-switch on="{{value.running}}">
-                    <span ng-switch-when='true' class="on flt--right">
+                <div class="cssSwitchBg grd-row-col-5-6 px1">
+                    <span class="on flt--right" ng-show="value.running == true">
                         <div class="cssSwitchLabel small" ng-click="stopContainer(value)">ON</div>
                         <div class="cssSwitch"></div>
                     </span>
-                    <span ng-switch-when='false' class="off flt--right">
+                    <span class="off flt--right" ng-show="value.running == false">
                         <div class="cssSwitchLabel small"  ng-click="startContainer(value)">OFF</div>
                         <div class="cssSwitch"></div>
                     </span>
