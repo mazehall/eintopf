@@ -45,17 +45,10 @@ angular.module('eintopf.services.socket.states', [])
       fromProject: function (project) {
         return Kefir.fromEvent(socket, 'res:project:detail:' + project);
       },
-      listContainers: function ($scope) {
-        resContainersLog.filter(function (x) {
-          if (x.message) return x;
-        }).onValue(function (val) {
-          val.read = false;
-          $scope.logs.push(val);
-        });
-
+      listContainers: function (project) {
         return resContainersList.map(function (containers) {
           return containers.filter(function (container) {
-            if ($scope.project.containers.indexOf(container.name) >= 0) {
+            if (project.containers.indexOf(container.name) >= 0) {
               container.running = (/^Up /).test(container.status) ? true : false;
               return container;
             }
@@ -66,14 +59,14 @@ angular.module('eintopf.services.socket.states', [])
             asObject[containers[index].name] = containers[index];
           }
           return asObject;
-        }).$assignProperty($scope, "containers");
+        });
       },
-      listApps: function($scope){
-        resAppsList.map(function(apps){
+      listApps: function(project){
+        return resAppsList.map(function(apps){
           return apps.filter(function(app) {
-            if ($scope.project.containers.indexOf(app.name) >= 0) return app;
+            if (project.containers.indexOf(app.name) >= 0) return app;
           });
-        }).$assignProperty($scope, "apps");
+        });
       }
     }
   }])

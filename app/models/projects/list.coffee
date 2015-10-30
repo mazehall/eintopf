@@ -22,7 +22,7 @@ getProjectContainers = (project, callback) ->
   process.on "close", ->
     dataset = dataset.split(/\n/).slice 2
     for container in dataset
-      continue if not container or (name = container.match(/^(\w+[^ ])/)) and not name[1]
+      continue if not container or not (name = container.match(/^(\w+[^ ])/)) or not name[1]
       containers.push name[1]
       runningApp.push name[1] if /[ ]Up[ ]/.test(container) is true
 
@@ -185,7 +185,7 @@ watcherModel.propertyToKefir 'containers:list'
     ((projectIndex)->
       getProjectContainers project, (containers, running) ->
         return false if ! projects[projectIndex]
-        projects[projectIndex].containers = if containers.length > 0 then containers else []
+        projects[projectIndex].containers = containers
         projects[projectIndex].state = if running.length > 0 then "running" else "exit"
     )(index)
 

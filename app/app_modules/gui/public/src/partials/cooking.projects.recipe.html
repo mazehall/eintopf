@@ -71,7 +71,7 @@
                     <p class="txt--center m0">Readme</p>
                 </li>
                 <li class="grd-row-col-1-6" ng-click="onClickTab('containers')"
-                    ng-class="{cssActive: currentTab =='containers'}" ng-if="project.containers">
+                    ng-class="{cssActive: currentTab =='containers'}" ng-if="project.containers && project.containers.length">
                     <p class="txt--center m0">Containers</p>
                 </li>
             </ul>
