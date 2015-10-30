@@ -132,6 +132,7 @@ model.loadContainers = () ->
       id: val.info.Id
       status: val.info.Status
       name: val.inspect.Name.replace(/\//g, '') # strip docker-compose slashes
+      running: (/^Up/).test(val.info.Status)
       virtualHost: null
       certName: null
 

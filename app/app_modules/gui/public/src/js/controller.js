@@ -38,14 +38,7 @@ angular.module('eintopf')
   .controller('containersCtrl',
   ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
     function($scope, resContainersList, reqContainerActions, resContainersLog) {
-      resContainersList
-        .map(function(x) {
-          x.forEach(function(container) {
-            container.running = /^up/i.test(container.status);
-          });
-          return x;
-        })
-        .$assignProperty($scope, 'containers');
+      resContainersList.$assignProperty($scope, 'containers');
 
       $scope.logs = [];
       resContainersLog

@@ -49,7 +49,6 @@ angular.module('eintopf.services.socket.states', [])
         return resContainersList.map(function (containers) {
           return containers.filter(function (container) {
             if (project.containers.indexOf(container.name) >= 0) {
-              container.running = (/^Up /).test(container.status) ? true : false;
               return container;
             }
           });
