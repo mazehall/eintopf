@@ -44,6 +44,7 @@ loadApps = () ->
             host: virtualHost
             certs: certs if certs
             https: true if certs
+            project: container.project
           foundApps.push app
 
   watcherModel.set 'apps:list', foundApps
@@ -132,10 +133,11 @@ model.loadContainers = () ->
       id: val.info.Id
       status: val.info.Status
       name: val.inspect.Name.replace(/\//g, '') # strip docker-compose slashes
-      running: (/^Up/).test(val.info.Status)
+      running: val.inspect.State.Running
       virtualHost: null
       certName: null
-
+    if (labels = val.inspect.Config.Labels) and labels["com.docker.compose.project"]
+      push.project = labels["com.docker.compose.project"]
     if typeIsArray val.inspect.Config.Env
       val.inspect.Config.Env.forEach (env) ->
         push.virtualHost = match[1] if (match = env.match /^VIRTUAL_HOST=(.*)/)?

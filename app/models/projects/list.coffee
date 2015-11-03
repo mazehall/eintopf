@@ -3,6 +3,7 @@ git  = require 'gift'
 jetpack = require 'fs-jetpack'
 mazehall = require 'mazehall/lib/modules'
 fs = require 'fs'
+path = require "path"
 child = require 'child_process'
 crypto = require "crypto"
 
@@ -96,7 +97,7 @@ model.loadProject = (projectPath, callback) ->
     project = config.eintopf
     project['path'] = projectPath
     project['scripts'] = config.scripts if config.scripts
-    project['id'] = config.name
+    project['id'] = path.basename(projectPath).replace(/[^a-zA-Z0-9]/ig, "")
     project['markdowns'] = result[1] if result[1]
     project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
 

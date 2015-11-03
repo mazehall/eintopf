@@ -85,12 +85,13 @@ angular.module('eintopf')
 
       resProjectStart.fromProject($stateParams.id);
       resProjectStop.fromProject($stateParams.id);
-      resProjectDetail.fromProject($stateParams.id).onValue(function(project){
-          reqContainersList.emit();
-          resProjectDetail.listContainers(project).$assignProperty($scope, "containers");
-          resProjectDetail.listApps(project).$assignProperty($scope, "apps");
-      }).$assignProperty($scope, 'project');
+      resProjectDetail.fromProject($stateParams.id).$assignProperty($scope, 'project');
       reqProjectDetail.emit($stateParams.id);
+      resProjectDetail.listApps($scope.project.id).$assignProperty($scope, "apps");
+      resProjectDetail.listContainers($scope.project.id).onValue(function(containers){
+        $scope.containerLength = Object.keys(containers).length;
+      }).$assignProperty($scope, "containers");
+      reqContainersList.emit();
       resContainersLog.filter(function (x) {
         if (x.message) return x;
       }).onValue(function (val) {

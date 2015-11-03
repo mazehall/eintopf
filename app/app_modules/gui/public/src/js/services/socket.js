@@ -50,7 +50,7 @@ angular.module('eintopf.services.socket.states', [])
       listContainers: function (project) {
         return resContainersList.map(function (containers) {
           return containers.filter(function (container) {
-            if (project.containers && project.containers.indexOf(container.name) >= 0) {
+            if (container.project && container.project == project) {
               return container;
             }
           });
@@ -65,7 +65,7 @@ angular.module('eintopf.services.socket.states', [])
       listApps: function(project){
         return resAppsList.map(function(apps){
           return apps.filter(function(app) {
-            if (project.containers && project.containers.indexOf(app.name) >= 0) return app;
+            if (app.project && app.project === project) return app;
           });
         });
       }
