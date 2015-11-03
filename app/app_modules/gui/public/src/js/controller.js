@@ -164,6 +164,8 @@ angular.module('eintopf')
         if (typeof container.id != "string") return false;
         reqContainerActions.remove(container.id);
       };
+
+      $scope.isElectron = navigator.userAgent && navigator.userAgent.match(/^electron/);
     }
   ])
   .controller('createProjectCtrl',
