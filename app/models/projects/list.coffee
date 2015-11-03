@@ -11,24 +11,6 @@ utilModel = require '../util/'
 watcherModel = require '../stores/watcher.coffee'
 watcherModel.set 'projects:list', []
 
-getProjectContainers = (project, callback) ->
-  return callback [] unless project.path?
-  containers = []
-  runningApp = []
-  dataset = ""
-  process = child.exec "docker-compose ps", {cwd: project.path}
-  process.stdout.on "data",(buffer) ->
-    dataset += buffer.toString()
-
-  process.on "close", ->
-    dataset = dataset.split(/\n/).slice 2
-    for container in dataset
-      continue if not container or not (name = container.match(/^(\w+[^ ])/)) or not name[1]
-      containers.push name[1]
-      runningApp.push name[1] if /[ ]Up[ ]/.test(container) is true
-
-    callback? containers, runningApp
-
 # emit subdirectory content through emitter
 dirEmitter = (path) ->
   (emitter) ->
@@ -180,17 +162,12 @@ module.exports = model;
 
 watcherModel.propertyToKefir 'containers:list'
 .throttle 5000
-.onValue ->
-  projects = watcherModel.get 'projects:list'
-  for project, index in projects
-    ((projectIndex)->
-      getProjectContainers project, (containers, running) ->
-        return false if ! projects[projectIndex]
-        projects[projectIndex].containers = containers
-        projects[projectIndex].state = if running.length > 0 then "running" else "exit"
-    )(index)
+.onValue (containers) ->
+  projects = watcherModel.get "projects:list"
+  for index, container of containers.newValue
+    (projects[i].state = (if container.running then "running" else "exit") if container.project is project.id) for project, i in projects
 
-    watcherModel.set "projects:list", projects
+  watcherModel.set "projects:list", projects
 
 # monitor certificate changes and sync them accordingly
 _r.merge [watcherModel.propertyToKefir('projects:certs'), watcherModel.propertyToKefir('proxy:certs')]
