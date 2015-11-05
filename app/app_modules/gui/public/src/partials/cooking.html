@@ -5,7 +5,9 @@
     </div>
     <div class="grd-row-col-5-6--lg grd-row-col-4-6--sm cssNav">
       <ul class="list--unstyled flt--right m0 p0">
-
+        <li class="flt--left" ng-if="inboxOnline == false">
+          <a class="btn--link bg--orange"><i class="fa fa-flash"></i> <b>OFFLINE</b></a>
+        </li>
         <li class="flt--left"  ui-sref-active='active'>
           <a ui-sref="cooking.apps" class="btn--link">Apps</a>
         </li>
@@ -22,5 +24,16 @@
     </div>
   </div>
 </div>
+
+<ul class="grd">
+  <li class="grd-row my1 bg--red" ng-repeat="(index, error) in backendErrors | filter:{read: false} track by $index">
+    <div class="grd-row-col-6 p1">
+      <a href="#" class="fnt--white flt--right " ng-click="error.read = true">
+        <i class="fnt--white fa fa-times"></i>
+      </a>
+      <p class="fnt--white">{{error.message}}</p>
+    </div>
+  </li>
+</ul>
 
 <div id="content" class="cssHeightFull"ui-view></div>

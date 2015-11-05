@@ -159,13 +159,21 @@ dockerEventsStream.throttle 1000
 .onValue (event) ->
   model.loadContainers()
 
+_r.interval 5000, true
+.onValue ->
+  utilModel.runCmd "ping 8.8.8.8 -c1", {cwd: utilModel.getConfigModulePath()}, null, (error) ->
+    watcherModel.set "inbox:online", if error then false else true
+
 # check proxy container state
 dockerEventsStream.throttle 10000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
-    return cb new Error "proxy deployment is already running" if runningProxyDeployment == true
-    runningProxyDeployment = true
-    model.deployProxy cb
+    return cb new Error "proxy deployment is already running" if runningProxyDeployment is true
+    if watcherModel.get "inbox:online"
+      runningProxyDeployment = true
+      model.deployProxy cb
+    else if not runningProxyDeployment and watcherModel.get("inbox:online") is false
+      watcherModel.set "backend:errors", ["error while trying to install proxy. no internet connection"]
 .onAny (val) ->
   runningProxyDeployment = false if val.type != "error" || val.value.message != "proxy deployment is already running"
 

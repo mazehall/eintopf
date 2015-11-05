@@ -1,6 +1,19 @@
 'use strict';
 
 angular.module('eintopf')
+  .controller("rootCtrl",
+  ["$scope", "inboxOnline", "backendErrors",
+    function($scope, inboxOnline, backendErrors) {
+      inboxOnline.$assignProperty($scope, "inboxOnline");
+      backendErrors.map(function(errors){
+        var mapped = [];
+        for(var index in errors){
+          mapped.push({message: errors[index], read: false})
+        }
+        return mapped;
+      }).$assignProperty($scope, "backendErrors");
+    }
+  ])
   .controller('setupCtrl',
   ['$scope', 'setupLiveResponse', 'setupRestart', '$state',
     function($scope, setupLiveResponse, setupRestart, $state) {
