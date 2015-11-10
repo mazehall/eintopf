@@ -161,7 +161,7 @@ dockerEventsStream.throttle 1000
 
 _r.interval 5000, true
 .onValue ->
-  utilModel.runCmd "ping 8.8.8.8 -c1", {cwd: utilModel.getConfigModulePath()}, null, (error) ->
+  utilModel.runCmd "vagrant ssh -c 'ping github.com -c1'", {cwd: utilModel.getConfigModulePath()}, null, (error) ->
     watcherModel.set "inbox:online", if error then false else true
 
 # check proxy container state
