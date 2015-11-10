@@ -85,8 +85,14 @@ model.deployProxy = (callback) ->
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       image.inspect (err, result) ->
-        return model.pullImage proxyConfig.Image, null, cb if err && err.statusCode == 404
-        return cb err, result
+        return cb err, result unless err
+        if err?.statusCode is 404 and watcherModel.get("inbox:online") is false
+          errMessage = "error while trying to install proxy. no internet connection"
+          watcherModel.set "backend:errors", [{message: errMessage, read: false, date: Date.now()}]
+          return cb new Error errMessage
+        if watcherModel.get("inbox:online") is true and err?.statusCode is 404
+          return model.pullImage proxyConfig.Image, null, cb
+        runningProxyDeployment = false
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       docker.createContainer proxyConfig, cb
@@ -169,11 +175,8 @@ dockerEventsStream.throttle 10000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
     return cb new Error "proxy deployment is already running" if runningProxyDeployment is true
-    if watcherModel.get "inbox:online"
-      runningProxyDeployment = true
-      model.deployProxy cb
-    else if not runningProxyDeployment and watcherModel.get("inbox:online") is false
-      watcherModel.set "backend:errors", ["error while trying to install proxy. no internet connection"]
+    runningProxyDeployment = true
+    model.deployProxy cb
 .onAny (val) ->
   runningProxyDeployment = false if val.type != "error" || val.value.message != "proxy deployment is already running"
 

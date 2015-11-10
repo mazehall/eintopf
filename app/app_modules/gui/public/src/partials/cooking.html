@@ -26,7 +26,7 @@
 </div>
 
 <ul class="grd">
-  <li class="grd-row my1 bg--red" ng-repeat="(index, error) in backendErrors | filter:{read: false} track by $index">
+  <li class="grd-row my1 bg--red" ng-repeat="(index, error) in backendErrors | filter:{read: false} track by error.date">
     <div class="grd-row-col-6 p1">
       <a href="#" class="fnt--white flt--right " ng-click="error.read = true">
         <i class="fnt--white fa fa-times"></i>

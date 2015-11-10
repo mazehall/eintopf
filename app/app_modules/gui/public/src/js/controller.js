@@ -5,13 +5,7 @@ angular.module('eintopf')
   ["$scope", "inboxOnline", "backendErrors",
     function($scope, inboxOnline, backendErrors) {
       inboxOnline.$assignProperty($scope, "inboxOnline");
-      backendErrors.map(function(errors){
-        var mapped = [];
-        for(var index in errors){
-          mapped.push({message: errors[index], read: false})
-        }
-        return mapped;
-      }).$assignProperty($scope, "backendErrors");
+      backendErrors.$assignProperty($scope, "backendErrors");
     }
   ])
   .controller('setupCtrl',
