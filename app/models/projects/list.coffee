@@ -130,14 +130,14 @@ model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:start:#{project.id}"
 
-  return watcherModel.log logName, "script start does not exist\n" unless project.scripts["start"]
+  return watcherModel.log logName, "script start does not exist\n" unless project.scripts?["start"]
   utilModel.runCmd project.scripts["start"], {cwd: project.path}, logName
 
 model.stopProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:stop:#{project.id}"
 
-  return watcherModel.log logName, "script stop does not exist\n" unless project.scripts["stop"]
+  return watcherModel.log logName, "script stop does not exist\n" unless project.scripts?["stop"]
   utilModel.runCmd project.scripts["stop"], {cwd: project.path}, logName
 
 model.updateProject = (project, callback) ->
@@ -155,7 +155,7 @@ model.callAction = (project, action, callback) ->
     return callback new Error 'invalid script name' if project.scripts? or action.script? or project.scripts[action.script]?
   logName = "res:project:action:script:#{project.id}"
 
-  return watcherModel.log logName, "script '#{action.script}' does not exists\n" unless project.scripts[action.script]
+  return watcherModel.log logName, "script '#{action.script}' does not exists\n" unless project.scripts?[action.script]
   utilModel.runCmd project.scripts[action.script], {cwd: project.path}, logName
 
 module.exports = model;
