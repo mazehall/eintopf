@@ -20,6 +20,19 @@
         </p>
       </li>
     </ul>
+
+    <div ng-controller="terminalCtrl" ng-show="showTerminal">
+      <terminal>
+        <p class="click-me">Click me to start commanding !</p>
+      </terminal>
+    </div>
+
+    <!--<div ng-show="vagrantLog">-->
+      <!--<div class="grd-row-col-6 scroll bg&#45;&#45;dark-gray p1" scroll-glue>-->
+        <!--<div class="fnt&#45;&#45;off-white" marked="vagrantLog"></div>-->
+      <!--</div>-->
+    <!--</div>-->
+
     <div ng-show="states.failed" class="">
         <pre class="bg--dark-gray my2 p1 fnt--off-white ">{{states.errorMessage}}</pre>
         <a class="btn flt--left" ng-click="setupRestart()">

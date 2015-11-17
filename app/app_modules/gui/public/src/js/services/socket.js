@@ -252,4 +252,31 @@ angular.module('eintopf.services.socket.states', [])
     return Kefir.fromEvent(socket, 'res:recommendations:list').toProperty();
   }])
 
+  .factory('terminalStream', ['socket', 'storage', function (socket, storage) {
+    var stream = null;
+
+    var emit = function(cmd) {
+      socket.emit('terminal:input', cmd);
+    };
+
+    var getStream = function() {
+      if(stream) return stream;
+      stream = Kefir.fromEvent(socket, 'terminal:output')
+        //.onValue(function(value) {
+        //  //value = value.replace(/\n/ig, "<br>");
+        //  storage.add("vagrant.log", new Date().toLocaleTimeString() + " > " + value);
+        //})
+        .filter(function(val) {
+          if(val && val.text) return true;
+        })
+        .toProperty();
+      return stream;
+    };
+
+    return {
+      emit: emit,
+      getStream: getStream
+    }
+  }])
+
 ;

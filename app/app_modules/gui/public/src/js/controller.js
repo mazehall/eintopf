@@ -9,7 +9,6 @@ angular.module('eintopf')
       $scope.$fromWatch('states')
         .filter(function(val) {
           if (val.newValue && val.newValue.state == 'cooking') return true;
-          return null;
         })
         .onValue(function() {
           $state.go('cooking.projects');
@@ -18,7 +17,6 @@ angular.module('eintopf')
       $scope.$fromWatch('states')
         .filter(function(val) {
           if (val.newValue && val.newValue.state == 'first') return true;
-          return null;
         })
         .onValue(function() {
           $state.go('first');
@@ -29,6 +27,30 @@ angular.module('eintopf')
       }
     }
   ])
+    .controller('terminalCtrl',
+    ['$scope', 'terminalStream',
+      function($scope, terminalStream) {
+        $scope.showTerminal = false;
+
+        terminalStream.getStream()
+        .onValue(function(val) {
+          if (!$scope.showTerminal) $scope.showTerminal = true;
+          $scope.$emit('terminal-output', {
+            output: false,
+            text: [val.text],
+            breakLine: true,
+            input: val.input | false,
+            secret: val.secret | false
+          });
+        });
+
+        $scope.$on('terminal-input', function (e, consoleInput) {
+          if(!consoleInput[0] || !consoleInput[0].command) return false;
+          terminalStream.emit(consoleInput[0].command);
+        });
+
+      }
+    ])
   .controller('cookingCtrl',
   ['$scope', 'reqProjectList', 'resProjectsList',
     function($scope, reqProjectsList, resProjectsList) {

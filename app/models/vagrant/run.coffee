@@ -1,11 +1,11 @@
-config = require '../stores/config'
 _r = require 'kefir'
 vagrant = require 'node-vagrant'
-fsModel = require './fs.coffee'
+
 utilModel = require '../util/'
+terminalModel = require '../util/terminal.coffee'
 
 isVagrantInstalled = (callback) ->
-  return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
+  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
 
   child = machine._run ['version']
   child.on 'close', () ->
@@ -13,33 +13,28 @@ isVagrantInstalled = (callback) ->
   child.on 'error', (err) ->
     callback new Error 'vagrant is apparently not installed'
 
-getVagrantMachine = (callback) ->
+model = {}
+
+model.getVagrantMachine = (callback) ->
   return callback new Error '' if ! (configModulePath = utilModel.getConfigModulePath())?
   return machine = vagrant.create {cwd: configModulePath}
 
-model = {}
 model.getStatus = (callback) ->
-  return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
+  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
   machine.status (err, result) ->
     return callback new Error err if err
     return callback(null, i.status) for own d, i of result
 
 model.getSshConfig = (callback) ->
-  return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
+  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
   machine.sshConfig callback
 
 model.up = (callback) ->
-  if process.platform != 'win32'
-    errorMessage = 'Your OS is currently not supported for automatic vagrant start.'
-    errorMessage += '\nPlease start vagrant manually.'
-    errorMessage += '\nOpen a shell/terminal and enter:'
-    errorMessage += '\n'
-    errorMessage += '\ncd ' + utilModel.getConfigModulePath()
-    errorMessage += '\nvagrant up'
-    return callback errorMessage
+  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
 
-  return callback new Error 'failed to initialize vagrant' if ! (machine = getVagrantMachine())?
-  machine.up callback
+  terminalModel.createPTYStream 'vagrant up', {cwd: machine.opts.cwd, env: machine.opts.env}, (err) ->
+    return callback err if err
+    return callback null, true
 
 model.run = (callback) ->
   runningMessage = 'is_runnning'

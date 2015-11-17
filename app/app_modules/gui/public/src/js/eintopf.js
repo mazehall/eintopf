@@ -1,6 +1,7 @@
 var eintopf = angular.module('eintopf', [
   'ui.router',
   'angular-kefir',
+  'vtortola.ng-terminal',
   'luegg.directives',
   'hc.marked',
   'eintopf.services.socket.states',
@@ -18,6 +19,11 @@ eintopf.factory('currentProject', [function () {
       projectId = value;
     }
   };
+}]);
+
+eintopf.config(['terminalConfigurationProvider', function (terminalConfigurationProvider) {
+  terminalConfigurationProvider.inputOnlyMode = true;
+  terminalConfigurationProvider.promptConfiguration = { end: '', user: '', separator: '', path: '' };
 }]);
 
 eintopf.config(function($stateProvider, $urlRouterProvider) {
