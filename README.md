@@ -1,13 +1,13 @@
-[![eintopf](http://mazehall.github.io/eintopf/img/eintopf_logo.png)](http://mazehall.github.io/eintopf)
+#[Eintopf](https://www.eintopf.io/)
 
 A pot with the mixture of the smart development tools Docker, Vagrant and VirtualBox. Made to ease the chore of the
 daily project works.
 
-![eintopf](http://mazehall.github.io/eintopf/img/screen_eintopf.png)
+![eintopf](https://eintopf.io/content/images/screen_eintopf.png)
 
 Download Eintopf
 ==============
-[Download the latest version of eintopf] (http://mazehall.github.io/eintopf)
+[Download the latest version of eintopf] (https://eintopf.io/download/)
 
 
 
@@ -69,9 +69,9 @@ The configuration works partially, so you only have to set what you want to over
     }
 
 
-## Vagrant file
+## Vagrantfile
 
-The used vagrant file is located in eintopfHome/eintopfNamespace/Vagrantfile (default: ~/.eintopf/default/Vagrantfile). You can set your own Vagrantfile there.
+The used Vagrantfile is located in <EINTOP_HOME>/<eintopfNamespace>/Vagrantfile (default: ~/.eintopf/default/Vagrantfile). You can set your own settings and provisioning there.
 
 The following settings are necessary so that Eintopf can use Vagrant :
 
