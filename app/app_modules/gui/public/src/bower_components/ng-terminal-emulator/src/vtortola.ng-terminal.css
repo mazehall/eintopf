@@ -37,6 +37,7 @@
     width:0;
 }
 
+/**
 .terminal-viewport {
     height: 100%;
     margin: 0;
@@ -44,6 +45,7 @@
     overflow-y: auto;
     padding:0;
 }
+**/
 
 .terminal-cursor{
     visibility:visible;
@@ -74,6 +76,7 @@
     padding:0;
 }
 
+/**
 .vintage-terminal .terminal-viewport {
     height: 94%;
     margin: 15px 20px;
@@ -81,3 +84,4 @@
     overflow-y: hidden;
     padding:0;
 }
+**/
