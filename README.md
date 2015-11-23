@@ -3,7 +3,7 @@
 A pot with the mixture of the smart development tools Docker, Vagrant and VirtualBox. Made to ease the chore of the
 daily project works.
 
-![eintopf](https://eintopf.io/content/images/screen_eintopf.png)
+![eintopf](resources/screen_eintopf.png)
 
 Download Eintopf
 ==============
