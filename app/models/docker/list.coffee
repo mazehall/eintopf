@@ -8,6 +8,7 @@ utilModel = require '../util/index.coffee'
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
 
+errMessageProxyNoNet = "error while trying to install proxy. no internet connection"
 runningProxyDeployment = false
 proxyConfig = config.get 'proxy'
 
@@ -85,14 +86,11 @@ model.deployProxy = (callback) ->
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       image.inspect (err, result) ->
-        return cb err, result unless err
-        if err?.statusCode is 404 and watcherModel.get("inbox:online") is false
-          errMessage = "error while trying to install proxy. no internet connection"
-          watcherModel.set "backend:errors", [{message: errMessage, read: false, date: Date.now()}]
-          return cb new Error errMessage
-        if watcherModel.get("inbox:online") is true and err?.statusCode is 404
-          return model.pullImage proxyConfig.Image, null, cb
-        runningProxyDeployment = false
+        if err?.statusCode == 404 && watcherModel.get("inbox:online") is false
+          watcherModel.set "backend:errors", [{message: errMessageProxyNoNet, read: false, date: Date.now()}]
+          return cb new Error errMessageProxyNoNet
+        return model.pullImage proxyConfig.Image, null, cb if err && err.statusCode == 404
+        return cb err, result
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       docker.createContainer proxyConfig, cb

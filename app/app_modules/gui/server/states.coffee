@@ -156,13 +156,13 @@ states = (connections_, rawSocket) ->
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.startProject project, () ->
+      projectsModel.startProject project
 
     _r.fromEvents socket, 'project:stop'
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.stopProject project, () ->
+      projectsModel.stopProject project
 
     _r.fromEvents socket, 'project:delete'
     .filter (x) ->

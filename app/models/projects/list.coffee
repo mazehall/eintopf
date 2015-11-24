@@ -127,18 +127,18 @@ model.deleteProject = (project, callback) ->
     callback null, true
 
 model.startProject = (project, callback) ->
-  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+  return callback? new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:start:#{project.id}"
 
   return watcherModel.log logName, "script start does not exist\n" unless project.scripts?["start"]
-  utilModel.runCmd project.scripts["start"], {cwd: project.path}, logName
+  utilModel.runCmd project.scripts["start"], {cwd: project.path}, logName, callback
 
 model.stopProject = (project, callback) ->
-  return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+  return callback? new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:stop:#{project.id}"
 
   return watcherModel.log logName, "script stop does not exist\n" unless project.scripts?["stop"]
-  utilModel.runCmd project.scripts["stop"], {cwd: project.path}, logName
+  utilModel.runCmd project.scripts["stop"], {cwd: project.path}, logName, callback
 
 model.updateProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?

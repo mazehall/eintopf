@@ -94,8 +94,8 @@ model.isProjectInstalled = (projectId) ->
 
 model.runCmd = (cmd, config, logName, callback) ->
   config = {} if ! config
-  stdout = ""
-  stderr = ""
+  stdOut = ""
+  stdErr = ""
 
   sh = 'sh'
   shFlag = '-c'
@@ -107,13 +107,15 @@ model.runCmd = (cmd, config, logName, callback) ->
 
   proc = spawn sh, [shFlag, cmd], config
   proc.on 'error', (err) -> callback? err
-  proc.on 'close', (code, signal) -> callback? (if stderr then new Error stderr else null), stdout
+  proc.on 'close', (code) ->
+    return callback? new Error(stdErr || "Command failed"), stdOut if code != 0
+    callback? null, stdOut
   proc.stdout.on 'data', (chunk) ->
     watcherModel.log logName, chunk.toString() if logName
-    stdout += chunk.toString()
+    stdOut += chunk.toString()
   proc.stderr.on 'data', (chunk) ->
     watcherModel.log logName, chunk.toString() if logName
-    stderr += chunk.toString()
+    stdErr += chunk.toString()
 
 model.syncCerts = (path, files, callback) ->
   return callback new Error 'Invalid path given' if ! path
