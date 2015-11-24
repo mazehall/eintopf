@@ -5,6 +5,7 @@ projectsModel = require '../../../models/projects/list.coffee'
 dockerModel = require '../../../models/docker/list.coffee'
 watcherModel = require '../../../models/stores/watcher.coffee'
 registryModel = require '../../../models/stores/registry.coffee'
+terminalModel = require '../../../models/util/terminal.coffee'
 
 setupModel.run()
 projectsModel.loadProjects()
@@ -89,6 +90,15 @@ states = (connections_, rawSocket) ->
   .onValue (val) ->
     rawSocket.emit 'res:recommendations:list', val.newValue
 
+  # emit terminal output
+  watcherModel.propertyToKefir 'terminal:output'
+  .filter (val) ->
+    return true if val.newValue?.length > 0
+  .map (val) ->
+    return val.newValue.shift()
+  .onValue (val) ->
+    rawSocket.emit 'terminal:output', val
+
   watcherModel.propertyToKefir "backend:errors"
   .onValue (val) ->
     rawSocket.emit "res:backend:errors", val.newValue
@@ -99,6 +109,11 @@ states = (connections_, rawSocket) ->
 
   connections_.onValue (socket) ->
     socket.emit 'states:live', watcherModel.get 'states:live'
+
+    _r.fromEvents socket, 'terminal:input'
+    .filter()
+    .onValue (val) ->
+      terminalModel.writeIntoPTY val
 
     _r.fromEvents socket, 'projects:list'
       .onValue () ->

@@ -26,10 +26,12 @@ gulp.task("cleanup dependencies", ["copy"], function() {
 
   /**
    * remove all packages specified in the 'devDependencies' section
+   *
+   * runs postinstall again to fix missing optional dependencies
    */
 
   var buildDir = jetpack.cwd("./build").dir(".");
-  var process = exec("npm prune --production", {cwd: buildDir.path()});
+  var process = exec("npm prune --production && npm run postinstall", {cwd: buildDir.path()});
 
   return process.stdout;
 });

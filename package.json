@@ -1,7 +1,8 @@
 {
   "devDependencies": {
     "asar": "^0.7.2",
-    "electron-prebuilt": "^0.30.1",
+    "electron-prebuilt": "^0.33.8",
+    "electron-rebuild": "^1.0.1",
     "esperanto": "^0.7.2",
     "fs-jetpack": "^0.7.0",
     "gulp": "^3.9.0",
