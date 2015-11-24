@@ -94,7 +94,8 @@ model.isProjectInstalled = (projectId) ->
 
 model.runCmd = (cmd, config, logName, callback) ->
   config = {} if ! config
-  output = ''
+  stdout = ""
+  stderr = ""
 
   sh = 'sh'
   shFlag = '-c'
@@ -105,16 +106,14 @@ model.runCmd = (cmd, config, logName, callback) ->
     config.windowsVerbatimArguments = true
 
   proc = spawn sh, [shFlag, cmd], config
-  proc.on 'error', (err) ->
-    return callback err if callback
-  proc.on 'close', (code, signal) ->
-    return callback null, output if callback
+  proc.on 'error', (err) -> callback? err
+  proc.on 'close', (code, signal) -> callback? (if stderr then new Error stderr else null), stdout
   proc.stdout.on 'data', (chunk) ->
     watcherModel.log logName, chunk.toString() if logName
-    output += chunk.toString()
+    stdout += chunk.toString()
   proc.stderr.on 'data', (chunk) ->
     watcherModel.log logName, chunk.toString() if logName
-    output += chunk.toString()
+    stderr += chunk.toString()
 
 model.syncCerts = (path, files, callback) ->
   return callback new Error 'Invalid path given' if ! path

@@ -40,9 +40,11 @@ loadApps = () ->
           return false if virtualHost.match /^\*/ # ignore wildcards
           certs = getCerts virtualHost, container.certName
           app =
+            name: container.name
             host: virtualHost
             certs: certs if certs
             https: true if certs
+            project: container.project
           foundApps.push app
 
   watcherModel.set 'apps:list', foundApps
@@ -83,8 +85,14 @@ model.deployProxy = (callback) ->
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       image.inspect (err, result) ->
-        return model.pullImage proxyConfig.Image, null, cb if err && err.statusCode == 404
-        return cb err, result
+        return cb err, result unless err
+        if err?.statusCode is 404 and watcherModel.get("inbox:online") is false
+          errMessage = "error while trying to install proxy. no internet connection"
+          watcherModel.set "backend:errors", [{message: errMessage, read: false, date: Date.now()}]
+          return cb new Error errMessage
+        if watcherModel.get("inbox:online") is true and err?.statusCode is 404
+          return model.pullImage proxyConfig.Image, null, cb
+        runningProxyDeployment = false
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       docker.createContainer proxyConfig, cb
@@ -131,9 +139,11 @@ model.loadContainers = () ->
       id: val.info.Id
       status: val.info.Status
       name: val.inspect.Name.replace(/\//g, '') # strip docker-compose slashes
+      running: val.inspect.State.Running
       virtualHost: null
       certName: null
-
+    if (labels = val.inspect.Config.Labels) and labels["com.docker.compose.project"]
+      push.project = labels["com.docker.compose.project"]
     if typeIsArray val.inspect.Config.Env
       val.inspect.Config.Env.forEach (env) ->
         push.virtualHost = match[1] if (match = env.match /^VIRTUAL_HOST=(.*)/)?
@@ -155,11 +165,16 @@ dockerEventsStream.throttle 1000
 .onValue (event) ->
   model.loadContainers()
 
+_r.interval 5000, true
+.onValue ->
+  utilModel.runCmd "vagrant ssh -c 'ping github.com -c1'", {cwd: utilModel.getConfigModulePath()}, null, (error) ->
+    watcherModel.set "inbox:online", if error then false else true
+
 # check proxy container state
 dockerEventsStream.throttle 10000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
-    return cb new Error "proxy deployment is already running" if runningProxyDeployment == true
+    return cb new Error "proxy deployment is already running" if runningProxyDeployment is true
     runningProxyDeployment = true
     model.deployProxy cb
 .onAny (val) ->

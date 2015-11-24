@@ -3,26 +3,13 @@ git  = require 'gift'
 jetpack = require 'fs-jetpack'
 mazehall = require 'mazehall/lib/modules'
 fs = require 'fs'
+path = require "path"
 child = require 'child_process'
 crypto = require "crypto"
 
 utilModel = require '../util/'
 watcherModel = require '../stores/watcher.coffee'
 watcherModel.set 'projects:list', []
-
-getRunningProjectContainers = (project, callback) ->
-  return callback [] unless project.path?
-  dataset = ""
-  process = child.exec "docker-compose ps", {cwd: project.path}
-  process.stdout.on "data",(buffer) ->
-    dataset += buffer.toString()
-
-  process.on "close", ->
-    dataset = dataset.split(/\n/).slice 2
-    running = dataset.filter (name) ->
-      return name.match(/^\w+/) if name.match /Up /
-
-    callback running if callback?
 
 # emit subdirectory content through emitter
 dirEmitter = (path) ->
@@ -92,7 +79,7 @@ model.loadProject = (projectPath, callback) ->
     project = config.eintopf
     project['path'] = projectPath
     project['scripts'] = config.scripts if config.scripts
-    project['id'] = config.name
+    project['id'] = path.basename(projectPath).replace(/[^a-zA-Z0-9]/ig, "")
     project['markdowns'] = result[1] if result[1]
     project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
 
@@ -143,14 +130,14 @@ model.startProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:start:#{project.id}"
 
-  return watcherModel.log logName, "script start does not exist\n" unless project.scripts["start"]
+  return watcherModel.log logName, "script start does not exist\n" unless project.scripts?["start"]
   utilModel.runCmd project.scripts["start"], {cwd: project.path}, logName
 
 model.stopProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:stop:#{project.id}"
 
-  return watcherModel.log logName, "script stop does not exist\n" unless project.scripts["stop"]
+  return watcherModel.log logName, "script stop does not exist\n" unless project.scripts?["stop"]
   utilModel.runCmd project.scripts["stop"], {cwd: project.path}, logName
 
 model.updateProject = (project, callback) ->
@@ -168,23 +155,19 @@ model.callAction = (project, action, callback) ->
     return callback new Error 'invalid script name' if project.scripts? or action.script? or project.scripts[action.script]?
   logName = "res:project:action:script:#{project.id}"
 
-  return watcherModel.log logName, "script '#{action.script}' does not exists\n" unless project.scripts[action.script]
+  return watcherModel.log logName, "script '#{action.script}' does not exists\n" unless project.scripts?[action.script]
   utilModel.runCmd project.scripts[action.script], {cwd: project.path}, logName
 
 module.exports = model;
 
 watcherModel.propertyToKefir 'containers:list'
 .throttle 5000
-.onValue ->
-  projects = watcherModel.get 'projects:list'
-  for project, index in projects
-    ((projectIndex)->
-      getRunningProjectContainers project, (containers) ->
-        return false if ! projects[projectIndex]
-        projects[projectIndex].state = if containers.length > 0 then "running" else "exit"
-    )(index)
+.onValue (containers) ->
+  projects = watcherModel.get "projects:list"
+  for index, container of containers.newValue
+    (projects[i].state = (if container.running then "running" else "exit") if container.project is project.id) for project, i in projects
 
-    watcherModel.set "projects:list", projects
+  watcherModel.set "projects:list", projects
 
 # monitor certificate changes and sync them accordingly
 _r.merge [watcherModel.propertyToKefir('projects:certs'), watcherModel.propertyToKefir('proxy:certs')]

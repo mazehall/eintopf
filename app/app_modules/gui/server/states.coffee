@@ -99,6 +99,14 @@ states = (connections_, rawSocket) ->
   .onValue (val) ->
     rawSocket.emit 'terminal:output', val
 
+  watcherModel.propertyToKefir "backend:errors"
+  .onValue (val) ->
+    rawSocket.emit "res:backend:errors", val.newValue
+
+  watcherModel.propertyToKefir "inbox:online"
+  .onValue (val) ->
+    rawSocket.emit "res:inbox:online", val.newValue
+
   connections_.onValue (socket) ->
     socket.emit 'states:live', watcherModel.get 'states:live'
 
