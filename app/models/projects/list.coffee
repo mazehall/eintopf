@@ -164,8 +164,10 @@ watcherModel.propertyToKefir 'containers:list'
 .throttle 5000
 .onValue (containers) ->
   projects = watcherModel.get "projects:list"
-  for index, container of containers.newValue
-    (projects[i].state = (if container.running then "running" else "exit") if container.project is project.id) for project, i in projects
+
+  for project, i in projects
+    project.state = null
+    (project.state = 'running' if container.running && container.project == project.id) for container, i in containers.newValue
 
   watcherModel.set "projects:list", projects
 
