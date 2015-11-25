@@ -116,8 +116,8 @@ states = (connections_, rawSocket) ->
       terminalModel.writeIntoPTY val
 
     _r.fromEvents socket, 'projects:list'
-      .onValue () ->
-        socket.emit 'res:projects:list', watcherModel.get 'projects:list'
+    .onValue () ->
+      socket.emit 'res:projects:list', watcherModel.get 'projects:list'
 
     _r.fromEvents socket, 'states:restart'
     .onValue () ->
