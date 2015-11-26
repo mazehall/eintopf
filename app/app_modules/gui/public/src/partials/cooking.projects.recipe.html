@@ -44,9 +44,10 @@
             </div>
         </div>
     </div>
+
     <div class="grd-row">
         <div class="grd-row-col-6 p2">
-            <ul class="grd-row cssTab cssBgGreen list--unstyled p0 m0">
+            <ul class="grd-row cssTab cssBgGreenAlpha list--unstyled p0 m0">
                 <li class="grd-row-col-1-6 " ng-click="onClickTab('protocol')" ng-class="{cssActive: currentTab == 'protocol'}">
                     <p class="txt--center m0">Logs</p>
                 </li>
@@ -55,6 +56,14 @@
                 </li>
                 <li class="grd-row-col-1-6" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.markdowns[0]">
                     <p class="txt--center m0">Readme</p>
+                </li>
+                <li class="grd-row-col-1-6" ng-click="onClickTab('containers')"
+                    ng-class="{cssActive: currentTab =='containers'}" ng-if="containers && containerLength">
+                    <p class="txt--center m0">Containers ({{containerLength}})</p>
+                </li>
+                <li class="grd-row-col-1-6" ng-click="onClickTab('apps')"
+                    ng-class="{cssActive: currentTab =='apps'}" ng-if="apps && apps.length">
+                    <p class="txt--center m0">Running Apps ({{apps.length}})</p>
                 </li>
             </ul>
             <div class="grd-row p0 m0 cssBorderWhitoutTop">
@@ -78,6 +87,14 @@
                             </div>
                         </li>
                     </ul>
+                </div>
+
+                <div class="grd-row-col-6 p1" ng-show="currentTab == 'containers'">
+                    <div ng-include="'/partials/cooking.containers.html'"></div>
+                </div>
+
+                <div class="grd-row-col-6 p1" ng-show="currentTab == 'apps'">
+                    <div ng-include="'/partials/cooking.apps.html'"></div>
                 </div>
             </div>
         </div>

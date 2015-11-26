@@ -5,6 +5,7 @@ projectsModel = require '../../../models/projects/list.coffee'
 dockerModel = require '../../../models/docker/list.coffee'
 watcherModel = require '../../../models/stores/watcher.coffee'
 registryModel = require '../../../models/stores/registry.coffee'
+terminalModel = require '../../../models/util/terminal.coffee'
 
 setupModel.run()
 projectsModel.loadProjects()
@@ -89,12 +90,34 @@ states = (connections_, rawSocket) ->
   .onValue (val) ->
     rawSocket.emit 'res:recommendations:list', val.newValue
 
+  # emit terminal output
+  watcherModel.propertyToKefir 'terminal:output'
+  .filter (val) ->
+    return true if val.newValue?.length > 0
+  .map (val) ->
+    return val.newValue.shift()
+  .onValue (val) ->
+    rawSocket.emit 'terminal:output', val
+
+  watcherModel.propertyToKefir "backend:errors"
+  .onValue (val) ->
+    rawSocket.emit "res:backend:errors", val.newValue
+
+  watcherModel.propertyToKefir "inbox:online"
+  .onValue (val) ->
+    rawSocket.emit "res:inbox:online", val.newValue
+
   connections_.onValue (socket) ->
     socket.emit 'states:live', watcherModel.get 'states:live'
 
+    _r.fromEvents socket, 'terminal:input'
+    .filter()
+    .onValue (val) ->
+      terminalModel.writeIntoPTY val
+
     _r.fromEvents socket, 'projects:list'
-      .onValue () ->
-        socket.emit 'res:projects:list', watcherModel.get 'projects:list'
+    .onValue () ->
+      socket.emit 'res:projects:list', watcherModel.get 'projects:list'
 
     _r.fromEvents socket, 'states:restart'
     .onValue () ->
@@ -133,13 +156,13 @@ states = (connections_, rawSocket) ->
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.startProject project, () ->
+      projectsModel.startProject project
 
     _r.fromEvents socket, 'project:stop'
     .filter (x) ->
       x if x.id?
     .onValue (project) ->
-      projectsModel.stopProject project, () ->
+      projectsModel.stopProject project
 
     _r.fromEvents socket, 'project:delete'
     .filter (x) ->

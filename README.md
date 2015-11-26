@@ -1,36 +1,25 @@
-[![eintopf](http://mazehall.github.io/eintopf/img/eintopf_logo.png)](http://mazehall.github.io/eintopf)
+[![Build Status](https://travis-ci.org/mazehall/eintopf.svg)](https://travis-ci.org/mazehall/eintopf)
+
+#[Eintopf](https://www.eintopf.io/)
 
 A pot with the mixture of the smart development tools Docker, Vagrant and VirtualBox. Made to ease the chore of the
 daily project works.
 
-![eintopf](http://mazehall.github.io/eintopf/img/screen_eintopf.png)
+![eintopf](resources/screen_eintopf.png)
 
 Download Eintopf
 ==============
-[Download the latest version of eintopf] (http://mazehall.github.io/eintopf)
+[Download the latest version of eintopf] (https://eintopf.io/download/)
 
 
-# Installation
 
-Currently the project is in a very early stage and in heavy development. There are release scripts for
-MacOS, Linux and Windows to build the native application.
-
-Please use the Git clone way to participate.
-
-
-## Prerequisites
+# Prerequisites
 
 * VirtualBox
 * Vagrant >= 1.7
-* Git + Gitbash (must be installed with the environment variables option)
+* Git
+* WindowsOS: Gitbash (must be installed with the "set environment variables" option)
 
-
-```
-    git clone https://github.com/mazehall/eintopf.git
-    cd eintopf
-    npm install
-    npm start
-```
 
 
 # How does it work?
@@ -82,9 +71,9 @@ The configuration works partially, so you only have to set what you want to over
     }
 
 
-## Vagrant file
+## Vagrantfile
 
-The used vagrant file is located in eintopfHome/eintopfNamespace/Vagrantfile (default: ~/.eintopf/default/Vagrantfile). You can set your own Vagrantfile there.
+The used Vagrantfile is located in <EINTOP_HOME>/<eintopfNamespace>/Vagrantfile (default: ~/.eintopf/default/Vagrantfile). You can set your own settings and provisioning there.
 
 The following settings are necessary so that Eintopf can use Vagrant :
 

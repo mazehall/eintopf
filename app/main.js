@@ -22,7 +22,7 @@ initMenu = function () {
 
   var template = [
     {
-      label: "Eintopf",
+      label: app.getName(),
       submenu: [
         {
           label: "About", click: function () {
@@ -40,6 +40,11 @@ initMenu = function () {
           label: "Quit", accelerator: "CmdOrCtrl+Q", click: function () {
           app.quit();
         }
+        },
+        {type: "separator"},
+        {
+          label: app.getName()+ " v" +app.getVersion(),
+          enabled: false
         }
       ]
     }
