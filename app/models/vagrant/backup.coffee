@@ -97,7 +97,7 @@ model.machineIdRegistered = (uuid, callback) ->
 model.fetchEintopfMachineId = (callback) ->
   vagrantPath = "#{utilModel.getConfigModulePath()}/.vagrant"
   machineName = jetpack.find vagrantPath, {matching: ["machines/*"]}, "inspect"
-  #@todo multiple folders support??
+  return callback new Error "Multiple machines found, can not restore more than one" if machineName.length > 1
   machineName = machineName?[0]?.name
 
   return callback new Error "No machine or vagrant directory found" if ! machineName

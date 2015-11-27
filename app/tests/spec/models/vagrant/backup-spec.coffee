@@ -322,7 +322,15 @@ describe "restore eintopf machine", ->
       expect(error.message).toBe model.ID_OR_DIRECTORY_NOT_FOUND
       done()
 
+  it "should return an error when more than one machines exists in the vagrant directory", (done) ->
+    model.__set__ "jetpack.find", -> ["vmname0", "vmname1"]
+    model.__set__ "jetpack.exists", -> null
+    model.fetchEintopfMachineId (error) ->
+      expect(error.message).toBe "Multiple machines found, can not restore more than one"
+      done()
+
   it "should return an error when the vagrant directory not exists", (done) ->
+    model.__set__ "jetpack.find", -> []
     model.__set__ "utilModel.folderExists", -> false
     model.fetchEintopfMachineId (error) ->
       expect(error).toEqual any Error
@@ -330,6 +338,7 @@ describe "restore eintopf machine", ->
       done()
 
   it "should return an error when the machine id is not registered", (done) ->
+    model.__set__ "jetpack.find", -> []
     model.__set__ "model.machineIdRegistered", (uuid, callback) -> callback new Error "not found"
     model.fetchEintopfMachineId (error) ->
       expect(error).toEqual any Error
