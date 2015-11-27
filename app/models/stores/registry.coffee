@@ -21,46 +21,47 @@ mapRegistryData = (registryData) ->
 
 model = {}
 
+model.loadRegistryContent = (registryUrl, callback) ->
+  opts = url.parse registryUrl
+  opts["headers"] = "accept": "application/json"
+  server = if opts.protocol == "https:" then https else http
+  req = server.request opts, (res) ->
+    res.chunk = ""
+    res.on 'data', (chunk) -> this.chunk += chunk;
+    res.on 'end', () ->
+      return callback new Error 'response set error code: ' + res.statusCode if res.statusCode.toString().substring(0, 1) != "2"
+      try return callback null, JSON.parse res.chunk
+      catch err
+        return callback new Error 'failed to parse registry json'
+  req.on "error", (err) -> return callback err
+  req.on 'socket', (socket) ->
+    socket.setTimeout 5000
+    socket.on 'timeout', () ->
+      return req.abort()
+  req.end()
+
+model.loadPrivateRegistryContent = (privates, callback) ->
+  dataset = []
+  counter = 0
+  for extension, index in privates
+    model.loadRegistryContent extension, (error, data) ->
+      dataset.push pattern for pattern in data unless error
+      counter++
+      callback error, dataset, counter is privates?.length
+
 model.loadRegistry = (callback) ->
   return callback new Error "No Registry link configured" if ! publicRegistry
-  loadRegistryContent = (registry, callback) ->
-    opts = url.parse registry
-    opts["headers"] = "accept": "application/json"
-    server = if opts.protocol == "https:" then https else http
-    req = server.request opts, (res) ->
-      res.chunk = ""
-      res.on 'data', (chunk) -> this.chunk += chunk;
-      res.on 'end', () ->
-        return callback new Error 'response set error code: ' + res.statusCode if res.statusCode.toString().substring(0, 1) != "2"
-        try return callback null, JSON.parse res.chunk
-        catch err
-          return callback new Error 'failed to parse registry json'
-    req.on "error", (err) -> return callback err
-    req.on 'socket', (socket) ->
-      socket.setTimeout 5000
-      socket.on 'timeout', () ->
-        return req.abort()
-    req.end()
 
   registry =
     public : []
-    extend : []
+    private : []
 
-  loadExtend = (extensions, callback) ->
-    dataset = []
-    counter = 0
-    for extension, index in extensions
-      loadRegistryContent extension, (error, data) ->
-        dataset.push pattern for pattern in data unless error
-        counter++
-        callback error, dataset, counter is extensions.length
-
-  loadRegistryContent publicRegistry, (error, data) ->
+  model.loadRegistryContent publicRegistry, (error, data) ->
     registry.public = mapRegistryData data unless error
-    return callback error, registry if registryConfig.extend? and registryConfig.extend.length is 0
-    return loadExtend registryConfig.extend, (error, data) ->
-      registry.extend = mapRegistryData data unless error
-      return callback error, registry
+    return callback error, registry if not registryConfig.private?.length
+    return model.loadPrivateRegistryContent registryConfig.private, (error, data) ->
+      registry.private = mapRegistryData data unless error
+      callback error, registry
 
 model.loadRegistryWithInterval = () ->
   _r.withInterval loadingTimeout, (emitter) ->
@@ -84,6 +85,9 @@ model.loadRegistry (err, result) ->
 watcherModel.propertyToKefir 'projects:list'
 .throttle(200)
 .onValue ->
-  watcherModel.set "recommendations:list", mapRegistryData watcherModel.get "recommendations:list"
+  recommendations = watcherModel.get "recommendations:list"
+  recommendations.public = mapRegistryData recommendations.public if recommendations.public?
+  recommendations.private = mapRegistryData recommendations.private if recommendations.private?
+  watcherModel.set "recommendations:list", mapRegistryData recommendations
 
 module.exports = model;

@@ -5,7 +5,7 @@
   },
   "registry": {
     "public": "http://registry.eintopf.io/files/projects.json",
-    "extend": [],
+    "private": [],
     "refreshInterval": "900000"
   },
   "proxy": {

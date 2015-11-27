@@ -65,12 +65,12 @@
     </div>
 </div>
 
-<div class="grd-row-col-6 px1 cssPatterns" ng-if="recommendations.extend && recommendations.extend.length > 0">
+<div class="grd-row-col-6 px1 cssPatterns" ng-if="recommendations.private && recommendations.private.length > 0">
     <h4 class="muted m0 p1">
         Private Project Descriptions
     </h4>
     <div class="grd-row">
-        <div class="grd-row-col-2-6--lg cssBox cssPattern" ng-repeat="(key, value) in recommendations.extend">
+        <div class="grd-row-col-2-6--lg cssBox cssPattern" ng-repeat="(key, value) in recommendations.private">
             <div class="bg--off-white p0 m1">
                 <div class="media" ng-class="{disabled: value.installed}">
                     <div class="media-figure p1" style="background-color:{{value.mediabg}};">
