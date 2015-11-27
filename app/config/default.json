@@ -4,7 +4,8 @@
     "pathDefaultVagrantFile": "config/Vagrantfile.default"
   },
   "registry": {
-    "url": "http://registry.eintopf.io/files/projects.json",
+    "public": "http://registry.eintopf.io/files/projects.json",
+    "private": [],
     "refreshInterval": "900000"
   },
   "proxy": {

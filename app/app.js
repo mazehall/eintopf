@@ -13,3 +13,8 @@ mazehall.moduleStream.log('module loader');
 mazehall.initPlugins(app);
 mazehall.initExpress(app);
 module.exports = server;
+
+// assure that all depending processes also exit
+process.on('exit', function() {
+  require('./models/util/terminal.coffee').killPty();
+});

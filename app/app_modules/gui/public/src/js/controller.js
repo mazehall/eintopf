@@ -1,6 +1,12 @@
 'use strict';
 
 angular.module('eintopf')
+  .controller("rootCtrl",
+  ["$scope", "backendErrors",
+    function($scope, backendErrors) {
+      backendErrors.$assignProperty($scope, "backendErrors");
+    }
+  ])
   .controller('setupCtrl',
   ['$scope', 'setupLiveResponse', 'setupRestart', '$state',
     function($scope, setupLiveResponse, setupRestart, $state) {
@@ -9,7 +15,6 @@ angular.module('eintopf')
       $scope.$fromWatch('states')
         .filter(function(val) {
           if (val.newValue && val.newValue.state == 'cooking') return true;
-          return null;
         })
         .onValue(function() {
           $state.go('cooking.projects');
@@ -18,7 +23,6 @@ angular.module('eintopf')
       $scope.$fromWatch('states')
         .filter(function(val) {
           if (val.newValue && val.newValue.state == 'first') return true;
-          return null;
         })
         .onValue(function() {
           $state.go('first');
@@ -29,23 +33,41 @@ angular.module('eintopf')
       }
     }
   ])
+  .controller('terminalCtrl',
+  ['$scope', 'terminalStream',
+    function($scope, terminalStream) {
+      $scope.showTerminal = false;
+
+      terminalStream.getStream()
+      .onValue(function(val) {
+        if (!$scope.showTerminal) $scope.showTerminal = true;
+        $scope.$emit('terminal-output', {
+          output: false,
+          text: [val.text],
+          breakLine: true,
+          input: val.input | false,
+          secret: val.secret | false
+        });
+      });
+
+      $scope.$on('terminal-input', function (e, consoleInput) {
+        if(!consoleInput[0] || !consoleInput[0].command) return false;
+        terminalStream.emit(consoleInput[0].command);
+      });
+
+    }
+  ])
   .controller('cookingCtrl',
   ['$scope', 'reqProjectList', 'resProjectsList',
     function($scope, reqProjectsList, resProjectsList) {
       resProjectsList.$assignProperty($scope, 'projects');
+      reqProjectsList.emit();
     }
   ])
   .controller('containersCtrl',
   ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
     function($scope, resContainersList, reqContainerActions, resContainersLog) {
-      resContainersList
-        .map(function(x) {
-          x.forEach(function(container) {
-            container.running = /^up/i.test(container.status);
-          });
-          return x;
-        })
-        .$assignProperty($scope, 'containers');
+      resContainersList.$assignProperty($scope, 'containers');
 
       $scope.logs = [];
       resContainersLog
@@ -82,17 +104,29 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'reqProjectList', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction',
-    function($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, reqProjectList, currentProject, resProjectStartAction, reqProjectStartAction) {
+  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction', 'reqContainerActions', 'reqContainersList', 'resContainersLog',
+    function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectStartAction, reqProjectStartAction, reqContainerActions, reqContainersList, resContainersLog) {
       $scope.project = {
         id: $stateParams.id
       };
       $scope.loading = false;
+      $scope.logs = [];
 
       resProjectStart.fromProject($stateParams.id);
       resProjectStop.fromProject($stateParams.id);
       resProjectDetail.fromProject($stateParams.id).$assignProperty($scope, 'project');
       reqProjectDetail.emit($stateParams.id);
+      resProjectDetail.listApps($scope.project.id).$assignProperty($scope, "apps");
+      resProjectDetail.listContainers($scope.project.id).onValue(function(containers){
+        $scope.containerLength = Object.keys(containers).length;
+      }).$assignProperty($scope, "containers");
+      reqContainersList.emit();
+      resContainersLog.filter(function (x) {
+        if (x.message) return x;
+      }).onValue(function (val) {
+        val.read = false;
+        $scope.logs.push(val);
+      });
 
       $scope.startProject = function(project) {
         $scope.loading = true;
@@ -119,7 +153,7 @@ angular.module('eintopf')
       currentProject.setProjectId($stateParams.id);
 
       /**
-       * Log section
+       * Tab section
        */
 
       $scope.currentTab = storage.get("frontend.tabs"+ $stateParams.id+ ".lastActive") || "readme";
@@ -145,6 +179,23 @@ angular.module('eintopf')
         resProjectStartAction.fromProject($stateParams.id);
         $scope.currentTab = "protocol"
       };
+
+      $scope.startContainer = function (container) {
+        if (typeof container.id != "string") return false;
+        reqContainerActions.start(container.id);
+      };
+
+      $scope.stopContainer = function (container) {
+        if (typeof container.id != "string") return false;
+        reqContainerActions.stop(container.id);
+      };
+
+      $scope.removeContainer = function (container) {
+        if (typeof container.id != "string") return false;
+        reqContainerActions.remove(container.id);
+      };
+
+      $scope.isElectron = navigator.userAgent && navigator.userAgent.match(/^electron/);
     }
   ])
   .controller('createProjectCtrl',

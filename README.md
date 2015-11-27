@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mazehall/eintopf.svg)](https://travis-ci.org/mazehall/eintopf)
+
 #[Eintopf](https://www.eintopf.io/)
 
 A pot with the mixture of the smart development tools Docker, Vagrant and VirtualBox. Made to ease the chore of the

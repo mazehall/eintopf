@@ -47,8 +47,11 @@ model.prototype.log = (propertyName, value) ->
   if linesMax? && _store[propertyName].length > linesMax
     _store[propertyName].shift()
 
+# clone objects to avoid unnecessary triggers because setting again after manipulation could trigger multiple change events
 model.prototype.get = (propertyName) ->
   return false if ! propertyName?
+  if typeof _store[propertyName] == "object"
+    return JSON.parse(JSON.stringify(_store[propertyName]))
   _store[propertyName]
 
 model.prototype.unset = (propertyName) ->

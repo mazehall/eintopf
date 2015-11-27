@@ -25,8 +25,7 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
-  .factory('resProjectsList', ['socket', 'reqProjectList', function (socket, reqProjectList) {
-    reqProjectList.emit();
+  .factory('resProjectsList', ['socket', function (socket) {
     return Kefir.fromEvent(socket, 'res:projects:list').toProperty();
   }])
 
@@ -42,10 +41,36 @@ angular.module('eintopf.services.socket.states', [])
     return Kefir.fromEvent(socket, 'res:projects:install');
   }])
 
-  .factory('resProjectDetail', ['socket', function (socket) {
+  .factory("backendErrors", ["socket", function(socket) {
+    return Kefir.fromEvent(socket, "res:backend:errors").toProperty();
+  }])
+
+  .factory('resProjectDetail', ['socket', 'resContainersList', 'resContainersLog', 'resAppsList', function (socket, resContainersList, resContainersLog, resAppsList) {
     return {
       fromProject: function (project) {
         return Kefir.fromEvent(socket, 'res:project:detail:' + project);
+      },
+      listContainers: function (project) {
+        return resContainersList.map(function (containers) {
+          return containers.filter(function (container) {
+            if (container.project && container.project == project) {
+              return container;
+            }
+          });
+        }).map(function (containers) {
+          var asObject = {};
+          for (var index in containers) {
+            asObject[containers[index].name] = containers[index];
+          }
+          return asObject;
+        });
+      },
+      listApps: function(project){
+        return resAppsList.map(function(apps){
+          return apps.filter(function(app) {
+            if (app.project && app.project === project) return app;
+          });
+        });
       }
     }
   }])
@@ -250,6 +275,33 @@ angular.module('eintopf.services.socket.states', [])
   .factory('resRecommendationsList', ['socket', 'reqRecommendationsList', function (socket, reqRecommendationsList) {
     reqRecommendationsList.emit();
     return Kefir.fromEvent(socket, 'res:recommendations:list').toProperty();
+  }])
+
+  .factory('terminalStream', ['socket', 'storage', function (socket, storage) {
+    var stream = null;
+
+    var emit = function(cmd) {
+      socket.emit('terminal:input', cmd);
+    };
+
+    var getStream = function() {
+      if(stream) return stream;
+      stream = Kefir.fromEvent(socket, 'terminal:output')
+        //.onValue(function(value) {
+        //  //value = value.replace(/\n/ig, "<br>");
+        //  storage.add("vagrant.log", new Date().toLocaleTimeString() + " > " + value);
+        //})
+        .filter(function(val) {
+          if(val && val.text) return true;
+        })
+        .toProperty();
+      return stream;
+    };
+
+    return {
+      emit: emit,
+      getStream: getStream
+    }
   }])
 
 ;

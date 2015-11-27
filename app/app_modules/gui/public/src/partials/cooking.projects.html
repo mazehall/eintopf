@@ -24,7 +24,7 @@
                 </p>
               </div>
               <div class="media-figure m0">
-                <i ng-class="{'fa-cog fa-spin  fnt-eintopf-green': value.state == 'running', 'fa-power-off fnt--light-gray': value.state == 'exit', 'fa-stop fnt--light-gray': !value.state}"
+                <i ng-class="{'fa-cog fa-spin  fnt-eintopf-green': value.state == 'running', 'fa-power-off fnt--light-gray': value.state != 'running'}"
                    class="fa"></i>
               </div>
             </div>

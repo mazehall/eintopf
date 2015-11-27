@@ -11,6 +11,11 @@ docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
 runningProxyDeployment = false
 proxyConfig = config.get 'proxy'
 
+messageProxyUpToDate = 'proxy seems up to date'
+messageProxyAlreadyInstalling = "proxy deployment is already running"
+messageErrProxyPre = "Error while installing proxy: "
+messageErrProxyPost = ". Please check your internet connection!"
+
 emitEventsFromDockerStream = (emitter) ->
   dockerEmitter = new DockerEvents {docker: docker}
   dockerEmitter.start();
@@ -40,9 +45,11 @@ loadApps = () ->
           return false if virtualHost.match /^\*/ # ignore wildcards
           certs = getCerts virtualHost, container.certName
           app =
+            name: container.name
             host: virtualHost
             certs: certs if certs
             https: true if certs
+            project: container.project
           foundApps.push app
 
   watcherModel.set 'apps:list', foundApps
@@ -78,7 +85,7 @@ model.deployProxy = (callback) ->
   .flatMap (data) ->
     _r.fromNodeCallback (cb) ->
       return cb null, true if data == null
-      return cb new Error 'proxy seems up to date' if proxyConfig.Image == data.Config.Image
+      return cb new Error messageProxyUpToDate if proxyConfig.Image == data.Config.Image
       container.remove {force:true}, cb
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
@@ -131,9 +138,11 @@ model.loadContainers = () ->
       id: val.info.Id
       status: val.info.Status
       name: val.inspect.Name.replace(/\//g, '') # strip docker-compose slashes
+      running: val.inspect.State.Running
       virtualHost: null
       certName: null
-
+    if (labels = val.inspect.Config.Labels) and labels["com.docker.compose.project"]
+      push.project = labels["com.docker.compose.project"]
     if typeIsArray val.inspect.Config.Env
       val.inspect.Config.Env.forEach (env) ->
         push.virtualHost = match[1] if (match = env.match /^VIRTUAL_HOST=(.*)/)?
@@ -147,7 +156,6 @@ model.loadContainers = () ->
     watcherModel.set 'containers:list', foundContainers
     loadApps()
 
-
 dockerEventsStream = _r.merge [_r.stream(emitEventsFromDockerStream), _r.interval(2000, 'reload')]
 
 # update container list when changes in docker occurred
@@ -159,11 +167,17 @@ dockerEventsStream.throttle 1000
 dockerEventsStream.throttle 10000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
-    return cb new Error "proxy deployment is already running" if runningProxyDeployment == true
+    return cb new Error messageProxyAlreadyInstalling if runningProxyDeployment is true
     runningProxyDeployment = true
     model.deployProxy cb
 .onAny (val) ->
-  runningProxyDeployment = false if val.type != "error" || val.value.message != "proxy deployment is already running"
+  runningProxyDeployment = false if val.type != "error" || val.value.message != messageProxyAlreadyInstalling
+.onError (err) ->
+  if err.message != messageProxyUpToDate && err.message != messageProxyAlreadyInstalling
+    message = messageErrProxyPre + err + messageErrProxyPost
+    watcherModel.set "backend:errors", [{message: message, read: false, date: Date.now()}]
+.onValue ->
+  watcherModel.set "backend:errors", []
 
 # persist available ssl certs
 proxyCertsStream = _r.interval 5000, 'reload'

@@ -10,7 +10,7 @@ utilsModel = require '../util/index'
 
 registryConfig = config.get 'registry'
 loadingTimeout = process.env.REGISTRY_INTERVAL || registryConfig.refreshInterval || 3600000
-registryUrl = process.env.REGISTRY_URL || registryConfig.url || null
+publicRegistry = process.env.REGISTRY_URL || registryConfig.public || null
 
 mapRegistryData = (registryData) ->
   return registryData if ! utilsModel.typeIsArray registryData
@@ -21,32 +21,47 @@ mapRegistryData = (registryData) ->
 
 model = {}
 
-model.loadRegistry = (callback) ->
-  return callback new Error "No Registry link configured" if ! registryUrl
-
+model.loadRegistryContent = (registryUrl, callback) ->
   opts = url.parse registryUrl
-  opts["headers"] =
-    "accept": "application/json"
-
+  opts["headers"] = "accept": "application/json"
   server = if opts.protocol == "https:" then https else http
   req = server.request opts, (res) ->
     res.chunk = ""
-    res.on 'data', (chunk) ->
-      this.chunk += chunk;
+    res.on 'data', (chunk) -> this.chunk += chunk;
     res.on 'end', () ->
       return callback new Error 'response set error code: ' + res.statusCode if res.statusCode.toString().substring(0, 1) != "2"
-
-      try
-        return callback null, JSON.parse res.chunk
+      try return callback null, JSON.parse res.chunk
       catch err
         return callback new Error 'failed to parse registry json'
+  req.on "error", (err) -> return callback err
   req.on 'socket', (socket) ->
     socket.setTimeout 5000
     socket.on 'timeout', () ->
       return req.abort()
-  req.on "error", (err) ->
-    return callback err
   req.end()
+
+model.loadPrivateRegistryContent = (privates, callback) ->
+  dataset = []
+  counter = 0
+  for extension, index in privates
+    model.loadRegistryContent extension, (error, data) ->
+      dataset.push pattern for pattern in data unless error
+      counter++
+      callback error, dataset, counter is privates?.length
+
+model.loadRegistry = (callback) ->
+  return callback new Error "No Registry link configured" if ! publicRegistry
+
+  registry =
+    public : []
+    private : []
+
+  model.loadRegistryContent publicRegistry, (error, data) ->
+    registry.public = if ! error then mapRegistryData data else defaultRegistry
+    return callback null, registry if not registryConfig.private?.length
+    return model.loadPrivateRegistryContent registryConfig.private, (error, data) ->
+      registry.private = mapRegistryData data unless error
+      callback null, registry
 
 model.loadRegistryWithInterval = () ->
   _r.withInterval loadingTimeout, (emitter) ->
@@ -55,21 +70,21 @@ model.loadRegistryWithInterval = () ->
       emitter.emit result
   .onValue (val) ->
     return watcherModel.set 'recommendations:list', [] if ! val
-    watcherModel.set 'recommendations:list', mapRegistryData val
-  .onError (err) ->
-    if ! watcherModel.get 'recommendations:list' # set default data if nothing is set
-      watcherModel.set 'recommendations:list', defaultRegistry
+    watcherModel.set 'recommendations:list', val
 
 # initial registry load - sets default data on fail
 defaultRegistry = mapRegistryData defaultRegistry
 model.loadRegistry (err, result) ->
-  return watcherModel.set 'recommendations:list', defaultRegistry if err
+  return watcherModel.set 'recommendations:list', {public: defaultRegistry} if err
   watcherModel.set 'recommendations:list', mapRegistryData result
 
 # reevaluate recommendations -> projects mapping
 watcherModel.propertyToKefir 'projects:list'
 .throttle(200)
 .onValue ->
-  watcherModel.set "recommendations:list", mapRegistryData watcherModel.get "recommendations:list"
+  recommendations = watcherModel.get "recommendations:list"
+  recommendations.public = mapRegistryData recommendations.public if recommendations.public?
+  recommendations.private = mapRegistryData recommendations.private if recommendations.private?
+  watcherModel.set "recommendations:list", mapRegistryData recommendations
 
 module.exports = model;
