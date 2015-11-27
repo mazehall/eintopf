@@ -8,9 +8,13 @@ utilModel = require '../util/index.coffee'
 typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
 
-errMessageProxyNoNet = "error while trying to install proxy. no internet connection"
 runningProxyDeployment = false
 proxyConfig = config.get 'proxy'
+
+messageProxyUpToDate = 'proxy seems up to date'
+messageProxyAlreadyInstalling = "proxy deployment is already running"
+messageErrProxyPre = "Error while installing proxy: "
+messageErrProxyPost = ". Please check your internet connection!"
 
 emitEventsFromDockerStream = (emitter) ->
   dockerEmitter = new DockerEvents {docker: docker}
@@ -81,14 +85,11 @@ model.deployProxy = (callback) ->
   .flatMap (data) ->
     _r.fromNodeCallback (cb) ->
       return cb null, true if data == null
-      return cb new Error 'proxy seems up to date' if proxyConfig.Image == data.Config.Image
+      return cb new Error messageProxyUpToDate if proxyConfig.Image == data.Config.Image
       container.remove {force:true}, cb
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       image.inspect (err, result) ->
-        if err?.statusCode == 404 && watcherModel.get("inbox:online") is false
-          watcherModel.set "backend:errors", [{message: errMessageProxyNoNet, read: false, date: Date.now()}]
-          return cb new Error errMessageProxyNoNet
         return model.pullImage proxyConfig.Image, null, cb if err && err.statusCode == 404
         return cb err, result
   .flatMap () ->
@@ -155,7 +156,6 @@ model.loadContainers = () ->
     watcherModel.set 'containers:list', foundContainers
     loadApps()
 
-
 dockerEventsStream = _r.merge [_r.stream(emitEventsFromDockerStream), _r.interval(2000, 'reload')]
 
 # update container list when changes in docker occurred
@@ -163,20 +163,21 @@ dockerEventsStream.throttle 1000
 .onValue (event) ->
   model.loadContainers()
 
-_r.interval 5000, true
-.onValue ->
-  utilModel.runCmd "vagrant ssh -c 'ping github.com -c1'", {cwd: utilModel.getConfigModulePath()}, null, (error) ->
-    watcherModel.set "inbox:online", if error then false else true
-
 # check proxy container state
 dockerEventsStream.throttle 10000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
-    return cb new Error "proxy deployment is already running" if runningProxyDeployment is true
+    return cb new Error messageProxyAlreadyInstalling if runningProxyDeployment is true
     runningProxyDeployment = true
     model.deployProxy cb
 .onAny (val) ->
-  runningProxyDeployment = false if val.type != "error" || val.value.message != "proxy deployment is already running"
+  runningProxyDeployment = false if val.type != "error" || val.value.message != messageProxyAlreadyInstalling
+.onError (err) ->
+  if err.message != messageProxyUpToDate && err.message != messageProxyAlreadyInstalling
+    message = messageErrProxyPre + err + messageErrProxyPost
+    watcherModel.set "backend:errors", [{message: message, read: false, date: Date.now()}]
+.onValue ->
+  watcherModel.set "backend:errors", []
 
 # persist available ssl certs
 proxyCertsStream = _r.interval 5000, 'reload'

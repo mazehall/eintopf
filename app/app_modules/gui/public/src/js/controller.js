@@ -2,9 +2,8 @@
 
 angular.module('eintopf')
   .controller("rootCtrl",
-  ["$scope", "inboxOnline", "backendErrors",
-    function($scope, inboxOnline, backendErrors) {
-      inboxOnline.$assignProperty($scope, "inboxOnline");
+  ["$scope", "backendErrors",
+    function($scope, backendErrors) {
       backendErrors.$assignProperty($scope, "backendErrors");
     }
   ])

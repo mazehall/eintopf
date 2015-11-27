@@ -45,10 +45,6 @@ angular.module('eintopf.services.socket.states', [])
     return Kefir.fromEvent(socket, "res:backend:errors").toProperty();
   }])
 
-  .factory("inboxOnline", ["socket", function(socket){
-    return Kefir.fromEvent(socket, "res:inbox:online").toProperty();
-  }])
-
   .factory('resProjectDetail', ['socket', 'resContainersList', 'resContainersLog', 'resAppsList', function (socket, resContainersList, resContainersLog, resAppsList) {
     return {
       fromProject: function (project) {
