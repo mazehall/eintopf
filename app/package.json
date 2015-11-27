@@ -4,7 +4,7 @@
   "productName": "Eintopf",
   "identifier": "com.mazehall.eintopf",
   "description": "Manage your development projects with docker.",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "author": "Jens Klose <jens.klose@mazehall.com>",
   "maintainers": [
     "jens klose <jens.klose@mazehall.com>",
