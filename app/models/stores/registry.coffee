@@ -57,11 +57,11 @@ model.loadRegistry = (callback) ->
     private : []
 
   model.loadRegistryContent publicRegistry, (error, data) ->
-    registry.public = mapRegistryData data unless error
-    return callback error, registry if not registryConfig.private?.length
+    registry.public = if ! error then mapRegistryData data else defaultRegistry
+    return callback null, registry if not registryConfig.private?.length
     return model.loadPrivateRegistryContent registryConfig.private, (error, data) ->
       registry.private = mapRegistryData data unless error
-      callback error, registry
+      callback null, registry
 
 model.loadRegistryWithInterval = () ->
   _r.withInterval loadingTimeout, (emitter) ->
@@ -71,9 +71,6 @@ model.loadRegistryWithInterval = () ->
   .onValue (val) ->
     return watcherModel.set 'recommendations:list', [] if ! val
     watcherModel.set 'recommendations:list', val
-  .onError ->
-    if ! watcherModel.get 'recommendations:list' # set default data if nothing is set
-      watcherModel.set 'recommendations:list', defaultRegistry
 
 # initial registry load - sets default data on fail
 defaultRegistry = mapRegistryData defaultRegistry
