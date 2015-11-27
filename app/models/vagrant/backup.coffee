@@ -13,9 +13,8 @@ model.restoreMachineId = (backupPath, restorePath, callback) ->
     return callback? error if error
 
     structure = ["machines", name, "virtualbox"];
-    machineId = jetpack.cwd restorePath
-    writePath = "#{machineId.path()}/#{structure.join('/')}"
-    machineId = machineId.dir path for path in structure if not jetpack.exists writePath
+    restoreDir = jetpack.cwd restorePath
+    writePath = "#{restoreDir.path()}/#{structure.join('/')}"
 
     if asar.listPackage(backupPath).join().indexOf("machines/#{name}/virtualbox/private_key") isnt -1
       hasPrivatekey = asar.extractFile backupPath, "machines/#{name}/virtualbox/private_key"
@@ -23,7 +22,7 @@ model.restoreMachineId = (backupPath, restorePath, callback) ->
 
     write = jetpack.writeAsync "#{writePath}/id", uuid, {atomic: true}
     write.then -> callback? null, true
-    write.fail -> callback? arguments...
+    write.fail -> callback? new Error 'restoring machine id failed'
 
 model.restoreBackup = (backupPath, restorePath, callback) ->
   model.needBackup = if jetpack.exists backupPath then false else true
@@ -98,12 +97,13 @@ model.machineIdRegistered = (uuid, callback) ->
 model.fetchEintopfMachineId = (callback) ->
   vagrantPath = "#{utilModel.getConfigModulePath()}/.vagrant"
   machineName = jetpack.find vagrantPath, {matching: ["machines/*"]}, "inspect"
+  #@todo multiple folders support??
   machineName = machineName?[0]?.name
 
-  return callback new Error "No machine or vagrant directory found" if not utilModel.folderExists vagrantPath or not machineName
+  return callback new Error "No machine or vagrant directory found" if ! machineName
 
   loadMachineId = _r.fromNodeCallback (cb) -> model.machineIdRegistered machineName, cb
-  loadMachineId.onError -> callback
+  loadMachineId.onError callback
   loadMachineId.onValue (stdout) ->
     machineId = (match = stdout.match /uuid="(.*)"/i) and match?.length is 2 and match[1]
     return callback null, machineId, machineName, stdout
