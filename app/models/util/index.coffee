@@ -146,18 +146,4 @@ model.removeFileAsync = (path, callback) ->
   .onValue (val) ->
     return callback null, true
 
-model.machineIdRegistered = (uuid, callback) ->
-  stdout = ""
-  stderr = ""
-
-  proc = spawn "VBoxManage", ["showvminfo", "--machinereadable", uuid]
-  proc.on 'error', (err) ->
-    return callback null, false
-  proc.on "close", ->
-    error = if stderr then new Error stderr else null
-    callback? error, stdout
-  proc.stdout.on "data", (chunk) -> stdout += chunk.toString()
-  proc.stderr.on "data", (chunk) -> stderr += chunk.toString()
-  proc
-
 module.exports = model
