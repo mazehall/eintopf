@@ -21,7 +21,6 @@
     "test": "node_modules/.bin/jasmine-node --coffee tests/spec"
   },
   "dependencies": {
-    "asar": "^0.8.0",
     "body-parser": "1.13.1",
     "coffee-script": "1.9.3",
     "config": "^1.15.0",

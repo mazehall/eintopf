@@ -1,11 +1,10 @@
 _r = require 'kefir'
 jetpack = require "fs-jetpack"
-asar = require "asar"
 
 config = require '../stores/config'
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
-vagrantBackupModel = require '../vagrant/backup.coffee'
+vagrantBackupModel = require '../vagrant/integrity.coffee'
 watcherModel = require '../stores/watcher.coffee'
 
 appConfig = config.get 'app'
@@ -53,7 +52,7 @@ model.run = () ->
     vagrantFsModel.copyVagrantFile cb
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      vagrantBackupModel.checkBackup (err, result) -> cb null, true
+      vagrantBackupModel.checkMachineIntegrity (err, result) -> cb null, true
   .flatMap () ->
     states.vagrantFile = true
     watcherModel.set 'states:live', states
@@ -68,7 +67,6 @@ model.run = () ->
     states.running = true
     states.state = "cooking"
     watcherModel.set 'states:live', states
-    vagrantBackupModel.checkBackup -> return if vagrantBackupModel.needBackup is true
   .onError (err) ->
     states.vagrantFile = "failed" if states.vagrantFile == false
     states.vagrantRun = "failed" if states.vagrantRun == false
