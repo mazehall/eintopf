@@ -4,7 +4,7 @@ jetpack = require "fs-jetpack"
 config = require '../stores/config'
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
-vagrantBackupModel = require '../vagrant/integrity.coffee'
+vagrantIntegrityModel = require '../vagrant/integrity.coffee'
 watcherModel = require '../stores/watcher.coffee'
 
 appConfig = config.get 'app'
@@ -52,7 +52,7 @@ model.run = () ->
     vagrantFsModel.copyVagrantFile cb
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      vagrantBackupModel.checkMachineIntegrity (err, result) -> cb null, true
+      vagrantIntegrityModel.checkMachineIntegrity (err, result) -> cb null, true
   .flatMap () ->
     states.vagrantFile = true
     watcherModel.set 'states:live', states

@@ -1,7 +1,10 @@
 _r = require 'kefir'
 jetpack = require "fs-jetpack"
+NodeRSA = require 'node-rsa'
+forge = require 'node-forge'
 
 utilModel = require "../util/index.coffee"
+terminalModel = require "../util/terminal.coffee"
 
 model = {}
 model.restoreMachineId = (id, path, callback) ->
@@ -13,7 +16,7 @@ model.restoreMachineId = (id, path, callback) ->
     return callback null, true
 
 model.restoreFromMachineFolder = (callback) ->
-  return callback new Error "backup failed: invalid config path" if ! (configPath = utilModel.getConfigModulePath())
+  return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
 
   vagrantDir = jetpack.cwd configPath, ".vagrant"
   restorePath = null
@@ -55,7 +58,7 @@ model.checkMachineId = (machineId, callback) ->
     return callback null, true
 
 model.checkMachineIntegrity = (callback) ->
-  return callback new Error "backup failed: invalid config path" if ! (configPath = utilModel.getConfigModulePath())
+  return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
 
   vagrantDir = jetpack.cwd configPath, ".vagrant"
 
@@ -76,15 +79,56 @@ model.checkMachineIntegrity = (callback) ->
   .onValue (val) ->
     return callback null, val
 
-# @todo implementation
-model.recreateMachineSsh = (callback) ->
-  return callback new Error 'not yet implemented!'
+model.recreateMachineSshKeys = (callback) ->
+  return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
 
-  # sdk
-  #NodeRSA = require('node-rsa');
-  #key = new NodeRSA({b:2048});
-  #
-  #console.log('private: ', key.exportKey('pkcs8-private'));
-  #console.log('public: ', key.exportKey('pkcs8-public'));
+  vagrantDir = jetpack.cwd configPath, ".vagrant"
+  keys = model.generateKeyPair()
+
+  _r.fromPromise jetpack.findAsync vagrantDir.path(), {matching: ["./machines/*/virtualbox"]}, "inspect"
+  .flatMap (folders) ->
+    return _r.fromNodeCallback (cb) ->
+      return cb new Error "can't maintain integrity with multiple machine folders" if folders.length > 1
+      cb null, folders[0]
+  .flatMap (vagrantDir) -> # write private key file
+    _r.fromNodeCallback (cb) ->
+      utilModel.writeFile vagrantDir.absolutePath + "/private_key", keys.privateKey, cb
+  .flatMap () -> # deploy public key to vm authorized_keys
+    _r.fromNodeCallback (cb) ->
+      model.deployVagrantAuthorizedKey keys.publicSSHKey, cb
+  .onError callback
+  .onValue ->
+    callback null, true
+
+#@todo 1024 or 2048? (cpu load...)
+model.generateKeyPair = ->
+  result = {}
+
+  key = new NodeRSA({b:1024});
+  result.privateKey = key.exportKey 'private'
+  result.publicKey = key.exportKey 'pkcs8-public-pem'
+
+  publicKey = forge.pki.publicKeyFromPem result.publicKey;
+  result.publicSSHKey =  forge.ssh.publicKeyToOpenSSH publicKey, 'vagrant'
+  result
+
+model.deployVagrantAuthorizedKey = (publicSSHKey, callback) ->
+  return callback new Error "Invalid public key" if ! publicSSHKey
+  return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
+
+  cmd = "vagrant ssh -c \"echo '" + publicSSHKey + "' >> /home/vagrant/.ssh/authorized_keys\""
+
+  proc = terminalModel.createPTYStream cmd, {cwd: configPath}, (err, result) ->
+    return callback err if err
+    return callback null, true
+
+  if proc.pty
+    proc.stdout.on 'data', (val) ->
+      if (val.match /(vagrant@(.*) password:)/ )
+        terminalModel.writeIntoPTY 'vagrant'
+  else # use stdin when not in pty mode
+    proc.stdin.on 'data', (val) ->
+      if (val.match /(vagrant@(.*) password:)/ )
+        terminalModel.writeIntoPTY 'vagrant'
 
 module.exports = model;

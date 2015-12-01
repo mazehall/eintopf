@@ -31,6 +31,8 @@
     "gift": "^0.6.1",
     "kefir": "2.7.0",
     "mazehall": "2.1.0",
+    "node-forge": "^0.6.38",
+    "node-rsa": "^0.2.26",
     "node-vagrant": "^1.0.6",
     "pm2": "0.14.3",
     "serve-static": "1.9.2",

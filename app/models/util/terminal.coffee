@@ -21,7 +21,6 @@ model._createPTY = (command, options) ->
   sh = 'sh'
   shFlag = '-c'
 
-  #@todo fix colored output
   if process.platform != 'win32' && !process.env.EINOPF_PTY_FORCE_CHILD
     pty = require 'pty.js' # windows should not even install this
     return pty.spawn sh, [shFlag, command], options
@@ -67,6 +66,7 @@ model.createPTYStream = (cmd, options, callback) ->
     return callback error || new Error 'Error: command failed' if code != 0
     watcherModel.log 'terminal:output', {text: 'done cmd: ' + cmd}
     return callback null, true
+  ptyStream
 
 # removes ansi escape sequences and ending new line
 model.formatTerminalOutput = (output) ->

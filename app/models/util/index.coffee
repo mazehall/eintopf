@@ -116,6 +116,7 @@ model.runCmd = (cmd, config, logName, callback) ->
   proc.stderr.on 'data', (chunk) ->
     watcherModel.log logName, chunk.toString() if logName
     stdErr += chunk.toString()
+  proc
 
 model.syncCerts = (path, files, callback) ->
   return callback new Error 'Invalid path given' if ! path
@@ -143,7 +144,15 @@ model.removeFileAsync = (path, callback) ->
 
   _r.fromPromise jetpack.removeAsync path
   .onError callback
-  .onValue (val) ->
+  .onValue ->
+    return callback null, true
+
+model.writeFile = (path, content, callback) ->
+  return callback new Error 'Invalid path' if ! path
+
+  _r.fromPromise jetpack.writeAsync path, content
+  .onError callback
+  .onValue ->
     return callback null, true
 
 module.exports = model
