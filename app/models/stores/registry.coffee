@@ -75,16 +75,19 @@ model.loadRegistryWithInterval = () ->
 # initial registry load - sets default data on fail
 defaultRegistry = mapRegistryData defaultRegistry
 model.loadRegistry (err, result) ->
-  return watcherModel.set 'recommendations:list', {public: defaultRegistry} if err
-  watcherModel.set 'recommendations:list', mapRegistryData result
+  registryContent = if err then {public: defaultRegistry} else mapRegistryData result
+  return watcherModel.set 'recommendations:list', registryContent if not registryConfig?.private?.length
+  return model.loadPrivateRegistryContent registryConfig.private, (error, data) ->
+    registryContent.private = mapRegistryData data unless error
+    watcherModel.set 'recommendations:list', registryContent
 
 # reevaluate recommendations -> projects mapping
 watcherModel.propertyToKefir 'projects:list'
 .throttle(200)
 .onValue ->
   recommendations = watcherModel.get "recommendations:list"
-  recommendations.public = mapRegistryData recommendations.public if recommendations.public?
-  recommendations.private = mapRegistryData recommendations.private if recommendations.private?
+  recommendations.public = mapRegistryData recommendations.public if recommendations?.public?
+  recommendations.private = mapRegistryData recommendations.private if recommendations?.private?
   watcherModel.set "recommendations:list", mapRegistryData recommendations
 
 module.exports = model;
