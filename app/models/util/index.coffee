@@ -1,7 +1,7 @@
 config = require 'config'
 jetpack = require 'fs-jetpack'
 spawn = require('child_process').spawn
-_r = require('kefir');
+_r = require 'kefir'
 
 watcherModel = require '../stores/watcher.coffee'
 

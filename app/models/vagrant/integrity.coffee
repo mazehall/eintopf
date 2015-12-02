@@ -1,12 +1,13 @@
 _r = require 'kefir'
 jetpack = require "fs-jetpack"
-NodeRSA = require 'node-rsa'
-forge = require 'node-forge'
 
 utilModel = require "../util/index.coffee"
+rsaModel = require "../util/rsa.coffee"
 terminalModel = require "../util/terminal.coffee"
 
 model = {}
+
+#@todo naming
 model.restoreMachineId = (id, path, callback) ->
   return callback new Error 'invalid parameters' if ! id || ! path
 
@@ -15,6 +16,7 @@ model.restoreMachineId = (id, path, callback) ->
   .onValue ->
     return callback null, true
 
+#@todo naming
 model.restoreFromMachineFolder = (callback) ->
   return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
 
@@ -37,6 +39,8 @@ model.restoreFromMachineFolder = (callback) ->
   .onValue ->
     return callback null, true
 
+#@todo move to core model
+#@todo naming
 model.getMachine = (machineId, callback) ->
   result = {}
 
@@ -49,6 +53,7 @@ model.getMachine = (machineId, callback) ->
       result[val[0]] = if typeof val[1] == "string" then val[1].replace(/^"/g, '').replace(/"$/g, '') else null
     return callback null, result
 
+#@todo virtual box model?
 model.checkMachineId = (machineId, callback) ->
   _r.fromNodeCallback (cb) -> model.getMachine machineId, cb
   .onError (err) -> # restore only on virtual box error
@@ -57,6 +62,7 @@ model.checkMachineId = (machineId, callback) ->
   .onValue ->
     return callback null, true
 
+#@todo naming
 model.checkMachineIntegrity = (callback) ->
   return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
 
@@ -79,18 +85,26 @@ model.checkMachineIntegrity = (callback) ->
   .onValue (val) ->
     return callback null, val
 
+#@todo naming
 model.recreateMachineSshKeys = (callback) ->
   return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
 
-  vagrantDir = jetpack.cwd configPath, ".vagrant"
-  keys = model.generateKeyPair()
+  configDir = jetpack.cwd configPath
+  vagrantDir = keys = null
 
-  _r.fromPromise jetpack.findAsync vagrantDir.path(), {matching: ["./machines/*/virtualbox"]}, "inspect"
+  _r.fromPromise jetpack.findAsync configDir.path(), {matching: ["./.vagrant/machines/*/virtualbox"]}, "inspect"
   .flatMap (folders) ->
     return _r.fromNodeCallback (cb) ->
       return cb new Error "can't maintain integrity with multiple machine folders" if folders.length > 1
       cb null, folders[0]
-  .flatMap (vagrantDir) -> # write private key file
+  .onValue (dir) ->
+    vagrantDir = dir
+  .flatMap ->
+    _r.fromNodeCallback (cb) ->
+      rsaModel.createKeyPairForSSH 'vagrant', cb
+  .onValue (createdKeys) ->
+    keys = createdKeys
+  .flatMap -> # write private key file
     _r.fromNodeCallback (cb) ->
       utilModel.writeFile vagrantDir.absolutePath + "/private_key", keys.privateKey, cb
   .flatMap () -> # deploy public key to vm authorized_keys
@@ -100,18 +114,7 @@ model.recreateMachineSshKeys = (callback) ->
   .onValue ->
     callback null, true
 
-#@todo 1024 or 2048? (cpu load...)
-model.generateKeyPair = ->
-  result = {}
-
-  key = new NodeRSA({b:1024});
-  result.privateKey = key.exportKey 'private'
-  result.publicKey = key.exportKey 'pkcs8-public-pem'
-
-  publicKey = forge.pki.publicKeyFromPem result.publicKey;
-  result.publicSSHKey =  forge.ssh.publicKeyToOpenSSH publicKey, 'vagrant'
-  result
-
+#@todo renaming
 model.deployVagrantAuthorizedKey = (publicSSHKey, callback) ->
   return callback new Error "Invalid public key" if ! publicSSHKey
   return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
