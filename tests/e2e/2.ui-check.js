@@ -8,7 +8,7 @@ module.exports = {
     "should list the community patterns in 'Create Project' page": function (browser){
         browser.waitForElementVisible("#content", 25000);
         browser.assert.containsText("#content", "Create Project");
-        browser.expect.element(".cssPatterns").text.to.contain("Community Pattern");
+        browser.expect.element("#content").text.to.contain("Community Pattern");
         browser.expect.element(".cssPattern").to.be.present;
         browser.end();
     },

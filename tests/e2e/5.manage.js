@@ -11,8 +11,8 @@ module.exports = {
         browser.click(".cssMenu li#eintopfphpdev > a.btn--link");
         browser.waitForElementPresent(".cssToolbar", 1000);
 
-        browser.expect.element(".cssToolbar li.start > a").to.be.present;
-        browser.click(".cssToolbar li.start > a");
+        browser.expect.element(".cssToolbar li.run > a").to.be.present;
+        browser.click(".cssToolbar li.run > a");
         browser.assert.containsText("ul.cssTab > li.cssActive", "Logs");
         browser.expect.element("[marked=\"protocol\"]").to.be.visible;
         browser.end();

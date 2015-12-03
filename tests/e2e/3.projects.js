@@ -8,6 +8,7 @@ module.exports = {
     "project descriptions 'PHP dev' should be available": function (browser){
         browser.waitForEintopfStart();
         browser.waitForElementPresent(".cssPattern[data-name=\"PHP dev\"]", 15000);
+        browser.expect.element(".cssMenu li#eintopfphpdev").to.be.not.present;
         browser.expect.element(".cssPattern[data-name=\"PHP dev\"]").to.be.present;
         browser.expect.element(".cssPattern[data-name=\"PHP dev\"] button").text.to.contain("Create");
         browser.end();
@@ -17,8 +18,10 @@ module.exports = {
         browser.waitForEintopfStart();
         browser.waitForElementPresent(".cssPattern[data-name=\"PHP dev\"]", 15000);
         browser.click(".cssPattern[data-name=\"PHP dev\"] button");
-        browser.expect.element("form#formCreateProject input#projectName").to.have.value.not.equals("");
         browser.waitForElementNotPresent(".cssPattern[data-name=\"PHP dev\"] button", 10000);
+        browser.expect.element(".cssMenu li#eintopfphpdev").to.be.present.after(4000);
+        browser.click("a[ui-sref=\"cooking.projects.create\"]");
+        browser.pause(3000);
         browser.assert.cssClassPresent(".cssPattern[data-name=\"PHP dev\"] .media", "disabled");
         browser.end();
     },
