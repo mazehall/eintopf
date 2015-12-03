@@ -14,6 +14,28 @@ try {
     });
 }
 
+var chromebinarylocation;
+switch (process.platform) {
+    case 'darwin':
+        chromebinarylocation = "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome";
+        break;
+    case 'linux':
+        chromebinarylocation = "/usr/bin/google-chrome";
+        break;
+    case 'win32':
+        chromebinarylocation = "C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe".replace("%USERNAME%", process.env.username);
+        break;
+}
+
+try {
+    fs.statSync(chromebinarylocation);
+} catch(e) {
+    console.log("ChromeDriver requires the default Chrome install location and can not be changed:");
+    console.log("  ->", chromebinarylocation, "\n");
+    console.log("Install Chrome or Eintopf at this location or link the binary");
+    process.exit(0);
+}
+
 spawn("node", ["node_modules/nightwatch/bin/nightwatch", "--config", "tests/e2e/nightwatch.json"], {
     env: process.env,
     stdio: "inherit"
