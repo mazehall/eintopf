@@ -36,6 +36,10 @@ try {
     process.exit(0);
 }
 
+if (process.platform === "darwin") {
+    console.log("*** Selenium need Java v1.7! Install JDK 1.7 and set the Environment variable: JAVA_HOME=\"`/usr/libexec/java_home -v '1.7*'`\" ***");
+}
+
 spawn("node", ["node_modules/nightwatch/bin/nightwatch", "--config", "tests/e2e/nightwatch.json"], {
     env: process.env,
     stdio: "inherit"

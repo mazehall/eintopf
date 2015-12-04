@@ -23,5 +23,15 @@ module.exports = {
             this.assert.equal(result.state, "success");
         });
         browser.end();
+    },
+
+    "should display an error when a non git-url is used for project installation": function (browser){
+        browser.waitForEintopfStart();
+        browser.expect.element("form #projectName").to.be.visible;
+        browser.setValue("form #projectName", ["www.localhost", browser.Keys.ENTER]);
+        browser.submitForm("form #projectName");
+        browser.waitForElementVisible("[ng-show=\"result.errorMessage\"]", 9000);
+        browser.expect.element("[ng-show=\"result.errorMessage\"]").text.to.contain("invalid or unsupported git url");
+        browser.end();
     }
 };

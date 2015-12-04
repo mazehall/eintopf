@@ -28,7 +28,7 @@
         "javascriptEnabled": true,
         "acceptSslCerts": true,
         "chromeOptions": {
-          "binary": "tests/e2e_launcher"
+          "binary": "tests/launcher_eintopf"
         }
       },
       "exclude" : "nightwatch.json"

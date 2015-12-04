@@ -1,4 +1,5 @@
 module.exports = {
+    "@tags": ["docker"],
     beforeEach : function(browser) {
         browser.waitForEintopfStart = function(){
             return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
