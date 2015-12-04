@@ -125,7 +125,7 @@ describe "deployPrivateKey", ->
 
   beforeEach ->
     model = rewire "../../../../models/vagrant/ssh.coffee"
-    model.__set__ 'vagrantModel',
+    model.__set__ 'vbModel',
       getOnlyVirtualBoxDir: jasmine.createSpy('getOnlyVirtualBoxDir').andCallFake (callback) ->
         process.nextTick -> callback null, absolutePath: samples.absolutePath
     model.__set__ 'utilModel',
@@ -150,7 +150,7 @@ describe "deployPrivateKey", ->
   it 'should fail when getOnlyVirtualBoxDir fails', (done) ->
     expected = new Error 'something went wrong'
 
-    model.__get__('vagrantModel').getOnlyVirtualBoxDir.andCallFake (callback) ->
+    model.__get__('vbModel').getOnlyVirtualBoxDir.andCallFake (callback) ->
       process.nextTick -> callback expected
 
     model.deployPrivateKey samples.privateKey, (err) ->
@@ -169,11 +169,11 @@ describe "deployPrivateKey", ->
 
   it 'should call getOnlyVirtualBoxDir with callback', (done) ->
     model.deployPrivateKey samples.privateKey, ->
-      expect(model.__get__('vagrantModel').getOnlyVirtualBoxDir).toHaveBeenCalledWith(jasmine.any(Function))
+      expect(model.__get__('vbModel').getOnlyVirtualBoxDir).toHaveBeenCalledWith(jasmine.any(Function))
       done()
 
   it 'should call writeFile with correct params', (done) ->
-    expectedPath = samples.absolutePath + "/private_key"
+    expectedPath = samples.absolutePath + "/virtualbox/private_key"
 
     model.deployPrivateKey samples.privateKey, ->
       expect(model.__get__('utilModel').writeFile).toHaveBeenCalledWith(expectedPath, samples.privateKey, jasmine.any(Function))
@@ -184,7 +184,7 @@ describe "installNewKeys", ->
 
   beforeEach ->
     model = rewire "../../../../models/vagrant/ssh.coffee"
-    model.__set__ 'vagrantModel',
+    model.__set__ 'vbModel',
       getOnlyVirtualBoxDir: jasmine.createSpy('getOnlyVirtualBoxDir').andCallFake (callback) ->
         process.nextTick -> callback null, absolutePath: samples.absolutePath
     model.__set__ 'rsaModel',
@@ -201,7 +201,7 @@ describe "installNewKeys", ->
   it 'should fail on getOnlyVirtualBoxDir', (done) ->
     expected = new Error 'something went wrong'
 
-    model.__get__('vagrantModel').getOnlyVirtualBoxDir.andCallFake (callback) ->
+    model.__get__('vbModel').getOnlyVirtualBoxDir.andCallFake (callback) ->
       process.nextTick -> callback expected
 
     model.installNewKeys (err) ->
@@ -230,7 +230,7 @@ describe "installNewKeys", ->
 
   it 'should call getOnlyVirtualBoxDir with callback', (done) ->
     model.installNewKeys ->
-      expect(model.__get__('vagrantModel').getOnlyVirtualBoxDir).toHaveBeenCalledWith(jasmine.any(Function))
+      expect(model.__get__('vbModel').getOnlyVirtualBoxDir).toHaveBeenCalledWith(jasmine.any(Function))
       done()
 
   it 'should call getOnlyVirtualBoxDir with callback', (done) ->

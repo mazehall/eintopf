@@ -150,7 +150,7 @@ model.removeFileAsync = (path, callback) ->
 model.writeFile = (path, content, callback) ->
   return callback new Error 'Invalid path' if ! path
 
-  _r.fromPromise jetpack.writeAsync path, content
+  _r.fromPromise jetpack.writeAsync path, content, {atomic: true}
   .onError callback
   .onValue ->
     return callback null, true

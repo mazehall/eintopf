@@ -4,6 +4,7 @@ utilModel = require '../util/index.coffee'
 rsaModel = require '../util/rsa.coffee'
 terminalModel = require '../util/terminal.coffee'
 vagrantModel = require './run.coffee'
+vbModel = require './virtualbox.coffee'
 
 model = {}
 model.getSSHConfig = (callback) ->
@@ -31,10 +32,10 @@ model.deployPrivateKey = (privateKey, callback) ->
   return callback new Error 'invalid private key' if ! privateKey || typeof privateKey != "string"
 
   _r.fromNodeCallback (cb) ->
-    vagrantModel.getOnlyVirtualBoxDir cb
+    vbModel.getOnlyVirtualBoxDir cb
   .flatMap (vagrantDir) ->
     _r.fromNodeCallback (cb) ->
-      utilModel.writeFile vagrantDir.absolutePath + "/private_key", privateKey, cb
+      utilModel.writeFile vagrantDir.absolutePath + "/virtualbox/private_key", privateKey, cb
   .onError callback
   .onValue ->
     callback null, true
@@ -43,7 +44,7 @@ model.deployPrivateKey = (privateKey, callback) ->
 # the vm has to run while deploying
 model.installNewKeys = (callback) ->
   _r.fromNodeCallback (cb) ->
-    vagrantModel.getOnlyVirtualBoxDir cb
+    vbModel.getOnlyVirtualBoxDir cb
   .flatMap ->
     _r.fromNodeCallback (cb) ->
       rsaModel.createKeyPairForSSH 'vagrant', cb
@@ -62,7 +63,7 @@ model.deployPublicKey = (publicSSHKey, callback) ->
 
   cmd = "vagrant ssh -c \"echo '" + publicSSHKey + "' >> /home/vagrant/.ssh/authorized_keys\""
 
-  proc = terminalModel.createPTYStream cmd, {cwd: configPath}, (err, result) ->
+  proc = terminalModel.createPTYStream cmd, {cwd: configPath}, (err) ->
     return callback err if err
     return callback null, true
 

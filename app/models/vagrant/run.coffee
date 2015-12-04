@@ -28,21 +28,6 @@ model.getStatus = (callback) ->
     return callback new Error err if err
     return callback(null, i.status) for own d, i of result
 
-# get current virtualBox dir. There is currently only one supported
-model.getOnlyVirtualBoxDir = (callback) ->
-  return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
-
-  configDir = jetpack.cwd configPath
-
-  _r.fromPromise jetpack.findAsync configDir.path(), {matching: ["./.vagrant/machines/*/virtualbox"]}, "inspect"
-  .flatMap (folders) ->
-    _r.fromNodeCallback (cb) ->
-      return cb new Error "can't maintain integrity with multiple machine folders" if folders.length > 1
-      cb null, folders[0]
-  .onError callback
-  .onValue (val) ->
-    callback null, val
-
 #@todo move to ssh model???
 model.reloadWithNewSsh = (callback) ->
   _r.fromNodeCallback (cb) ->

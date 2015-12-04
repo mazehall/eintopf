@@ -5,7 +5,7 @@ config = require '../stores/config'
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
 vagrantSSHModel = require '../vagrant/ssh.coffee'
-vagrantIntegrityModel = require '../vagrant/integrity.coffee'
+virtualBoxModel = require '../vagrant/virtualbox.coffee'
 watcherModel = require '../stores/watcher.coffee'
 
 appConfig = config.get 'app'
@@ -53,7 +53,7 @@ model.run = () ->
     vagrantFsModel.copyVagrantFile cb
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      vagrantIntegrityModel.checkMachineIntegrity (err, result) -> cb null, true
+      virtualBoxModel.checkMachineConsistency (err, result) -> cb null, true
   .flatMap () ->
     states.vagrantFile = true
     watcherModel.set 'states:live', states
