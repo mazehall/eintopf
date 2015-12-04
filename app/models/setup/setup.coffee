@@ -4,6 +4,7 @@ jetpack = require "fs-jetpack"
 config = require '../stores/config'
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
+vagrantSSHModel = require '../vagrant/ssh.coffee'
 vagrantIntegrityModel = require '../vagrant/integrity.coffee'
 watcherModel = require '../stores/watcher.coffee'
 
@@ -22,7 +23,7 @@ inSetup = false
 states = JSON.parse(JSON.stringify(defaultStates));
 
 getVagrantSshConfigAndSetIt = (callback) ->
-  _r.fromNodeCallback (cb) -> vagrantRunModel.getSshConfig cb
+  _r.fromNodeCallback (cb) -> vagrantSSHModel.getSSHConfig cb
   .onValue (val) ->
     watcherModel.setProperty 'settings:list', 'vagrantSshConfig', val
   .onEnd ->

@@ -2,8 +2,6 @@ _r = require 'kefir'
 jetpack = require "fs-jetpack"
 
 utilModel = require "../util/index.coffee"
-rsaModel = require "../util/rsa.coffee"
-terminalModel = require "../util/terminal.coffee"
 
 model = {}
 
@@ -84,54 +82,5 @@ model.checkMachineIntegrity = (callback) ->
   .onError callback
   .onValue (val) ->
     return callback null, val
-
-#@todo naming
-model.recreateMachineSshKeys = (callback) ->
-  return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
-
-  configDir = jetpack.cwd configPath
-  vagrantDir = keys = null
-
-  _r.fromPromise jetpack.findAsync configDir.path(), {matching: ["./.vagrant/machines/*/virtualbox"]}, "inspect"
-  .flatMap (folders) ->
-    return _r.fromNodeCallback (cb) ->
-      return cb new Error "can't maintain integrity with multiple machine folders" if folders.length > 1
-      cb null, folders[0]
-  .onValue (dir) ->
-    vagrantDir = dir
-  .flatMap ->
-    _r.fromNodeCallback (cb) ->
-      rsaModel.createKeyPairForSSH 'vagrant', cb
-  .onValue (createdKeys) ->
-    keys = createdKeys
-  .flatMap -> # write private key file
-    _r.fromNodeCallback (cb) ->
-      utilModel.writeFile vagrantDir.absolutePath + "/private_key", keys.privateKey, cb
-  .flatMap () -> # deploy public key to vm authorized_keys
-    _r.fromNodeCallback (cb) ->
-      model.deployVagrantAuthorizedKey keys.publicSSHKey, cb
-  .onError callback
-  .onValue ->
-    callback null, true
-
-#@todo renaming
-model.deployVagrantAuthorizedKey = (publicSSHKey, callback) ->
-  return callback new Error "Invalid public key" if ! publicSSHKey
-  return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
-
-  cmd = "vagrant ssh -c \"echo '" + publicSSHKey + "' >> /home/vagrant/.ssh/authorized_keys\""
-
-  proc = terminalModel.createPTYStream cmd, {cwd: configPath}, (err, result) ->
-    return callback err if err
-    return callback null, true
-
-  if proc.pty
-    proc.stdout.on 'data', (val) ->
-      if (val.match /(vagrant@(.*) password:)/ )
-        terminalModel.writeIntoPTY 'vagrant'
-  else # use stdin when not in pty mode
-    proc.stdin.on 'data', (val) ->
-      if (val.match /(vagrant@(.*) password:)/ )
-        terminalModel.writeIntoPTY 'vagrant'
 
 module.exports = model;

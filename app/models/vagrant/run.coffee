@@ -1,9 +1,9 @@
 _r = require 'kefir'
 vagrant = require 'node-vagrant'
+jetpack = require "fs-jetpack"
 
 utilModel = require '../util/'
 terminalModel = require '../util/terminal.coffee'
-integrityModel = require './integrity.coffee'
 watcherModel = require '../stores/watcher.coffee'
 
 isVagrantInstalled = (callback) ->
@@ -17,6 +17,7 @@ isVagrantInstalled = (callback) ->
 
 model = {}
 
+#@todo does it have to run completely every time?
 model.getVagrantMachine = (callback) ->
   return callback new Error '' if ! (configModulePath = utilModel.getConfigModulePath())?
   return machine = vagrant.create {cwd: configModulePath}
@@ -27,13 +28,25 @@ model.getStatus = (callback) ->
     return callback new Error err if err
     return callback(null, i.status) for own d, i of result
 
-model.getSshConfig = (callback) ->
-  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
-  machine.sshConfig callback
+# get current virtualBox dir. There is currently only one supported
+model.getOnlyVirtualBoxDir = (callback) ->
+  return callback new Error "Invalid config path" if ! (configPath = utilModel.getConfigModulePath())
 
+  configDir = jetpack.cwd configPath
+
+  _r.fromPromise jetpack.findAsync configDir.path(), {matching: ["./.vagrant/machines/*/virtualbox"]}, "inspect"
+  .flatMap (folders) ->
+    _r.fromNodeCallback (cb) ->
+      return cb new Error "can't maintain integrity with multiple machine folders" if folders.length > 1
+      cb null, folders[0]
+  .onError callback
+  .onValue (val) ->
+    callback null, val
+
+#@todo move to ssh model???
 model.reloadWithNewSsh = (callback) ->
   _r.fromNodeCallback (cb) ->
-    integrityModel.recreateMachineSshKeys cb
+    sshModel.installNewKeys cb
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       model.reload cb
@@ -95,3 +108,6 @@ model.run = (callback) ->
     callback err
 
 module.exports = model;
+
+#@todo improve require order
+sshModel = require './ssh.coffee'

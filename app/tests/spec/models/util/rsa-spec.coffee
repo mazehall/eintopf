@@ -3,13 +3,12 @@
 rewire = require 'rewire'
 
 model = null
-samples = {
-  rndPublicKey: '----\nrandomPublicKey\n----',
-  rndPrivateKey: '----\nrandomPrivateKey\n----',
+samples =
+  publicKey: '----\nrandomPublicKey\n----',
+  privateKey: '----\nrandomPrivateKey\n----',
   rndPublicSSHKey: 'ssh-rsa randomPublicSSHKey test',
   forgeResult: ['something'],
   label: 'testing'
-}
 
 describe "createKeyPair", ->
 
@@ -18,14 +17,14 @@ describe "createKeyPair", ->
     model.__set__ 'NodeRSA', jasmine.createSpy('NodeRSA').andCallFake ->
       return {
         exportKey: (format) ->
-          return samples.rndPublicKey if format == 'public'
-          return samples.rndPrivateKey if format == 'private'
+          return samples.publicKey if format == 'public'
+          return samples.privateKey if format == 'private'
       }
 
   it 'should only return private and public pem', (done) ->
     expected = {
-      privateKey: samples.rndPrivateKey
-      publicKey: samples.rndPublicKey
+      privateKey: samples.privateKey
+      publicKey: samples.publicKey
     }
 
     model.createKeyPair (err, keys) ->
@@ -50,17 +49,17 @@ describe "publicKeyPemToPublicSSH" , ->
           samples.rndPublicSSHKey
 
   it 'should return public ssh key', (done) ->
-    model.publicKeyPemToPublicSSH samples.rndPublicKey, samples.label, (err, key) ->
+    model.publicKeyPemToPublicSSH samples.publicKey, samples.label, (err, key) ->
       expect(key).toBe(samples.rndPublicSSHKey)
       done()
 
   it 'should call forge.pki.publicKeyFromPem with the public key', (done) ->
-    model.publicKeyPemToPublicSSH samples.rndPublicKey, samples.label, ->
-      expect(model.__get__('forge').pki.publicKeyFromPem).toHaveBeenCalledWith(samples.rndPublicKey)
+    model.publicKeyPemToPublicSSH samples.publicKey, samples.label, ->
+      expect(model.__get__('forge').pki.publicKeyFromPem).toHaveBeenCalledWith(samples.publicKey)
       done()
 
   it 'should call forge.ssh.publicKeyToOpenSSH with forged key and label', (done) ->
-    model.publicKeyPemToPublicSSH samples.rndPublicKey, samples.label, ->
+    model.publicKeyPemToPublicSSH samples.publicKey, samples.label, ->
       expect(model.__get__('forge').ssh.publicKeyToOpenSSH).toHaveBeenCalledWith(samples.forgeResult, samples.label)
       done()
 
@@ -70,16 +69,16 @@ describe "createKeyPairForSSH" , ->
     model = rewire "../../../../models/util/rsa.coffee"
     spyOn(model, 'createKeyPair').andCallFake (callback) ->
       callback null,
-        privateKey: samples.rndPrivateKey,
-        publicKey: samples.rndPublicKey
+        privateKey: samples.privateKey,
+        publicKey: samples.publicKey
     spyOn(model, 'publicKeyPemToPublicSSH').andCallFake (publicKey, label, callback) ->
       callback null,
         samples.rndPublicSSHKey
 
   it 'should return private, public and public ssh keys', (done) ->
     expected = {
-      privateKey: samples.rndPrivateKey,
-      publicKey: samples.rndPublicKey,
+      privateKey: samples.privateKey,
+      publicKey: samples.publicKey,
       publicSSHKey: samples.rndPublicSSHKey
     }
 
@@ -94,7 +93,7 @@ describe "createKeyPairForSSH" , ->
 
   it 'should call publicKeyPemToPublicSSH with correct parameters', (done) ->
     model.createKeyPairForSSH samples.label, ->
-      expect(model.publicKeyPemToPublicSSH).toHaveBeenCalledWith(samples.rndPublicKey, samples.label,jasmine.any(Function))
+      expect(model.publicKeyPemToPublicSSH).toHaveBeenCalledWith(samples.publicKey, samples.label,jasmine.any(Function))
       done()
 
   it 'should fail on createKeyPair error', (done) ->
