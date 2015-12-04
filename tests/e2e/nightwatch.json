@@ -26,7 +26,10 @@
       "desiredCapabilities": {
         "browserName": "chrome",
         "javascriptEnabled": true,
-        "acceptSslCerts": true
+        "acceptSslCerts": true,
+        "chromeOptions": {
+          "binary": "tests/e2e_launcher"
+        }
       },
       "exclude" : "nightwatch.json"
     }
