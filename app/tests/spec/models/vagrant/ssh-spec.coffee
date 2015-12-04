@@ -13,42 +13,6 @@ samples =
   configPath: '/tmp/rnd/config/path'
 
 
-describe "getSSHConfig", ->
-
-  machineMock =
-    sshConfig: jasmine.createSpy('getVagrantMachine').andCallFake (callback) ->
-      callback null, {}
-
-  beforeEach ->
-    model = rewire "../../../../models/vagrant/ssh.coffee"
-    model.__set__ 'vagrantModel',
-      getVagrantMachine: jasmine.createSpy('getVagrantMachine').andCallFake ->
-        machineMock
-
-  it 'should call vagrantModel.getVagrantMachine without parameters', (done) ->
-    model.getSSHConfig ->
-      expect(model.__get__('vagrantModel').getVagrantMachine).toHaveBeenCalledWith()
-      done()
-
-  it 'should call machine.sshConfig with callback', (done) ->
-    model.getSSHConfig ->
-      expect(machineMock.sshConfig).toHaveBeenCalledWith(jasmine.any(Function))
-      done()
-
-  it 'should call machine.sshConfig with own callback', (done) ->
-    callback = ->
-      expect(machineMock.sshConfig).toHaveBeenCalledWith(callback)
-      done()
-
-    model.getSSHConfig callback
-
-  it 'should fail without machine', (done) ->
-    model.__get__('vagrantModel').getVagrantMachine.andCallFake -> null
-
-    model.getSSHConfig (err) ->
-      expect(err).toBeTruthy()
-      done()
-
 describe "deployPublicKeyStdInCallback", ->
 
   beforeEach ->

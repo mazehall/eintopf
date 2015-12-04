@@ -3,13 +3,9 @@ _r = require 'kefir'
 utilModel = require '../util/index.coffee'
 rsaModel = require '../util/rsa.coffee'
 terminalModel = require '../util/terminal.coffee'
-vagrantModel = require './run.coffee'
 vbModel = require './virtualbox.coffee'
 
 model = {}
-model.getSSHConfig = (callback) ->
-  return callback new Error 'Failed to get vagrant machine' if ! (machine = vagrantModel.getVagrantMachine())?
-  machine.sshConfig callback
 
 # reacts on password input and writes the default 'vagrant' password
 model.deployPublicKeyStdInCallback = (val) ->

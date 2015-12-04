@@ -5,6 +5,7 @@ jetpack = require "fs-jetpack"
 utilModel = require '../util/'
 terminalModel = require '../util/terminal.coffee'
 watcherModel = require '../stores/watcher.coffee'
+sshModel = require './ssh.coffee'
 
 isVagrantInstalled = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
@@ -21,6 +22,11 @@ model = {}
 model.getVagrantMachine = (callback) ->
   return callback new Error '' if ! (configModulePath = utilModel.getConfigModulePath())?
   return machine = vagrant.create {cwd: configModulePath}
+
+#@todo machine model or machine function wrapper???
+model.getSSHConfig = (callback) ->
+  return callback new Error 'Failed to get vagrant machine' if ! (machine = model.getVagrantMachine())?
+  machine.sshConfig callback
 
 model.getStatus = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
@@ -93,6 +99,3 @@ model.run = (callback) ->
     callback err
 
 module.exports = model;
-
-#@todo improve require order
-sshModel = require './ssh.coffee'
