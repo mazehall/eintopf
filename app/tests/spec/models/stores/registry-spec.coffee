@@ -34,10 +34,6 @@ describe "updateRegistryInstallFlags", ->
     model.updateRegistryInstallFlags()
     expect(model.__get__('watcherModel').get).toHaveBeenCalledWith(samples.watcherId)
 
-  it 'should call mapRegistryData 2 times', ->
-    model.updateRegistryInstallFlags()
-    expect(model.mapRegistryData.callCount).toBe(2)
-
   it 'should call mapRegistryData with public data', ->
     model.updateRegistryInstallFlags()
     expect(model.mapRegistryData).toHaveBeenCalledWith(samples.recommendationsList.public)
