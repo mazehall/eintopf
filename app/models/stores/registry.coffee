@@ -12,14 +12,24 @@ registryConfig = config.get 'registry'
 loadingTimeout = process.env.REGISTRY_INTERVAL || registryConfig.refreshInterval || 3600000
 publicRegistry = process.env.REGISTRY_URL || registryConfig.public || null
 
-mapRegistryData = (registryData) ->
+model = {}
+
+# update and set registry install flags in watcherModel 'recommendations:list'
+model.updateRegistryInstallFlags = ->
+  registry = watcherModel.get "recommendations:list"
+
+  updatedRegistry =
+    "public": if registry?.public? then model.mapRegistryData registry.public else []
+    "private": if registry?.private? then model.mapRegistryData registry.private else []
+
+  watcherModel.set "recommendations:list", updatedRegistry
+
+model.mapRegistryData = (registryData) ->
   return registryData if ! utilsModel.typeIsArray registryData
   for registry in registryData
     registry.id = if registry.url then utilsModel.getProjectNameFromGitUrl registry.url else null
     registry.installed = if utilsModel.isProjectInstalled registry.id then true else false
   return registryData
-
-model = {}
 
 model.loadRegistryContent = (registryUrl, callback) ->
   opts = url.parse registryUrl
@@ -57,10 +67,10 @@ model.loadRegistry = (callback) ->
     private : []
 
   model.loadRegistryContent publicRegistry, (error, data) ->
-    registry.public = if ! error then mapRegistryData data else defaultRegistry
+    registry.public = if ! error then model.mapRegistryData data else defaultRegistry
     return callback null, registry if not registryConfig.private?.length
     return model.loadPrivateRegistryContent registryConfig.private, (error, data) ->
-      registry.private = mapRegistryData data unless error
+      registry.private = model.mapRegistryData data unless error
       callback null, registry
 
 model.loadRegistryWithInterval = () ->
@@ -73,18 +83,14 @@ model.loadRegistryWithInterval = () ->
     watcherModel.set 'recommendations:list', val
 
 # initial registry load - sets default data on fail
-defaultRegistry = mapRegistryData defaultRegistry
+defaultRegistry = model.mapRegistryData defaultRegistry
 model.loadRegistry (err, result) ->
   return watcherModel.set 'recommendations:list', {public: defaultRegistry} if err
-  watcherModel.set 'recommendations:list', mapRegistryData result
+  watcherModel.set 'recommendations:list', model.mapRegistryData result
 
 # reevaluate recommendations -> projects mapping
 watcherModel.propertyToKefir 'projects:list'
 .throttle(200)
-.onValue ->
-  recommendations = watcherModel.get "recommendations:list"
-  recommendations.public = mapRegistryData recommendations.public if recommendations.public?
-  recommendations.private = mapRegistryData recommendations.private if recommendations.private?
-  watcherModel.set "recommendations:list", mapRegistryData recommendations
+.onValue model.updateRegistryInstallFlags
 
 module.exports = model;
