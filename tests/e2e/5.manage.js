@@ -3,7 +3,10 @@ module.exports = {
     beforeEach : function(browser) {
         browser.waitForEintopfStart = function(){
             return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
-        }
+        };
+        browser.endSession = function(){
+            return browser.closeWindow().end();
+        };
     },
 
     "should switch to the 'logs' tab when project starts": function (browser){
@@ -16,7 +19,7 @@ module.exports = {
         browser.click(".cssToolbar li.run > a");
         browser.assert.containsText("ul.cssTab > li.cssActive", "Logs");
         browser.expect.element("[marked=\"protocol\"]").to.be.visible;
-        browser.end();
+        browser.endSession();
     },
 
     "should switch to the 'logs' tab when description update starts": function (browser){
@@ -29,7 +32,7 @@ module.exports = {
         browser.click(".cssToolbar li.update > a");
         browser.assert.containsText("ul.cssTab > li.cssActive", "Logs");
         browser.expect.element("[marked=\"protocol\"]").to.be.visible;
-        browser.end();
+        browser.endSession();
     },
 
     "should remove the 'running' css class and switch to the 'logs' tab by stopping a project": function (browser){
@@ -45,7 +48,7 @@ module.exports = {
 
         browser.assert.containsText("ul.cssTab > li.cssActive", "Logs");
         browser.expect.element("[marked=\"protocol\"]").to.be.visible;
-        browser.end();
+        browser.endSession();
     },
 
     "should be removed from the sidebar when deleted a project": function (browser){
@@ -58,6 +61,6 @@ module.exports = {
 
         browser.waitForElementNotPresent(".cssToolbar", 10000);
         browser.expect.element(".cssMenu li#eintopfphpdev").to.not.be.present.after(1000);
-        browser.end();
+        browser.endSession();
     }
 };

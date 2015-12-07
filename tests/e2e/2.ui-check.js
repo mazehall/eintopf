@@ -2,7 +2,10 @@ module.exports = {
     beforeEach : function(browser) {
         browser.waitForEintopfStart = function(){
             return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
-        }
+        };
+        browser.endSession = function(){
+            return browser.closeWindow().end();
+        };
     },
 
     "should list the community patterns in 'Create Project' page": function (browser){
@@ -10,7 +13,7 @@ module.exports = {
         browser.assert.containsText("#content", "Create Project");
         browser.expect.element("#content").text.to.contain("Community Pattern");
         browser.expect.element(".cssPattern").to.be.present;
-        browser.end();
+        browser.endSession();
     },
 
     "should navigate to settings and display the vagrant ssh config": function (browser){
@@ -22,7 +25,7 @@ module.exports = {
         browser.getValue("[ng-show=\"settings.vagrantSshConfig\"] [type=\"text\"]", function(result){
             this.assert.equal(result.state, "success");
         });
-        browser.end();
+        browser.endSession();
     },
 
     "should display an error when a non git-url is used for project installation": function (browser){
@@ -32,6 +35,6 @@ module.exports = {
         browser.submitForm("form #projectName");
         browser.waitForElementVisible("[ng-show=\"result.errorMessage\"]", 9000);
         browser.expect.element("[ng-show=\"result.errorMessage\"]").text.to.contain("invalid or unsupported git url");
-        browser.end();
+        browser.endSession();
     }
 };
