@@ -106,7 +106,7 @@ describe "getMachine", ->
       expect(err).toBe(expected)
       done()
 
-  it 'should run cmd only once on linux even when it fails with binary not found', (done) ->
+  it 'should call runCmd only once when it fails on linux', (done) ->
     model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
       if cmd.match(/^"C:/)
         return process.nextTick -> callback new Error 'something went wrong'
@@ -116,7 +116,7 @@ describe "getMachine", ->
       expect(model.__get__('utilModel').runCmd.callCount).toBe(1)
       done()
 
-  it 'should run cmd twice on window when first fails with binary not found', (done) ->
+  it 'should call runCmd twice when first fails on windows', (done) ->
     Object.defineProperty process, 'platform',
       value: 'win32'
 
@@ -129,18 +129,7 @@ describe "getMachine", ->
       expect(model.__get__('utilModel').runCmd.callCount).toBe(2)
       done()
 
-  it 'should run cmd once on window when first fails not with binary not found', (done) ->
-    Object.defineProperty process, 'platform',
-      value: 'win32'
-
-    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
-      process.nextTick -> callback new Error 'random error'
-
-    model.getMachine samples.id, ->
-      expect(model.__get__('utilModel').runCmd.callCount).toBe(1)
-      done()
-
-  it 'should call runCmd with fixed vbox manage when first fails with binary not found', (done) ->
+  it 'should call runCmd with fixed vbox manage after first fail on windows', (done) ->
     Object.defineProperty process, 'platform',
       value: 'win32'
 
