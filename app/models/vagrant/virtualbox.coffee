@@ -3,7 +3,7 @@ jetpack = require "fs-jetpack"
 
 utilModel = require "../util/index.coffee"
 
-winVBoxManagePath = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
+winVBoxManagePath = 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' # keep slashes
 
 model = {}
 
@@ -22,7 +22,7 @@ model.getMachine = (machineId, callback) ->
   _r.fromNodeCallback (cb) -> # cmd response only positive when machine exists
     utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, (err, result) ->
       if process.platform == "win32" && err
-        return utilModel.runCmd '"' + winVBoxManagePath + '"' + cmdParams, null, null, cb
+        return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, cb
       cb err, result
   .map (resultString) ->
     result = {}

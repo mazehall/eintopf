@@ -137,7 +137,7 @@ describe "getMachine", ->
       process.nextTick -> callback new Error 'sh: 1: VBoxManage: not found'
 
     model.getMachine samples.id, ->
-      expect(model.__get__('utilModel.runCmd').argsForCall[1][0]).toContain('C:\Program Files\Oracle\VirtualBox\VBoxManage.exe')
+      expect(model.__get__('utilModel.runCmd').argsForCall[1][0]).toContain('C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe')
       done()
 
 
