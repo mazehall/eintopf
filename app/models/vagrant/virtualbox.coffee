@@ -3,6 +3,8 @@ jetpack = require "fs-jetpack"
 
 utilModel = require "../util/index.coffee"
 
+winVBoxManagePath = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
+
 model = {}
 
 # checks that machine actually exists in virtual box if not try to restore it
@@ -15,8 +17,13 @@ model.checkAndRestoreMachineId = (machineId, callback) ->
     return callback null, true
 
 model.getMachine = (machineId, callback) ->
+  cmdParams = "showvminfo --machinereadable " + machineId
+
   _r.fromNodeCallback (cb) -> # cmd response only positive when machine exists
-    utilModel.runCmd 'VBoxManage showvminfo --machinereadable ' + machineId, null, null, cb
+    utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, (err, result) ->
+      if process.platform == "win32" && err?.message?.match(/(VBoxManage: not found)/)
+        return utilModel.runCmd '"' + winVBoxManagePath + '"' + cmdParams, null, null, cb
+      cb err, result
   .map (resultString) ->
     result = {}
     return result if ! resultString
