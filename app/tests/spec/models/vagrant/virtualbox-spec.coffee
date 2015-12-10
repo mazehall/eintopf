@@ -6,7 +6,8 @@ model = null
 samples =
   path: "/tmp/somehting/something/.vagrant/machines/eintopf"
   id: "123123-asdqw-3213-1234-32121"
-  vmInfo: "name=\"eintopf\"\ngroups=\"/\"\nostype=\"Ubuntu (64-bit)\"\nUUID=\"123123-asdqw-3213-1234-32121\""
+  vmInfoRaw: "name=\"eintopf\"\ngroups=\"/\"\nostype=\"Ubuntu (64-bit)\"\nUUID=\"123123-asdqw-3213-1234-32121\""
+  vmInfoRawWin: "name=\"eintopf\"\r\ngroups=\"/\"\r\nostype=\"Ubuntu (64-bit)\"\r\nUUID=\"123123-asdqw-3213-1234-32121\""
   vmInfoMapped:
     name: "eintopf"
     groups: "/"
@@ -80,7 +81,7 @@ describe "getMachine", ->
     model = rewire "../../../../models/vagrant/virtualbox.coffee"
     model.__set__ 'utilModel',
       runCmd: jasmine.createSpy('runCmd').andCallFake (cmd, config, logName, callback) ->
-        process.nextTick -> callback null, samples.vmInfo
+        process.nextTick -> callback null, samples.vmInfoRaw
 
   afterEach ->
     Object.defineProperty process, 'platform',
@@ -122,7 +123,7 @@ describe "getMachine", ->
 
     model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
       if cmd.match(/^"C:/)
-        return process.nextTick -> callback null, samples.vmInfo
+        return process.nextTick -> callback null, samples.vmInfoRaw
       process.nextTick -> callback new Error 'sh: 1: VBoxManage: not found'
 
     model.getMachine samples.id, ->
@@ -138,6 +139,27 @@ describe "getMachine", ->
 
     model.getMachine samples.id, ->
       expect(model.__get__('utilModel.runCmd').argsForCall[1][0]).toContain('C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe')
+      done()
+
+  it 'should return empty object when runCmd returns nothing', (done) ->
+    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
+      process.nextTick -> callback null, null
+
+    model.getMachine samples.id, (err, result) ->
+      expect(result).toEqual({})
+      done()
+
+  it 'should map cmd result into correct properties', (done) ->
+    model.getMachine samples.id, (err, result) ->
+      expect(result).toEqual(samples.vmInfoMapped)
+      done()
+
+  it 'should map windows cmd result into correct properties', (done) ->
+    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
+      process.nextTick -> callback null, samples.vmInfoRawWin
+
+    model.getMachine samples.id, (err, result) ->
+      expect(result).toEqual(samples.vmInfoMapped)
       done()
 
 

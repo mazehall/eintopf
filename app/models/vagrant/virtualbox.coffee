@@ -27,7 +27,7 @@ model.getMachine = (machineId, callback) ->
   .map (resultString) ->
     result = {}
     return result if ! resultString
-    for line in resultString.split("\n")
+    for line in resultString.split(/\r?\n/)
       val = line.split("=")
       result[val[0]] = if typeof val[1] == "string" then val[1].replace(/^"/g, '').replace(/"$/g, '') else null
     result
