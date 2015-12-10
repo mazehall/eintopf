@@ -1,13 +1,5 @@
 module.exports = {
     "@tags": ["docker"],
-    beforeEach : function(browser) {
-        browser.waitForEintopfStart = function(){
-            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
-        };
-        browser.endSession = function(){
-            return browser.closeWindow().end();
-        };
-    },
 
     "should switch to the 'logs' tab when project starts": function (browser){
         browser.waitForEintopfStart();
@@ -62,5 +54,14 @@ module.exports = {
         browser.waitForElementNotPresent(".cssToolbar", 10000);
         browser.expect.element(".cssMenu li#eintopfphpdev").to.not.be.present.after(1000);
         browser.endSession();
+    },
+
+    before: function(browser) {
+        browser.waitForEintopfStart = function(){
+            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
+        };
+        browser.endSession = function(){
+            return browser.closeWindow().end();
+        };
     }
 };

@@ -1,13 +1,4 @@
 module.exports = {
-    beforeEach : function(browser) {
-        browser.waitForEintopfStart = function(){
-            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
-        };
-        browser.endSession = function(){
-            return browser.closeWindow().end();
-        };
-    },
-
     "should load mazehall and node modules without an error": function (browser){
         browser.waitForElementVisible("html", 2000);
         browser.expect.element("html").text.to.not.match(/Cannot GET/ig);
@@ -25,5 +16,14 @@ module.exports = {
         browser.expect.element(".cssSetup").text.to.contain("Start VirtualBox").after(5000);
         browser.waitForEintopfStart();
         browser.endSession();
+    },
+
+    before: function(browser) {
+        browser.waitForEintopfStart = function(){
+            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
+        };
+        browser.endSession = function(){
+            return browser.closeWindow().end();
+        };
     }
 };

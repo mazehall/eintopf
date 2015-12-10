@@ -1,12 +1,4 @@
 module.exports = {
-    beforeEach : function(browser) {
-        browser.waitForEintopfStart = function(){
-            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
-        };
-        browser.endSession = function(){
-            return browser.closeWindow().end();
-        };
-    },
 
     "should list the community patterns in 'Create Project' page": function (browser){
         browser.waitForElementVisible("#content", 25000);
@@ -36,5 +28,14 @@ module.exports = {
         browser.waitForElementVisible("[ng-show=\"result.errorMessage\"]", 9000);
         browser.expect.element("[ng-show=\"result.errorMessage\"]").text.to.contain("invalid or unsupported git url");
         browser.endSession();
+    },
+
+    before: function(browser) {
+        browser.waitForEintopfStart = function(){
+            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
+        };
+        browser.endSession = function(){
+            return browser.closeWindow().end();
+        };
     }
 };

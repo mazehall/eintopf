@@ -1,13 +1,5 @@
 module.exports = {
     "@tags": ["docker", "proxy"],
-    beforeEach : function(browser) {
-        browser.waitForEintopfStart = function(){
-            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
-        };
-        browser.endSession = function(){
-            return browser.closeWindow().end();
-        };
-    },
 
     "should have a active 'running app' container": function (browser){
         browser.waitForEintopfStart();
@@ -33,5 +25,14 @@ module.exports = {
         browser.waitForElementVisible("html", 2000);
         browser.assert.containsText("html", "Hello world");
         browser.endSession();
+    },
+
+    before: function(browser) {
+        browser.waitForEintopfStart = function(){
+            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
+        };
+        browser.endSession = function(){
+            return browser.closeWindow().end();
+        };
     }
 };

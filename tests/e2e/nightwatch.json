@@ -15,10 +15,13 @@
 
   "test_settings": {
     "default": {
-      "launch_url": "http://localhost:31313",
+      "launch_url": "http://localhost:31314",
       "selenium_port": 4444,
       "selenium_host": "localhost",
       "silent": true,
+      "globals" : {
+        "port" : 31314
+      },
       "screenshots": {
         "enabled": true,
         "path"   : "tests/e2e/screenshots"

@@ -1,13 +1,5 @@
 module.exports = {
     "@tags": ["docker"],
-    beforeEach : function(browser) {
-        browser.waitForEintopfStart = function(){
-            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
-        };
-        browser.endSession = function(){
-            return browser.closeWindow().end();
-        };
-    },
 
     "project descriptions 'PHP dev' should be available": function (browser){
         browser.waitForEintopfStart();
@@ -81,5 +73,14 @@ module.exports = {
         browser.expect.element("[ng-show=\"currentTab == 'containers'\"]").text.to.match(/eintopfphpdev/i);
         browser.expect.element("[ng-show=\"currentTab == 'containers'\"] .cssSwitchBg").text.to.equal("ON");
         browser.endSession();
+    },
+
+    before: function(browser) {
+        browser.waitForEintopfStart = function(){
+            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
+        };
+        browser.endSession = function(){
+            return browser.closeWindow().end();
+        };
     }
 };
