@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 
 var usemin = require('gulp-usemin');
-var gutil = require('gulp-util');
 var minifyCss = require('gulp-minify-css');
 var minifyJs = require('gulp-uglify');
 var less = require('gulp-less');
