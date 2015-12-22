@@ -24,6 +24,6 @@
     "build": "./node_modules/.bin/gulp build",
     "release": "./node_modules/.bin/gulp release --env=production",
     "start": "node ./tasks/start",
-    "test": ""
+    "test": "cd app && npm test"
   }
 }

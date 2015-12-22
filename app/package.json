@@ -3,7 +3,7 @@
   "private": true,
   "productName": "Eintopf",
   "identifier": "com.mazehall.eintopf",
-  "description": "Manage your development projects with docker.",
+  "description": "The smartest way to share and administrate docker projects.",
   "version": "1.1.1",
   "author": "Jens Klose <jens.klose@mazehall.com>",
   "maintainers": [
