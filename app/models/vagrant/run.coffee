@@ -27,7 +27,12 @@ model.getStatus = (callback) ->
 
 model.getSshConfig = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
-  machine.sshConfig callback
+
+  machine.sshConfig (error, config) ->
+    return callback? error if error
+    return machine._run ["ssh", "-c", "hostname -I | cut -d' ' -f2"], (error, hostname) ->
+      config.hostname = hostname if hostname and not error
+      callback? error, config
 
 model.up = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?

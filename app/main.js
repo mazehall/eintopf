@@ -1,7 +1,6 @@
 var app = require('app');
 var shell = require('shell');
 var BrowserWindow = require('browser-window');
-var menuEntries = require('./app_modules/gui/public/src/js/services/app-menu');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 var Menu = require('menu');
 
@@ -9,7 +8,6 @@ process.cwd = app.getAppPath;
 
 var server = require('./server.js');
 var mainWindow, webContents;
-var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
 var port = process.env.PORT = process.env.PORT || 31313;
 // Preserver of the window size and position between app launches.
 var mainWindowState = windowStateKeeper('main', {
@@ -94,8 +92,6 @@ app.on('ready', function () {
     });
   });
   process.emit('app:startserver', port);
-
-  //menuEntries.setMenu();
 
   mainWindow.on('close', function () {
     mainWindowState.saveState(mainWindow);
