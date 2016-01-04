@@ -44,7 +44,7 @@ module.exports = {
     "running projects should have two new tabs of their project detail page": function (browser){
         browser.waitForEintopfStart();
         browser.click(".cssMenu li#eintopfphpdev > a.btn--link");
-        browser.waitForElementPresent(".cssToolbar", 1000);
+        browser.waitForElementPresent(".cssToolbar", 1000).pause(3000);
         browser.expect.element(".cssTab").text.to.match(/Containers/i);
         browser.expect.element(".cssTab").text.to.match(/Running Apps/i);
         browser.endSession();
@@ -53,7 +53,7 @@ module.exports = {
     "running projects should have 'running app´s' of their project detail page": function (browser){
         browser.waitForEintopfStart();
         browser.click(".cssMenu li#eintopfphpdev > a.btn--link");
-        browser.waitForElementPresent(".cssToolbar", 1000);
+        browser.waitForElementPresent(".cssToolbar", 1000).pause(3000);
         browser.expect.element(".cssTab > li.tab_running_apps").to.be.present;
         browser.click(".cssTab > li.tab_running_apps");
 
@@ -65,7 +65,7 @@ module.exports = {
     "running projects should have a active container of their project detail page": function (browser){
         browser.waitForEintopfStart();
         browser.click(".cssMenu li#eintopfphpdev > a.btn--link");
-        browser.waitForElementPresent(".cssToolbar", 1000);
+        browser.waitForElementPresent(".cssToolbar", 1000).pause(3000);
         browser.expect.element(".cssTab > li.tab_containers").to.be.present;
         browser.click(".cssTab > li.tab_containers");
 

@@ -21,7 +21,7 @@ module.exports = {
     },
 
     "should call a project url": function (browser){
-        browser.init("http://php.dev:4480/");
+        browser.init("http://php.dev:4480/index.php");
         browser.waitForElementVisible("html", 2000);
         browser.assert.containsText("html", "Hello world");
         browser.endSession();
