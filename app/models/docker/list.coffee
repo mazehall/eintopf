@@ -173,9 +173,12 @@ dockerEventsStream.throttle 10000
 .onAny (val) ->
   runningProxyDeployment = false if val.type != "error" || val.value.message != messageProxyAlreadyInstalling
 .onError (err) ->
-  if err.message != messageProxyUpToDate && err.message != messageProxyAlreadyInstalling
-    message = messageErrProxyPre + err + messageErrProxyPost
-    watcherModel.set "backend:errors", [{message: message, read: false, date: Date.now()}]
+  ignoredErrorMessages = [messageProxyUpToDate, messageProxyAlreadyInstalling]
+  ignoredErrorCodes = ['ECONNREFUSED', 'ECONNRESET']
+  return false if ! ignoredErrorMessages.indexOf(err.message) || ! ignoredErrorCodes.indexOf(err.code)
+
+  message = messageErrProxyPre + err + messageErrProxyPost
+  watcherModel.set "backend:errors", [{message: message, read: false, date: Date.now()}]
 .onValue ->
   watcherModel.set "backend:errors", []
 
