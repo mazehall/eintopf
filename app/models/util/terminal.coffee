@@ -43,7 +43,7 @@ model.createPTYStream = (cmd, options, callback) ->
     opts = {text: model.formatTerminalOutput(val)}
 
     # when pty match for sudo password input
-    if ptyStream.pty && (opts.text.match /(\[sudo\] password|Password:)/ )
+    if ptyStream && ptyStream.pty && (opts.text.match /(\[sudo\] password|Password:)/ )
       opts.input = true
       opts.secret = true
     watcherModel.log 'terminal:output', opts

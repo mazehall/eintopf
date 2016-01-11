@@ -61,18 +61,11 @@ model.up = (callback) ->
     return callback err if err
     return callback null, true
 
-  if proc.pty
-    proc.stdout.on 'data', (val) ->
-      if (val.match /(Warning: Authentication failure. Retrying...)/ )
-        failedSsh = true
-        proc.emit 'error', new Error 'SSH connection failed'
-        proc.destroy()
-  else # use stdin when not in pty mode
-    proc.stdin.on 'data', (val) ->
-      if (val.match /(Warning: Authentication failure. Retrying...)/ )
-        failedSsh = true
-        proc.emit 'error', new Error 'SSH connection failed'
-        proc.destroy()
+  proc.stdout.on 'data', (val) ->
+    if (val.toString().match /(Warning: Authentication failure. Retrying...)/ )
+      proc.emit 'error', new Error 'SSH connection failed'
+      failedSsh = true
+      if proc.pty then proc.destroy() else proc.kill('SIGINT')
 
 model.run = (callback) ->
   runningMessage = 'is_runnning'
