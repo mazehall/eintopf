@@ -5,7 +5,6 @@ watcherModel = require '../stores/watcher.coffee'
 config = require '../stores/config.coffee'
 utilModel = require '../util/index.coffee'
 
-typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
 
 runningProxyDeployment = false
@@ -37,7 +36,7 @@ loadApps = () ->
   containers = watcherModel.get 'containers:list'
   foundApps = []
 
-  if typeIsArray containers
+  if utilModel.typeIsArray containers
     containers.forEach (container) ->
       if container.virtualHost? and container.status.match /^Up /
         virtualHosts = container.virtualHost.split(",")
@@ -120,48 +119,71 @@ model.removeContainer = (containerId, callback) ->
   container = docker.getContainer containerId
   container.remove callback
 
-model.loadContainers = () ->
+# maps container data
+model.mapContainerData = (container) ->
+  container.id = container.Id
+  container.status = container.Status
+  container.name = container.Names[0].replace(/\//g, '') if utilModel.typeIsArray container.Names # strip docker-compose slashes
+  container.running = if container.status.match(/^Up/) then true else false
+
+  if (labels = container.inspect.Config.Labels) and labels["com.docker.compose.project"]
+    container.project = labels["com.docker.compose.project"]
+
+  if (utilModel.typeIsArray container.inspect.Config.Env)
+    for env in container.inspect.Config.Env
+      container.virtualHost = match[1] if (match = env.match /^VIRTUAL_HOST=(.*)/)?
+      container.certName = match[1] if (match = env.match /^CERT_NAME=(.*)/)?
+
+  return container
+
+# loads container inspect data and adds that plus somme additional mapped data
+model.loadContainer = (container, callback) ->
+  return callback new Error 'invalid container' if !container || !container.Id
+  currentContainers = watcherModel.get 'containers:list'
+
+  # use old inspect data if possible
+  if utilModel.typeIsArray currentContainers
+    for val in currentContainers
+      if container.Id == val.id && typeof val.inspect == "object"
+        container.inspect = val.inspect
+        return callback null, model.mapContainerData container
+
+  docker.getContainer(container.Id).inspect (err, result) ->
+    return callback err if err
+
+    container.inspect = result
+    return callback null, model.mapContainerData container
+
+model.loadContainers = (callback) ->
   foundContainers = [];
 
   _r.fromNodeCallback (cb) ->
     docker.listContainers {"all": true}, cb
   .filter (x) ->
-    typeIsArray x
-  .flatten()
-  .flatMap (containerInfo) ->
+    utilModel.typeIsArray x
+  .flatten().flatMap (container) ->
     _r.fromNodeCallback (cb) ->
-      docker.getContainer(containerInfo.Id).inspect (err, result) ->
-        return cb err if err
-        return cb null, {info: containerInfo, inspect: result}
+      model.loadContainer container, cb
   .onValue (val) ->
-    push =
-      id: val.info.Id
-      status: val.info.Status
-      name: val.inspect.Name.replace(/\//g, '') # strip docker-compose slashes
-      running: val.inspect.State.Running
-      virtualHost: null
-      certName: null
-    if (labels = val.inspect.Config.Labels) and labels["com.docker.compose.project"]
-      push.project = labels["com.docker.compose.project"]
-    if typeIsArray val.inspect.Config.Env
-      val.inspect.Config.Env.forEach (env) ->
-        push.virtualHost = match[1] if (match = env.match /^VIRTUAL_HOST=(.*)/)?
-        push.certName = match[1] if (match = env.match /^CERT_NAME=(.*)/)?
-    foundContainers.push push
+    foundContainers.push val
   .onEnd () ->
     foundContainers.sort (a, b) ->
       return -1 if a.name < b.name
       return 1 if a.name > b.name
       return 0;
-    watcherModel.set 'containers:list', foundContainers
-    loadApps()
+    callback null, foundContainers
+
 
 dockerEventsStream = _r.merge [_r.stream(emitEventsFromDockerStream), _r.interval(2000, 'reload')]
 
-# update container list when changes in docker occurred
+# update container list
 dockerEventsStream.throttle 1000
-.onValue (event) ->
-  model.loadContainers()
+.flatMap ->
+  _r.fromNodeCallback (cb) ->
+    model.loadContainers cb
+.onValue (containers) ->
+  watcherModel.set 'containers:list', containers
+  loadApps()
 
 # check proxy container state
 dockerEventsStream.throttle 10000
