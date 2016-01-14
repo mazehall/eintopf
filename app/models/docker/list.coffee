@@ -146,7 +146,7 @@ model.loadContainer = (container, callback) ->
     for val in currentContainers
       if container.Id == val.id && typeof val.inspect == "object"
         container.inspect = val.inspect
-        return callback null, model.mapContainerData container
+        return callback null, container
 
   docker.getContainer(container.Id).inspect (err, result) ->
     return callback err if err
