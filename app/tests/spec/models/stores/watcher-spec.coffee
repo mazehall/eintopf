@@ -289,9 +289,97 @@ describe 'toKefir', ->
     model.__set__ '_store', cloneObject data
 
   it "should return observable", ->
-    expect(model.toKefir()).toEqual(jasmine.any(Object))
+    stream= model.toKefir()
 
-#@todo use cases? improve testing
+    expect(stream).toEqual(jasmine.any(Object))
+    expect(stream.onValue).toEqual(jasmine.any(Function))
+    expect(stream.onError).toEqual(jasmine.any(Function))
+    expect(stream.onEnd).toEqual(jasmine.any(Function))
+
+  it "should trigger object event", (done) ->
+    stream = model.toKefir()
+
+    stream.onValue (val) ->
+      expect(val).toEqual(jasmine.any(Object))
+      done()
+
+    model.set 'testOnValue', 'testing'
+
+  it "event value should contain property name, oldValue, newValue", (done) ->
+    stream = model.toKefir()
+
+    stream.onValue (val) ->
+      expect(Object.keys(val)).toEqual(["name", "oldValue", "newValue"])
+      done()
+
+    model.set 'testOnValue', 'testing'
+
+  it "should return correct name", (done) ->
+    name = 'testOnValue'
+    stream = model.toKefir()
+
+    stream.onValue (val) ->
+      expect(val.name).toEqual(name)
+      done()
+
+    model.set name, 'testing'
+
+  it "should return correct new value", (done) ->
+    value = 'testing'
+    stream = model.toKefir()
+
+    stream.onValue (val) ->
+      expect(val.newValue).toEqual(value)
+      done()
+
+    model.set 'testOnValue', value
+
+  it "should return correct undefined old value", (done) ->
+    value = 'testing'
+    stream = model.toKefir()
+
+    stream.onValue (val) ->
+      expect(val.oldValue).toBeUndefined()
+      done()
+
+    model.set 'testOnValue', value
+
+  it "should return correct defined old value", (done) ->
+    val1 = 'testing'
+    val2 = 'more testing'
+    stream = model.toKefir()
+
+    stream.onValue (val) ->
+      return false if val.newValue != val2
+      expect(val.oldValue).toEqual(val1)
+      done()
+
+    stream.onValue (val) ->
+      setTimeout ->
+        model.set 'testOnValue', val2 if val.newValue == val1
+      , 1
+
+    model.set 'testOnValue', val1
+
+  it "should listen on all properties", () ->
+    val1 = 'testing'
+    val2 = 'more testing'
+    stream = model.toKefir()
+
+    stream.onValue (val) ->
+      return false if val.newValue != val2
+      expect(val.oldValue).toEqual(val1)
+      done()
+
+    stream.onValue (val) ->
+      setTimeout ->
+        model.set 'totallyDifferentProperty', val2 if val.newValue == val1
+      , 1
+
+    model.set 'testOnValue', val1
+
+
+#@todo use cases?
 describe 'propertyToKefir', ->
 
   beforeEach ->
@@ -299,4 +387,86 @@ describe 'propertyToKefir', ->
     model.__set__ '_store', cloneObject data
 
   it "should return observable", ->
-    expect(model.propertyToKefir('object')).toEqual(jasmine.any(Object))
+    stream=model.propertyToKefir('testOnValue')
+
+    expect(stream).toEqual(jasmine.any(Object))
+    expect(stream.onValue).toEqual(jasmine.any(Function))
+    expect(stream.onError).toEqual(jasmine.any(Function))
+    expect(stream.onEnd).toEqual(jasmine.any(Function))
+
+  it "should trigger object event", (done) ->
+    stream = model.propertyToKefir('testOnValue')
+
+    stream.onValue (val) ->
+      expect(val).toEqual(jasmine.any(Object))
+      done()
+
+    model.set 'testOnValue', 'testing'
+
+  it "event value should contain property name, oldValue, newValue", (done) ->
+    stream = model.propertyToKefir('testOnValue')
+
+    stream.onValue (val) ->
+      expect(Object.keys(val)).toEqual(["name", "oldValue", "newValue"])
+      done()
+
+    model.set 'testOnValue', 'testing'
+
+  it "should return correct name", (done) ->
+    name = 'testOnValue'
+    stream = model.propertyToKefir('testOnValue')
+
+    stream.onValue (val) ->
+      expect(val.name).toEqual(name)
+      done()
+
+    model.set name, 'testing'
+
+  it "should return correct new value", (done) ->
+    value = 'testing'
+    stream = model.propertyToKefir('testOnValue')
+
+    stream.onValue (val) ->
+      expect(val.newValue).toEqual(value)
+      done()
+
+    model.set 'testOnValue', value
+
+  it "should return correct undefined old value", (done) ->
+    value = 'testing'
+    stream = model.propertyToKefir('testOnValue')
+
+    stream.onValue (val) ->
+      expect(val.oldValue).toBeUndefined()
+      done()
+
+    model.set 'testOnValue', value
+
+  it "should return correct defined old value", (done) ->
+    val1 = 'testing'
+    val2 = 'more testing'
+    stream = model.propertyToKefir('testOnValue')
+
+    stream.onValue (val) ->
+      return false if val.newValue != val2
+      expect(val.oldValue).toEqual(val1)
+      done()
+
+    stream.onValue (val) ->
+      setTimeout ->
+        model.set 'testOnValue', val2 if val.newValue == val1
+      , 1
+
+    model.set 'testOnValue', val1
+
+  it "should not trigger event on other properties", (done) ->
+    stream = model.propertyToKefir('testOnValue')
+
+    stream.onValue (val) ->
+      throw new Error 'should not call on other properties'
+
+    setTimeout ->
+      done()
+    , 10
+
+    model.set 'totallyDifferentProperty', 'test'
