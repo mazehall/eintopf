@@ -25,7 +25,7 @@ states = JSON.parse(JSON.stringify(defaultStates));
 getVagrantSshConfigAndSetIt = (callback) ->
   _r.fromNodeCallback (cb) -> vagrantRunModel.getSshConfig cb
   .onValue (val) ->
-    watcherModel.setProperty 'settings:list', 'vagrantSshConfig', val
+    watcherModel.setChildProperty 'settings:list', 'vagrantSshConfig', val
   .onEnd ->
     callback? null
 

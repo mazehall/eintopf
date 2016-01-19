@@ -67,10 +67,6 @@ describe 'get', ->
   it "Should return undefined if property does not exist", ->
     expect(model.get 'entropy').toBeUndefined()
 
-#@todo implementation??
-describe 'getProperty', ->
-
-
 describe 'log', ->
 
   beforeEach ->
@@ -152,13 +148,13 @@ describe 'set', ->
     val = {"k1": "v1", "k2": "v2"}
 
     model.set 'newObj', val
-    expect(model.__get__('_store').newObj).toBe(val)
+    expect(model.__get__('_store').newObj).toEqual(val)
 
   it "Should set array", ->
     val = ["v1", "v2"]
 
     model.set 'newAr', val
-    expect(model.__get__('_store').newAr).toBe(val)
+    expect(model.__get__('_store').newAr).toEqual(val)
 
   it "Should overwrite existing property", ->
     val = 'new value'
@@ -205,13 +201,13 @@ describe 'setChildProperty', ->
     val = {"k1": "v1", "k2": "v2"}
 
     model.setChildProperty 'object', 'newObj', val
-    expect(model.__get__('_store').object.newObj).toBe(val)
+    expect(model.__get__('_store').object.newObj).toEqual(val)
 
   it "Should set array", ->
     val = ["v1", "v2"]
 
     model.setChildProperty 'object', 'newAr', val
-    expect(model.__get__('_store').object.newAr).toBe(val)
+    expect(model.__get__('_store').object.newAr).toEqual(val)
 
   it "Should overwrite existing property", ->
     val = 'new value'
@@ -221,17 +217,6 @@ describe 'setChildProperty', ->
 
     expect(model.__get__('_store').object.string).toBe(val)
 
-  it "Should work with arrays", ->
-    val = 'something'
-
-    model.setChildProperty 'array', 'new', val
-
-    model.setChildProperty 'array', 'string', "first"
-    model.setChildProperty 'array', 'string', val
-
-    expect(model.__get__('_store').array.new).toBe(val)
-    expect(model.__get__('_store').array.string).toBe(val)
-
   it "Should fail when no property or childname given", ->
     expect(model.setChildProperty '', 'something', 'something').toBeFalsy()
     expect(model.setChildProperty null, 'something', 'something').toBeFalsy()
@@ -239,49 +224,11 @@ describe 'setChildProperty', ->
     expect(model.setChildProperty 'object', '', 'something').toBeFalsy()
     expect(model.setChildProperty 'object', null, 'something').toBeFalsy()
 
-  it "should fail when property is not an object or array", ->
+  it "should fail when property is not an object", ->
     expect(model.setChildProperty 'string', 'something', 'something').toBeFalsy()
+    expect(model.setChildProperty('array', 'new', 'something')).toBeFalsy()
 
 
-  # functional tests
-
-  it 'Should not call set() when object exists', ->
-    val = 'something'
-
-    model.setChildProperty 'object', 'new', val
-
-    expectedObject = data
-    expectedObject.object.new = val
-
-    expect(model.set.callCount).toBe(0)
-
-  it 'Should call set() when object does not exist', ->
-    val = 'something'
-
-    model.setChildProperty 'newObject', 'new', val
-
-    expect(model.set).toHaveBeenCalledWith 'newObject', {"new": val}
-
-#@todo use case? fails + improve testing
-describe 'unset', ->
-
-  beforeEach ->
-    model = rewire "../../../../models/stores/watcher.coffee"
-    model.__set__ '_store', cloneObject data
-
-#  it 'Should remove property from store', ->
-#    model.unset 'object'
-#
-#    expect(model.__get__('_store').object).toBeUndefined()
-
-  it "Should return true if undefined", ->
-    expect(model.unset 'notExistend').toBeTruthy()
-
-  it "Should fail when no property given", ->
-    expect(model.unset '').toBeFalsy()
-    expect(model.unset null).toBeFalsy()
-
-#@todo use cases? improve testing
 describe 'toKefir', ->
 
   beforeEach ->
@@ -296,90 +243,200 @@ describe 'toKefir', ->
     expect(stream.onError).toEqual(jasmine.any(Function))
     expect(stream.onEnd).toEqual(jasmine.any(Function))
 
-  it "should trigger object event", (done) ->
-    stream = model.toKefir()
+  it "should trigger on value event", (done) ->
+    onV = jasmine.createSpy('onValue').andCallFake ->
 
-    stream.onValue (val) ->
-      expect(val).toEqual(jasmine.any(Object))
+    model.toKefir().onValue onV
+
+    setTimeout ->
+      expect(onV.callCount).toBe(1)
       done()
+    , 0
 
     model.set 'testOnValue', 'testing'
+
+  it "should trigger event with setChildProperty", (done) ->
+    onV = jasmine.createSpy('onValue').andCallFake ->
+
+    model.toKefir().onValue onV
+
+    model.setChildProperty 'newObject', 'testOnValue', 'test'
+    setTimeout ->
+      expect(onV.callCount).toBe(1)
+      done()
+    , 0
+
+  #@todo configurable
+  it "should not trigger event when same string", (done) ->
+    _data = "strings"
+    onV = jasmine.createSpy('onValue').andCallFake ->
+
+    model.toKefir().onValue onV
+
+    model.set 'same', _data
+    model.set 'same', _data
+
+    setTimeout ->
+      expect(onV.callCount).toBe(1)
+      done()
+    , 0
+
+  #@todo configurable
+  it "should not trigger event when same boolean", (done) ->
+    _data = true
+    onV = jasmine.createSpy('onValue').andCallFake ->
+
+    model.toKefir()
+    .onValue onV
+
+    model.set 'same', _data
+    model.set 'same', _data
+
+    setTimeout ->
+      expect(onV.callCount).toBe(1)
+      done()
+    , 0
+
+  #@todo configurable
+  it "should not trigger event when same object", (done) ->
+    _data = {key: 'val', key2: 'val2'}
+    onV = jasmine.createSpy('onValue').andCallFake ->
+
+    model.toKefir()
+    .onValue onV
+
+    model.set 'same', _data
+    model.set 'same', _data
+
+    setTimeout ->
+      expect(onV.callCount).toBe(1)
+      done()
+    , 0
+
+  #@todo configurable
+  it "should not trigger event when same array", (done) ->
+    _data = ["test", {"test": "test"}]
+    onV = jasmine.createSpy('onValue').andCallFake ->
+
+    model.toKefir()
+    .onValue onV
+
+    model.set 'same', _data
+    model.set 'same', _data
+
+    setTimeout ->
+      expect(onV.callCount).toBe(1)
+      done()
+    , 0
+
+  it "should trigger event in deep object", (done) ->
+    _data = {key: 'val', key2: 'val2'}
+    onV = jasmine.createSpy('onValue').andCallFake ->
+
+    model.toKefir()
+    .onValue onV
+
+    model.set 'notSame', _data
+    _data.key = 'v3'
+    model.set 'notSame', _data
+
+    setTimeout ->
+      expect(onV.callCount).toBe(2)
+      done()
+    , 0
+
+  it "should not trigger event when setting undefined on non existing property", (done) ->
+    onV = jasmine.createSpy('onValue').andCallFake ->
+
+    model.toKefir()
+    .onValue onV
+
+    model.set 'same'
+    setTimeout ->
+      expect(onV.callCount).toBe(1)
+      done()
+    , 0
+
+  it "should trigger event after setting undefined on existing property", (done) ->
+    onV = jasmine.createSpy('onValue').andCallFake ->
+
+    model.toKefir()
+    .onValue onV
+
+    model.set 'same'
+    setTimeout ->
+      expect(onV.callCount).toBe(1)
+      done()
+    , 0
 
   it "event value should contain property name, oldValue, newValue", (done) ->
-    stream = model.toKefir()
-
-    stream.onValue (val) ->
-      expect(Object.keys(val)).toEqual(["name", "oldValue", "newValue"])
+    model.toKefir()
+    .onValue (val) ->
+      expect(val.hasOwnProperty("name")).toBeTruthy()
+      expect(val.hasOwnProperty("oldValue")).toBeTruthy()
+      expect(val.hasOwnProperty("newValue")).toBeTruthy()
       done()
 
     model.set 'testOnValue', 'testing'
 
-  it "should return correct name", (done) ->
+  it "should return correct property", (done) ->
     name = 'testOnValue'
-    stream = model.toKefir()
+    value = 'testing'
 
-    stream.onValue (val) ->
+    model.toKefir()
+    .onValue (val) ->
       expect(val.name).toEqual(name)
-      done()
-
-    model.set name, 'testing'
-
-  it "should return correct new value", (done) ->
-    value = 'testing'
-    stream = model.toKefir()
-
-    stream.onValue (val) ->
       expect(val.newValue).toEqual(value)
-      done()
-
-    model.set 'testOnValue', value
-
-  it "should return correct undefined old value", (done) ->
-    value = 'testing'
-    stream = model.toKefir()
-
-    stream.onValue (val) ->
       expect(val.oldValue).toBeUndefined()
       done()
 
-    model.set 'testOnValue', value
+    model.set name, value
 
   it "should return correct defined old value", (done) ->
     val1 = 'testing'
     val2 = 'more testing'
-    stream = model.toKefir()
 
-    stream.onValue (val) ->
+    model.toKefir()
+    .onValue (val) ->
       return false if val.newValue != val2
       expect(val.oldValue).toEqual(val1)
       done()
-
-    stream.onValue (val) ->
+    .onValue (val) ->
       setTimeout ->
         model.set 'testOnValue', val2 if val.newValue == val1
       , 1
 
     model.set 'testOnValue', val1
 
-  it "should listen on all properties", () ->
-    val1 = 'testing'
-    val2 = 'more testing'
-    stream = model.toKefir()
+  it "should listen on all properties", (done) ->
+    onV = jasmine.createSpy('onValue').andCallFake ->
 
-    stream.onValue (val) ->
-      return false if val.newValue != val2
-      expect(val.oldValue).toEqual(val1)
+    model.toKefir().onValue onV
+
+    model.set 'testOnValue', 'testing'
+    model.set 'totallyDifferentProperty', 'more testing'
+
+    setTimeout ->
+      expect(onV.callCount).toBe(2)
       done()
+    , 0
 
-    stream.onValue (val) ->
-      setTimeout ->
-        model.set 'totallyDifferentProperty', val2 if val.newValue == val1
-      , 1
+  it "should trigger event from log", (done) ->
+    onV = jasmine.createSpy('onValue').andCallFake ->
 
-    model.set 'testOnValue', val1
+    model.toKefir()
+    .onValue onV
 
+    model.log 'newLog', 'first line'
+    model.log 'newLog', 'second line'
 
-#@todo use cases?
+    setTimeout ->
+      expect(onV.callCount).toBe(2)
+      done()
+    , 0
+
+# stream should react exactly as toKefir with the exception that
+# this stream only reacts to the given property
 describe 'propertyToKefir', ->
 
   beforeEach ->
@@ -394,79 +451,24 @@ describe 'propertyToKefir', ->
     expect(stream.onError).toEqual(jasmine.any(Function))
     expect(stream.onEnd).toEqual(jasmine.any(Function))
 
-  it "should trigger object event", (done) ->
-    stream = model.propertyToKefir('testOnValue')
+  it "should trigger event", (done) ->
+    onV = jasmine.createSpy('onValue').andCallFake ->
 
-    stream.onValue (val) ->
-      expect(val).toEqual(jasmine.any(Object))
-      done()
+    model.propertyToKefir('testOnValue').onValue onV
 
     model.set 'testOnValue', 'testing'
-
-  it "event value should contain property name, oldValue, newValue", (done) ->
-    stream = model.propertyToKefir('testOnValue')
-
-    stream.onValue (val) ->
-      expect(Object.keys(val)).toEqual(["name", "oldValue", "newValue"])
+    setTimeout ->
+      expect(onV.callCount).toBe(1)
       done()
-
-    model.set 'testOnValue', 'testing'
-
-  it "should return correct name", (done) ->
-    name = 'testOnValue'
-    stream = model.propertyToKefir('testOnValue')
-
-    stream.onValue (val) ->
-      expect(val.name).toEqual(name)
-      done()
-
-    model.set name, 'testing'
-
-  it "should return correct new value", (done) ->
-    value = 'testing'
-    stream = model.propertyToKefir('testOnValue')
-
-    stream.onValue (val) ->
-      expect(val.newValue).toEqual(value)
-      done()
-
-    model.set 'testOnValue', value
-
-  it "should return correct undefined old value", (done) ->
-    value = 'testing'
-    stream = model.propertyToKefir('testOnValue')
-
-    stream.onValue (val) ->
-      expect(val.oldValue).toBeUndefined()
-      done()
-
-    model.set 'testOnValue', value
-
-  it "should return correct defined old value", (done) ->
-    val1 = 'testing'
-    val2 = 'more testing'
-    stream = model.propertyToKefir('testOnValue')
-
-    stream.onValue (val) ->
-      return false if val.newValue != val2
-      expect(val.oldValue).toEqual(val1)
-      done()
-
-    stream.onValue (val) ->
-      setTimeout ->
-        model.set 'testOnValue', val2 if val.newValue == val1
-      , 1
-
-    model.set 'testOnValue', val1
+    , 0
 
   it "should not trigger event on other properties", (done) ->
-    stream = model.propertyToKefir('testOnValue')
+    onV = jasmine.createSpy('onValue').andCallFake ->
 
-    stream.onValue (val) ->
-      throw new Error 'should not call on other properties'
-
-    setTimeout ->
-      done()
-    , 10
+    model.propertyToKefir('testOnValue').onValue onV
 
     model.set 'totallyDifferentProperty', 'test'
+    setTimeout ->
+      expect(onV.callCount).toBe(0)
+      done()
+    , 0
