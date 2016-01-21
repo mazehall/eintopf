@@ -1,12 +1,12 @@
 _r = require 'kefir'
 jetpack = require "fs-jetpack"
 asar = require "asar"
+ks = require 'kefir-storage'
 
 config = require '../stores/config'
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
 vagrantBackupModel = require '../vagrant/backup.coffee'
-watcherModel = require '../stores/watcher.coffee'
 
 appConfig = config.get 'app'
 
@@ -25,7 +25,7 @@ states = JSON.parse(JSON.stringify(defaultStates));
 getVagrantSshConfigAndSetIt = (callback) ->
   _r.fromNodeCallback (cb) -> vagrantRunModel.getSshConfig cb
   .onValue (val) ->
-    watcherModel.setChildProperty 'settings:list', 'vagrantSshConfig', val
+    ks.setChildProperty 'settings:list', 'vagrantSshConfig', val
   .onEnd ->
     callback? null
 
@@ -56,7 +56,7 @@ model.run = () ->
       vagrantBackupModel.checkBackup (err, result) -> cb null, true
   .flatMap () ->
     states.vagrantFile = true
-    watcherModel.set 'states:live', states
+    ks.set 'states:live', states
     return _r
     .fromNodeCallback (cb) ->
       vagrantRunModel.run cb
@@ -67,14 +67,14 @@ model.run = () ->
     states.vagrantRun = true
     states.running = true
     states.state = "cooking"
-    watcherModel.set 'states:live', states
+    ks.set 'states:live', states
     vagrantBackupModel.checkBackup -> return if vagrantBackupModel.needBackup is true
   .onError (err) ->
     states.vagrantFile = "failed" if states.vagrantFile == false
     states.vagrantRun = "failed" if states.vagrantRun == false
     states.errorMessage = err.message
     states.failed = true
-    watcherModel.set 'states:live', states
+    ks.set 'states:live', states
   .onEnd () ->
     inSetup = false
 

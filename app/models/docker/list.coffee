@@ -1,7 +1,8 @@
 _r = require 'kefir'
 Dockerrode = require 'dockerode'
 DockerEvents = require 'docker-events'
-watcherModel = require '../stores/watcher.coffee'
+ks = require 'kefir-storage'
+
 config = require '../stores/config.coffee'
 utilModel = require '../util/index.coffee'
 
@@ -33,7 +34,7 @@ emitEventsFromDockerStream = (emitter) ->
       , 10000
 
 loadApps = () ->
-  containers = watcherModel.get 'containers:list'
+  containers = ks.get 'containers:list'
   foundApps = []
 
   if utilModel.typeIsArray containers
@@ -51,10 +52,10 @@ loadApps = () ->
             project: container.project
           foundApps.push app
 
-  watcherModel.set 'apps:list', foundApps
+  ks.set 'apps:list', foundApps
 
 getCerts = (host, certName) ->
-  certs = watcherModel.get 'proxy:certs'
+  certs = ks.get 'proxy:certs'
   return certs[certName] if certName && certs?[certName]
   return certs[host] if certs?[host]
 
@@ -139,7 +140,7 @@ model.mapContainerData = (container) ->
 # loads container inspect data and adds that plus somme additional mapped data
 model.loadContainer = (container, callback) ->
   return callback new Error 'invalid container' if !container || !container.Id
-  currentContainers = watcherModel.get 'containers:list'
+  currentContainers = ks.get 'containers:list'
 
   # use old inspect data if possible
   if utilModel.typeIsArray currentContainers
@@ -182,7 +183,7 @@ dockerEventsStream.throttle 1000
   _r.fromNodeCallback (cb) ->
     model.loadContainers cb
 .onValue (containers) ->
-  watcherModel.set 'containers:list', containers
+  ks.set 'containers:list', containers
   loadApps()
 
 # check proxy container state
@@ -200,9 +201,9 @@ dockerEventsStream.throttle 10000
   return false if ! ignoredErrorMessages.indexOf(err.message) || ! ignoredErrorCodes.indexOf(err.code)
 
   message = messageErrProxyPre + err + messageErrProxyPost
-  watcherModel.set "backend:errors", [{message: message, read: false, date: Date.now()}]
+  ks.set "backend:errors", [{message: message, read: false, date: Date.now()}]
 .onValue ->
-  watcherModel.set "backend:errors", []
+  ks.set "backend:errors", []
 
 # persist available ssl certs
 proxyCertsStream = _r.interval 5000, 'reload'
@@ -218,6 +219,6 @@ proxyCertsStream = _r.interval 5000, 'reload'
     certs[file.host]['files'].push file
   return certs
 .onValue (certs) ->
-  watcherModel.set 'proxy:certs', certs
+  ks.set 'proxy:certs', certs
 
 module.exports = model;
