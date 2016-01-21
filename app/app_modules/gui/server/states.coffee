@@ -29,7 +29,6 @@ states = (connections_, rawSocket) ->
 
   # emit changes in live states
   ks.fromProperty 'states:live'
-  .log()
   .onValue (val) ->
     rawSocket.emit 'states:live', val.value
 
