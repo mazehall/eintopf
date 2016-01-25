@@ -11,6 +11,8 @@ ks = require 'kefir-storage'
 utilModel = require '../util/'
 ks.set 'projects:list', []
 
+projectHashes = []
+
 # emit subdirectory content through emitter
 dirEmitter = (path) ->
   (emitter) ->
@@ -90,6 +92,9 @@ model.loadProject = (projectPath, callback) ->
       for file in result[2]
         file.host = file.name.slice(0, -4)
     project['certs'] = result[2] if result[2]
+
+    ks.set 'project:detail:' + project.id, project if project.hash != projectHashes[project.id]
+    projectHashes[project.id] = project.hash
 
     callback null, project
 

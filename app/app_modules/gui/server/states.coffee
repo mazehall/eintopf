@@ -17,15 +17,12 @@ states = (connections_, rawSocket) ->
   # emit changes in project list
   ks.fromProperty 'projects:list'
   .onValue (val) ->
-
-#    #@todo fix deprecated oldValue usage
-#    hashes = {}
-#    hashes[value.id] = value.hash for value in val.oldValue
-#
-#    for project in val.value
-#      rawSocket.emit "res:project:detail:#{project.id}", project if hashes[project.id] != project.hash
-
     rawSocket.emit 'res:projects:list', val.value
+
+  ks.fromRegex /^project:detail:/
+  .onValue (prop) ->
+    project = prop.value
+    rawSocket.emit "res:project:detail:#{project.id}", project
 
   # emit changes in live states
   ks.fromProperty 'states:live'
@@ -36,11 +33,6 @@ states = (connections_, rawSocket) ->
   ks.fromProperty 'containers:list'
   .onValue (val) ->
     rawSocket.emit 'res:containers:list', val.value
-
-  #@todo emit project detail changes ????
-#  ks.fromProperty  'projects:list'
-#  .onValue (val) ->
-#    console.log val
 
   ks.fromProperty 'res:projects:install'
   .onValue (val) ->
