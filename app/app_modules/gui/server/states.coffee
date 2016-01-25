@@ -86,7 +86,7 @@ states = (connections_, rawSocket) ->
   .filter (val) ->
     return true if val.value?.length > 0
   .map (val) ->
-    return val.value.shift()
+    return val.value.pop()
   .onValue (val) ->
     rawSocket.emit 'terminal:output', val
 
