@@ -67,9 +67,13 @@ angular.module('eintopf.services.socket.states', [])
       },
       listApps: function(project){
         return resAppsList.map(function(apps){
-          return apps.filter(function(app) {
-            if (app.project && app.project === project) return app;
-          });
+          var mappedApps = []
+
+          for (var key in apps) {
+            if(apps[key]['running'] && apps[key]['project'] == project) mappedApps.push(apps[key]);
+          }
+
+          return mappedApps
         });
       }
     }

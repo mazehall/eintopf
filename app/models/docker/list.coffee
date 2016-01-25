@@ -20,39 +20,18 @@ emitEventsFromDockerStream = (emitter) ->
   dockerEmitter = new DockerEvents {docker: docker}
   dockerEmitter.start();
 
-  dockerEmitter.on "create", (message) -> emitter.emit 'create'
-  dockerEmitter.on "start", (message) -> emitter.emit 'start'
-  dockerEmitter.on "stop", (message) -> emitter.emit 'stop'
-  dockerEmitter.on "destroy", (message) -> emitter.emit 'destroy'
-  dockerEmitter.on "die", (message) -> emitter.emit 'die'
+  dockerEmitter.on "create", (message) -> emitter.emit {type: 'create', value: message}
+  dockerEmitter.on "start", (message) -> emitter.emit {type: 'start', value: message}
+  dockerEmitter.on "stop", (message) -> emitter.emit {type: 'stop', value: message}
+  dockerEmitter.on "destroy", (message) -> emitter.emit {type: 'destroy', value: message}
+  dockerEmitter.on "die", (message) ->emitter.emit {type: 'die', value: message}
   dockerEmitter.on "error", (err) ->
     if err.code == "ECONNRESET" || err.code == "ECONNREFUSED" #try to reconnect after timeout
       setTimeout () ->
         dockerEmitter.stop()
         dockerEmitter.start()
-        emitter.emit 'reconnect'
+        emitter.emit {type: 'reconnect'}
       , 10000
-
-loadApps = () ->
-  containers = ks.get 'containers:list'
-  foundApps = []
-
-  if utilModel.typeIsArray containers
-    containers.forEach (container) ->
-      if container.virtualHost? and container.status.match /^Up /
-        virtualHosts = container.virtualHost.split(",")
-        virtualHosts.forEach (virtualHost) ->
-          return false if virtualHost.match /^\*/ # ignore wildcards
-          certs = getCerts virtualHost, container.certName
-          app =
-            name: container.name
-            host: virtualHost
-            certs: certs if certs
-            https: true if certs
-            project: container.project
-          foundApps.push app
-
-  ks.set 'apps:list', foundApps
 
 getCerts = (host, certName) ->
   certs = ks.get 'proxy:certs'
@@ -121,12 +100,7 @@ model.removeContainer = (containerId, callback) ->
   container.remove callback
 
 # maps container data
-model.mapContainerData = (container) ->
-  container.id = container.Id
-  container.status = container.Status
-  container.name = container.Names[0].replace(/\//g, '') if utilModel.typeIsArray container.Names # strip docker-compose slashes
-  container.running = if container.status.match(/^Up/) then true else false
-
+model.mapInspectData = (container) ->
   if (labels = container.inspect.Config.Labels) and labels["com.docker.compose.project"]
     container.project = labels["com.docker.compose.project"]
 
@@ -134,60 +108,92 @@ model.mapContainerData = (container) ->
     for env in container.inspect.Config.Env
       container.virtualHost = match[1] if (match = env.match /^VIRTUAL_HOST=(.*)/)?
       container.certName = match[1] if (match = env.match /^CERT_NAME=(.*)/)?
-
   return container
 
 # loads container inspect data and adds that plus somme additional mapped data
 model.loadContainer = (container, callback) ->
   return callback new Error 'invalid container' if !container || !container.Id
-  currentContainers = ks.get 'containers:list'
-
-  # use old inspect data if possible
-  if utilModel.typeIsArray currentContainers
-    for val in currentContainers
-      if container.Id == val.id && typeof val.inspect == "object"
-        container.inspect = val.inspect
-        return callback null, model.mapContainerData container
 
   docker.getContainer(container.Id).inspect (err, result) ->
     return callback err if err
 
     container.inspect = result
-    return callback null, model.mapContainerData container
+    return callback null, model.mapInspectData container
 
-model.loadContainers = (callback) ->
-  foundContainers = [];
+model.initApps = (container) ->
+  return false if ! container?.virtualHost
 
-  _r.fromNodeCallback (cb) ->
-    docker.listContainers {"all": true}, cb
-  .filter (x) ->
-    utilModel.typeIsArray x
-  .flatten().flatMap (container) ->
+  virtualHosts = container.virtualHost.split(",")
+  virtualHosts.forEach (virtualHost) ->
+    return false if virtualHost.match /^\*/ # ignore wildcards
+
+    certs = getCerts virtualHost, container.certName
+    app =
+      running: container.running
+      name: container.name
+      host: virtualHost
+      certs: certs if certs
+      https: true if certs
+      project: container.project
+
+    ks.setChildProperty 'apps:list', virtualHost, app
+
+model.inspectContainers = (containers) ->
+  return false if ! utilModel.typeIsArray containers
+
+  stream = _r.pool()
+  stream.flatten()
+  .filter (container) ->
+    !(ks.get 'container:inspect:' + container.Id)
+  .flatMap (container) ->
     _r.fromNodeCallback (cb) ->
       model.loadContainer container, cb
-  .onValue (val) ->
-    foundContainers.push val
-  .onEnd () ->
-    foundContainers.sort (a, b) ->
+  .onValue (container) ->
+    ks.set 'container:inspect:' + container.Id, container
+    model.initApps container
+
+  stream.plug _r.constant containers
+
+model.loadContainers = ->
+  _r.fromNodeCallback (cb) ->
+    docker.listContainers {"all": true}, cb
+  .map (containers) ->
+    for container in containers
+      container.id = container.Id
+      container.status = container.Status
+      container.name = container.Names[0].replace(/\//g, '') if utilModel.typeIsArray container.Names # strip docker-compose slashes
+      container.running = if container.status.match(/^Up/) then true else false
+    containers
+  .map (containers) ->
+    containers.sort (a, b) ->
       return -1 if a.name < b.name
       return 1 if a.name > b.name
       return 0;
-    callback null, foundContainers
+  .onError (error) -> # reset on connection error
+    ks.set 'containers:list', []
+    ks.set 'apps:list', {}
+  .onValue (containers) ->
+    ks.set 'containers:list', containers
+    model.inspectContainers containers
 
+#######################
+# runtime streams
+#
 
-dockerEventsStream = _r.merge [_r.stream(emitEventsFromDockerStream), _r.interval(2000, 'reload')]
+# update docker container list
+_r.interval 2000
+.onValue () ->
+  model.loadContainers()
 
-# update container list
-dockerEventsStream.throttle 1000
-.flatMap ->
-  _r.fromNodeCallback (cb) ->
-    model.loadContainers cb
-.onValue (containers) ->
-  ks.set 'containers:list', containers
-  loadApps()
+# reset container inspect data so that it will be reinspected on next loadContainers tick
+_r.stream emitEventsFromDockerStream
+.filter (event) ->
+  event.value?.id && (event.type == 'die' or event.type == 'start')
+.onValue (event) ->
+  ks.set 'container:inspect:' + event.value.id, null
 
 # check proxy container state
-dockerEventsStream.throttle 10000
+_r.interval 10000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
     return cb new Error messageProxyAlreadyInstalling if runningProxyDeployment is true
@@ -206,7 +212,7 @@ dockerEventsStream.throttle 10000
   ks.set "backend:errors", []
 
 # persist available ssl certs
-proxyCertsStream = _r.interval 5000, 'reload'
+_r.interval 5000, 'reload'
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
     return cb new Error 'Could not get proxy certs path' if ! (proxyCertsPath = utilModel.getProxyCertsPath())
