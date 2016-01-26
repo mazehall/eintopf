@@ -166,7 +166,7 @@ model.callAction = (project, action, callback) ->
 module.exports = model;
 
 ks.fromProperty 'containers:inspect'
-.throttle 5000
+.throttle 2000
 .map (containers) ->
   runningProjects = {}
   for id, container of containers.value

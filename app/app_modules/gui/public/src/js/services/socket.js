@@ -45,24 +45,43 @@ angular.module('eintopf.services.socket.states', [])
     return Kefir.fromEvent(socket, "res:backend:errors").toProperty();
   }])
 
-  .factory('resProjectDetail', ['socket', 'resContainersList', 'resContainersLog', 'resAppsList', function (socket, resContainersList, resContainersLog, resAppsList) {
+  .factory('resProjectDetail', ['socket', 'resContainersList', 'resContainersLog', 'resAppsList', 'resContainersInspect', function (socket, resContainersList, resContainersLog, resAppsList, resContainersInspect) {
     return {
       fromProject: function (project) {
         return Kefir.fromEvent(socket, 'res:project:detail:' + project);
       },
       listContainers: function (project) {
-        return resContainersList.map(function (containers) {
-          return containers.filter(function (container) {
-            if (container.project && container.project == project) {
-              return container;
-            }
-          });
-        }).map(function (containers) {
-          var asObject = {};
-          for (var index in containers) {
-            asObject[containers[index].name] = containers[index];
+        return Kefir.combine([resContainersList, resContainersInspect])
+        .throttle(2000)
+        //fix against flickering when resetting inspect -> might create problems when inspecting fails due to errors
+        .filter(function(value) {
+          for (var key in value[1]) {
+            if(!value[1][key]) return false
           }
-          return asObject;
+          return true;
+        })
+        .map(function (value) {
+          var mappedContainers = {};
+          var containers = value[1];
+
+          for (var key in containers) {
+            if(containers[key] && containers[key].project && containers[key].project == project) {
+              mappedContainers[containers[key].Id] = containers[key];
+            }
+          }
+
+          value[1] = mappedContainers;
+          return value;
+        })
+        .map(function (value) {
+          var mappedContainers = {};
+          var containers = value[0];
+
+          for (var key in containers) {
+            if(value[1][containers[key].Id]) mappedContainers[containers[key].name] = containers[key];
+          }
+
+          return mappedContainers;
         });
       },
       listApps: function(project){
@@ -215,11 +234,26 @@ angular.module('eintopf.services.socket.states', [])
     }
   }])
 
+  .factory('reqContainersInspect', ['socket', function (socket) {
+    return {
+      emit: function () {
+        socket.emit('containers:inspect');
+      }
+    }
+  }])
+
   .factory('resContainersList', ['socket', 'reqContainersList', function (socket, reqContainersList) {
     var containerList_ = Kefir.fromEvent(socket, 'res:containers:list').toProperty();
     reqContainersList.emit();
     containerList_.onValue(function() {});
     return containerList_;
+  }])
+
+  .factory('resContainersInspect', ['socket', 'reqContainersInspect', function (socket, reqContainersInspect) {
+    var containersInspect = Kefir.fromEvent(socket, 'res:containers:inspect').toProperty();
+    reqContainersInspect.emit();
+    containersInspect.onValue(function() {});
+    return containersInspect;
   }])
 
   .factory('reqAppsList', ['socket', function (socket) {

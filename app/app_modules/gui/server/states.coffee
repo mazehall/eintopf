@@ -34,6 +34,10 @@ states = (connections_, rawSocket) ->
   .onValue (val) ->
     rawSocket.emit 'res:containers:list', val.value
 
+  ks.fromProperty 'containers:inspect'
+  .onValue (val) ->
+    rawSocket.emit 'res:containers:inspect', val.value
+
   ks.fromProperty 'res:projects:install'
   .onValue (val) ->
     rawSocket.emit 'res:projects:install', val.value
@@ -105,6 +109,10 @@ states = (connections_, rawSocket) ->
     _r.fromEvents socket, 'containers:list'
     .onValue () ->
       socket.emit 'res:containers:list', ks.get 'containers:list'
+
+    _r.fromEvents socket, 'containers:inspect'
+    .onValue () ->
+      socket.emit 'res:containers:inspect', ks.get 'containers:inspect'
 
     _r.fromEvents socket, 'apps:list'
     .onValue () ->
