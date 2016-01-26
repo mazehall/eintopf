@@ -1,14 +1,14 @@
 <ul class="grd list--unstyled cssContainer">
     <li class="grd-row muted">
-            <span class="mx1 grd-row-col-1-6">
-                running apps
-            </span>
+      <span class="mx1 grd-row-col-1-6">
+          running apps
+      </span>
 
-            <span class="mx1 grd-row-col-3-6">
+      <span class="mx1 grd-row-col-3-6">
 
-            </span>
+      </span>
     </li>
-    <li class="grd-row py1" ng-repeat="app in apps" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+    <li class="grd-row py1" ng-repeat="app in apps" ng-if="app.running" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
         <div class="mx1 grd-row-col-3-6" ng-if="app.https != true">
             <a href="http://{{app.host}}:4480" target="{{isElectron? '' : '_blank'}}">
                 http://{{app.host}}:4480

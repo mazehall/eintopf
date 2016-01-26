@@ -21,18 +21,18 @@ describe "updateRegistryInstallFlags", ->
 
   beforeEach ->
     model = rewire "../../../../models/stores/registry.coffee"
-    model.__set__ 'watcherModel',
-      get: jasmine.createSpy('watcherModel.get').andCallFake -> samples.recommendationsList
-      set: jasmine.createSpy('watcherModel.set').andCallFake ->
+    model.__set__ 'ks',
+      get: jasmine.createSpy('ks.get').andCallFake -> samples.recommendationsList
+      set: jasmine.createSpy('ks.set').andCallFake ->
     spyOn(model, 'mapRegistryData').andCallFake (val) -> val
 
-  it "should call watcherModel.set with the correct data", ->
+  it "should call ks.set with the correct data", ->
     model.updateRegistryInstallFlags()
-    expect(model.__get__('watcherModel').set).toHaveBeenCalledWith(samples.watcherId, samples.recommendationsList)
+    expect(model.__get__('ks').set).toHaveBeenCalledWith(samples.watcherId, samples.recommendationsList)
 
-  it 'should call watcherModel.get with recommendations:list', ->
+  it 'should call ks.get with recommendations:list', ->
     model.updateRegistryInstallFlags()
-    expect(model.__get__('watcherModel').get).toHaveBeenCalledWith(samples.watcherId)
+    expect(model.__get__('ks').get).toHaveBeenCalledWith(samples.watcherId)
 
   it 'should call mapRegistryData with public data', ->
     model.updateRegistryInstallFlags()
@@ -42,11 +42,11 @@ describe "updateRegistryInstallFlags", ->
     model.updateRegistryInstallFlags()
     expect(model.mapRegistryData).toHaveBeenCalledWith(samples.recommendationsList.private)
 
-  it 'should call watcherModel.set with empty public/private array when recommendationsList data is empty', ->
-    model.__get__('watcherModel.get').andCallFake -> null
+  it 'should call ks.set with empty public/private array when recommendationsList data is empty', ->
+    model.__get__('ks.get').andCallFake -> null
 
     model.updateRegistryInstallFlags()
-    expect(model.__get__('watcherModel').set).toHaveBeenCalledWith(samples.watcherId, samples.recommendationsListEmpty)
+    expect(model.__get__('ks').set).toHaveBeenCalledWith(samples.watcherId, samples.recommendationsListEmpty)
 
 
 #@todo improve tests
