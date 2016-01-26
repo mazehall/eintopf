@@ -111,6 +111,11 @@ model.loadProjects = (callback) ->
     foundProjects.push(project)
     projectCerts = projectCerts.concat project.certs if project.certs
   .onEnd () ->
+    foundProjects.sort (a, b) ->
+      return -1 if a.name < b.name
+      return 1 if a.name > b.name
+      return 0;
+
     watcherModel.set 'projects:certs', projectCerts
     watcherModel.set 'projects:list', foundProjects
     return callback null, [foundProjects, projectCerts] if callback
