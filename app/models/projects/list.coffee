@@ -165,14 +165,18 @@ model.callAction = (project, action, callback) ->
 
 module.exports = model;
 
-ks.fromProperty 'containers:list'
+ks.fromProperty 'containers:inspect'
 .throttle 5000
-.onValue (containers) ->
+.map (containers) ->
+  runningProjects = {}
+  for id, container of containers.value
+    runningProjects[container.project] = true if container?.running && container.project
+  runningProjects
+.onValue (runningProjects) ->
   projects = ks.get "projects:list"
 
-  for project, i in projects
-    project.state = null
-    (project.state = 'running' if container.running && container.project == project.id) for container, i in containers.value
+  for project in projects
+    project.state = if runningProjects[project.id] then 'running' else null
 
   ks.set "projects:list", projects
 

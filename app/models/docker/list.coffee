@@ -144,12 +144,12 @@ model.inspectContainers = (containers) ->
   stream = _r.pool()
   stream.flatten()
   .filter (container) ->
-    !(ks.get 'container:inspect:' + container.Id)
+    !(ks.getChildProperty 'containers:inspect', container.Id)
   .flatMap (container) ->
     _r.fromNodeCallback (cb) ->
       model.loadContainer container, cb
   .onValue (container) ->
-    ks.set 'container:inspect:' + container.Id, container
+    ks.setChildProperty 'containers:inspect', container.Id, container
     model.initApps container
 
   stream.plug _r.constant containers
@@ -171,10 +171,13 @@ model.loadContainers = ->
       return 0;
   .onError (error) -> # reset on connection error
     ks.set 'containers:list', []
+    ks.set 'containers:inspect', {}
     ks.set 'apps:list', {}
   .onValue (containers) ->
     ks.set 'containers:list', containers
     model.inspectContainers containers
+
+module.exports = model;
 
 #######################
 # runtime streams
@@ -190,7 +193,7 @@ _r.stream emitEventsFromDockerStream
 .filter (event) ->
   event.value?.id && (event.type == 'die' or event.type == 'start')
 .onValue (event) ->
-  ks.set 'container:inspect:' + event.value.id, null
+  ks.setChildProperty 'containers:inspect', event.value.id, null
 
 # check proxy container state
 _r.interval 10000
@@ -226,5 +229,3 @@ _r.interval 5000, 'reload'
   return certs
 .onValue (certs) ->
   ks.set 'proxy:certs', certs
-
-module.exports = model;

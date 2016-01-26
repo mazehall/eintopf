@@ -19,8 +19,8 @@ angular.module('eintopf.services.socket.states', [])
 
   .factory('reqProjectList', ['socket', function (socket) {
     return {
-      emit: function (data) {
-        socket.emit('projects:list', data);
+      emit: function () {
+        socket.emit('projects:list');
       }
     }
   }])

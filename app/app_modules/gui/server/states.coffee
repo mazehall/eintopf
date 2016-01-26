@@ -124,12 +124,7 @@ states = (connections_, rawSocket) ->
     _r.fromEvents socket, 'project:detail'
     .filter()
     .onValue (id) ->
-      projects = ks.get 'projects:list'
-      project = {}
-      if typeIsArray projects
-        for x,i in projects
-          project = x if x.id == id
-      socket.emit "res:project:detail:#{id}", project
+      socket.emit "res:project:detail:#{id}", ks.get 'project:detail:' + id
 
     _r.fromEvents socket, 'project:start'
     .filter (x) ->
