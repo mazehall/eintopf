@@ -13,7 +13,8 @@ module.exports = {
 
     "should start the server and show the project list": function (browser){
         browser.waitForElementVisible(".cssSetup", 2000);
-        browser.expect.element(".cssSetup").text.to.contain("Start VirtualBox").after(5000);
+        browser.expect.element(".cssSetup").text.to.contain("check Vagrant config").after(5000);
+        browser.expect.element(".cssSetup").text.to.contain("check and start Eintopf-Docker-Service")
         browser.waitForEintopfStart();
         browser.endSession();
     },
