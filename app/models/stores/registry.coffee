@@ -2,9 +2,9 @@ _r = require 'kefir'
 https = require "https"
 http = require "http"
 url = require 'url'
+ks = require 'kefir-storage'
 
 config = require '../stores/config'
-watcherModel = require './watcher.coffee'
 defaultRegistry = require '../../config/default.registry.json'
 utilsModel = require '../util/index'
 
@@ -14,15 +14,15 @@ publicRegistry = process.env.REGISTRY_URL || registryConfig.public || null
 
 model = {}
 
-# update and set registry install flags in watcherModel 'recommendations:list'
+# update and set registry install flags in kefir-storage 'recommendations:list'
 model.updateRegistryInstallFlags = ->
-  registry = watcherModel.get "recommendations:list"
+  registry = ks.get "recommendations:list"
 
   updatedRegistry =
     "public": if registry?.public? then model.mapRegistryData registry.public else []
     "private": if registry?.private? then model.mapRegistryData registry.private else []
 
-  watcherModel.set "recommendations:list", updatedRegistry
+  ks.set "recommendations:list", updatedRegistry
 
 model.mapRegistryData = (registryData) ->
   return registryData if ! utilsModel.typeIsArray registryData
@@ -79,17 +79,17 @@ model.loadRegistryWithInterval = () ->
       return emitter.error err if err
       emitter.emit result
   .onValue (val) ->
-    return watcherModel.set 'recommendations:list', [] if ! val
-    watcherModel.set 'recommendations:list', val
+    return ks.set 'recommendations:list', [] if ! val
+    ks.set 'recommendations:list', val
 
 # initial registry load - sets default data on fail
 defaultRegistry = model.mapRegistryData defaultRegistry
 model.loadRegistry (err, result) ->
-  return watcherModel.set 'recommendations:list', {public: defaultRegistry} if err
-  watcherModel.set 'recommendations:list', model.mapRegistryData result
+  return ks.set 'recommendations:list', {public: defaultRegistry} if err
+  ks.set 'recommendations:list', model.mapRegistryData result
 
 # reevaluate recommendations -> projects mapping
-watcherModel.propertyToKefir 'projects:list'
+ks.fromProperty 'projects:list'
 .throttle(200)
 .onValue model.updateRegistryInstallFlags
 

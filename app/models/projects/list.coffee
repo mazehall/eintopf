@@ -6,10 +6,12 @@ fs = require 'fs'
 path = require "path"
 child = require 'child_process'
 crypto = require "crypto"
+ks = require 'kefir-storage'
 
 utilModel = require '../util/'
-watcherModel = require '../stores/watcher.coffee'
-watcherModel.set 'projects:list', []
+ks.set 'projects:list', []
+
+projectHashes = []
 
 # emit subdirectory content through emitter
 dirEmitter = (path) ->
@@ -27,10 +29,10 @@ dirEmitter = (path) ->
 
 model = {};
 model.getList = () ->
-  return watcherModel.get 'projects:list'
+  return ks.get 'projects:list'
 
 model.getProject = (id) ->
-  for own d, i of watcherModel.get 'projects:list'
+  for own d, i of ks.get 'projects:list'
     return i if i.id == id
   return null
 
@@ -84,12 +86,15 @@ model.loadProject = (projectPath, callback) ->
     project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
 
     # keep existing running states
-    (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in watcherModel.get 'projects:list'
+    (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in ks.get 'projects:list'
 
     if result[2]
       for file in result[2]
         file.host = file.name.slice(0, -4)
     project['certs'] = result[2] if result[2]
+
+    ks.set 'project:detail:' + project.id, project if project.hash != projectHashes[project.id]
+    projectHashes[project.id] = project.hash
 
     callback null, project
 
@@ -101,7 +106,7 @@ model.loadProjects = (callback) ->
 
   _r.stream dirEmitter projectsPath
   .onError () ->
-    watcherModel.set 'projects:list', foundProjects
+    ks.set 'projects:list', foundProjects
   .filter (project) ->
     project if project.path?
   .flatMap (project) ->
@@ -111,13 +116,8 @@ model.loadProjects = (callback) ->
     foundProjects.push(project)
     projectCerts = projectCerts.concat project.certs if project.certs
   .onEnd () ->
-    foundProjects.sort (a, b) ->
-      return -1 if a.name < b.name
-      return 1 if a.name > b.name
-      return 0;
-
-    watcherModel.set 'projects:certs', projectCerts
-    watcherModel.set 'projects:list', foundProjects
+    ks.set 'projects:certs', projectCerts
+    ks.set 'projects:list', foundProjects
     return callback null, [foundProjects, projectCerts] if callback
 
 model.deleteProject = (project, callback) ->
@@ -127,7 +127,7 @@ model.deleteProject = (project, callback) ->
   .fail (error) ->
     callback error
   .then ->
-    watcherModel.log 'res:project:delete:' + project.id
+    ks.log 'res:project:delete:' + project.id
     model.loadProjects()
     callback null, true
 
@@ -135,21 +135,21 @@ model.startProject = (project, callback) ->
   return callback? new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:start:#{project.id}"
 
-  return watcherModel.log logName, "script start does not exist\n" unless project.scripts?["start"]
+  return ks.log logName, "script start does not exist\n" unless project.scripts?["start"]
   utilModel.runCmd project.scripts["start"], {cwd: project.path}, logName, callback
 
 model.stopProject = (project, callback) ->
   return callback? new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:stop:#{project.id}"
 
-  return watcherModel.log logName, "script stop does not exist\n" unless project.scripts?["stop"]
+  return ks.log logName, "script stop does not exist\n" unless project.scripts?["stop"]
   utilModel.runCmd project.scripts["stop"], {cwd: project.path}, logName, callback
 
 model.updateProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:update:#{project.id}"
 
-  watcherModel.log logName, ["Start pulling...\n"]
+  ks.log logName, ["Start pulling...\n"]
   utilModel.runCmd "git pull", {cwd: project.path}, logName, (err, result) ->
     return callback err if err
     model.loadProjects callback
@@ -160,28 +160,32 @@ model.callAction = (project, action, callback) ->
     return callback new Error 'invalid script name' if project.scripts? or action.script? or project.scripts[action.script]?
   logName = "res:project:action:script:#{project.id}"
 
-  return watcherModel.log logName, "script '#{action.script}' does not exists\n" unless project.scripts?[action.script]
+  return ks.log logName, "script '#{action.script}' does not exists\n" unless project.scripts?[action.script]
   utilModel.runCmd project.scripts[action.script], {cwd: project.path}, logName
 
 module.exports = model;
 
-watcherModel.propertyToKefir 'containers:list'
-.throttle 5000
-.onValue (containers) ->
-  projects = watcherModel.get "projects:list"
+ks.fromProperty 'containers:inspect'
+.throttle 2000
+.map (containers) ->
+  runningProjects = {}
+  for id, container of containers.value
+    runningProjects[container.project] = true if container?.running && container.project
+  runningProjects
+.onValue (runningProjects) ->
+  projects = ks.get "projects:list"
 
-  for project, i in projects
-    project.state = null
-    (project.state = 'running' if container.running && container.project == project.id) for container, i in containers.newValue
+  for project in projects
+    project.state = if runningProjects[project.id] then 'running' else null
 
-  watcherModel.set "projects:list", projects
+  ks.set "projects:list", projects
 
 # monitor certificate changes and sync them accordingly
-_r.merge [watcherModel.propertyToKefir('projects:certs'), watcherModel.propertyToKefir('proxy:certs')]
+_r.merge [ks.fromProperty('projects:certs'), ks.fromProperty('proxy:certs')]
 .throttle 5000
 .onValue (val) ->
   return false if ! (proxyCertsPath = utilModel.getProxyCertsPath())?
-  projectCerts = if val.name == 'projects:certs' then val.newValue else watcherModel.get 'projects:certs'
+  projectCerts = if val.name == 'projects:certs' then val.value else ks.get 'projects:certs'
 
   utilModel.syncCerts proxyCertsPath, projectCerts, ->
 
