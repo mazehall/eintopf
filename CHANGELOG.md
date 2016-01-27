@@ -1,3 +1,4 @@
+## 1.2.0
 
 [Added] end to end tests
 
@@ -9,6 +10,7 @@
 [Changed] fetching docker containers info to lessen cpu load
 [Changed] replaced watchjs with kefir-storage
 [Changed] increased eintopf proxy version to use increased proxy timeout
+[Changed] renamed steps in setup view
 
 ## 1.1.1
 
