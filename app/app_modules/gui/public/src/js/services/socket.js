@@ -53,13 +53,6 @@ angular.module('eintopf.services.socket.states', [])
       listContainers: function (project) {
         return Kefir.combine([resContainersList, resContainersInspect])
         .throttle(2000)
-        //fix against flickering when resetting inspect -> might create problems when inspecting fails due to errors
-        .filter(function(value) {
-          for (var key in value[1]) {
-            if(!value[1][key]) return false
-          }
-          return true;
-        })
         .map(function (value) {
           var mappedContainers = {};
           var containers = value[1];

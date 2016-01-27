@@ -188,10 +188,23 @@ _r.interval 2000
 .onValue () ->
   model.loadContainers()
 
-# reset container inspect data so that it will be reinspected on next loadContainers tick
+# update inspect running state on die and start container
 _r.stream emitEventsFromDockerStream
 .filter (event) ->
-  event.value?.id && (event.type == 'die' or event.type == 'start')
+  event?.value?.id && ['die', 'start'].indexOf(event.type) >= 0
+.map  (event) ->
+  event.container = ks.getChildProperty 'containers:inspect', event.value.id
+  event
+.filter (event) -> event.container?
+.onValue (event) ->
+  event.container.running = if event.type == 'start' then true else false
+  ks.setChildProperty 'containers:inspect', event.value.id, event.container
+  model.initApps event.container
+
+# clear inspect data if container was destroyed
+_r.stream emitEventsFromDockerStream
+.filter (event) ->
+  event?.value?.id && event.type == 'destroy'
 .onValue (event) ->
   ks.setChildProperty 'containers:inspect', event.value.id, null
 
