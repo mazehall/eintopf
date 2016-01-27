@@ -14,7 +14,7 @@
     <div class="cssMenu p1 m0">
       <ul class="list--unstyled  p0 m0">
 
-        <li ng-repeat="(key, value) in projects" class="m0 grd-row txt--left">
+        <li ng-repeat="(key, value) in projects" class="m0 grd-row txt--left" id="{{value.id}}">
           <a class="grd-row-col-6 py2 btn--link txt--left"
              ui-sref="cooking.projects.recipe({id: '{{value.id}}'})" ui-sref-active='active'>
             <div class="media">
