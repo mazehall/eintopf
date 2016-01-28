@@ -1,9 +1,9 @@
 _r = require 'kefir'
+ks = require 'kefir-storage'
 
 setupModel = require '../../../models/setup/setup.coffee'
 projectsModel = require '../../../models/projects/list.coffee'
 dockerModel = require '../../../models/docker/list.coffee'
-watcherModel = require '../../../models/stores/watcher.coffee'
 registryModel = require '../../../models/stores/registry.coffee'
 terminalModel = require '../../../models/util/terminal.coffee'
 
@@ -15,96 +15,83 @@ typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is 
 
 states = (connections_, rawSocket) ->
   # emit changes in project list
-  watcherModel.propertyToKefir 'projects:list'
+  ks.fromProperty 'projects:list'
   .onValue (val) ->
+    rawSocket.emit 'res:projects:list', val.value
 
-    hashes = {}
-    hashes[value.id] = value.hash for value in val.oldValue
-
-    for project in val.newValue
-      rawSocket.emit "res:project:detail:#{project.id}", project if hashes[project.id] != project.hash
-
-    rawSocket.emit 'res:projects:list', val.newValue
+  ks.fromRegex /^project:detail:/
+  .onValue (prop) ->
+    project = prop.value
+    rawSocket.emit "res:project:detail:#{project.id}", project
 
   # emit changes in live states
-  watcherModel.propertyToKefir 'states:live'
+  ks.fromProperty 'states:live'
   .onValue (val) ->
-    rawSocket.emit 'states:live', val.newValue
+    rawSocket.emit 'states:live', val.value
 
   # emit changes in docker container list
-  watcherModel.propertyToKefir 'containers:list'
+  ks.fromProperty 'containers:list'
   .onValue (val) ->
-    rawSocket.emit 'res:containers:list', val.newValue
+    rawSocket.emit 'res:containers:list', val.value
 
-  #@todo emit project detail changes ????
-#  watcherModel.propertyToKefir 'projects:list'
-#  .onValue (val) ->
-#    console.log val
-
-  watcherModel.propertyToKefir 'res:projects:install'
+  ks.fromProperty 'containers:inspect'
   .onValue (val) ->
-    rawSocket.emit 'res:projects:install', val.newValue
+    rawSocket.emit 'res:containers:inspect', val.value
 
-  watcherModel.toKefir()
-  .filter (x) ->
-    x.name.match /^res:project:start:/
+  ks.fromProperty 'res:projects:install'
   .onValue (val) ->
-    rawSocket.emit val.name, val.newValue[val.newValue.length-1]
+    rawSocket.emit 'res:projects:install', val.value
 
-  watcherModel.toKefir()
-  .filter (x) ->
-    x.name.match /^res:project:stop:/
+  ks.fromRegex /^res:project:start:/
   .onValue (val) ->
-    rawSocket.emit val.name, val.newValue[val.newValue.length-1]
+    rawSocket.emit val.name, val.value[val.value.length-1]
 
-  watcherModel.toKefir()
-  .filter (x) ->
-    x.name.match /^res:project:delete:/
+  ks.fromRegex /^res:project:stop:/
   .onValue (val) ->
-    rawSocket.emit val.name, val.newValue
+    rawSocket.emit val.name, val.value[val.value.length-1]
 
-  watcherModel.toKefir()
-  .filter (x) ->
-    x.name.match /^res:project:update:/
+  ks.fromRegex /^res:project:delete:/
   .onValue (val) ->
-    rawSocket.emit val.name, val.newValue[val.newValue.length-1]
+    rawSocket.emit val.name, val.value
 
-  watcherModel.toKefir()
-  .filter (x) ->
-    x.name.match /^res:project:action:script:/
+  ks.fromRegex /^res:project:update:/
   .onValue (val) ->
-    rawSocket.emit val.name, val.newValue[val.newValue.length-1]
+    rawSocket.emit val.name, val.value[val.value.length-1]
+
+  ks.fromRegex /^res:project:action:script:/
+  .onValue (val) ->
+    rawSocket.emit val.name, val.value[val.value.length-1]
 
   # emit apps changes
-  watcherModel.propertyToKefir 'apps:list'
+  ks.fromProperty 'apps:list'
   .onValue (val) ->
-    rawSocket.emit 'res:apps:list', val.newValue
+    rawSocket.emit 'res:apps:list', val.value
 
   # emit settings changes
-  watcherModel.propertyToKefir 'settings:list'
+  ks.fromProperty 'settings:list'
   .onValue (val) ->
-    rawSocket.emit 'res:settings:list', val.newValue
+    rawSocket.emit 'res:settings:list', val.value
 
   # emit recommendations changes
-  watcherModel.propertyToKefir 'recommendations:list'
+  ks.fromProperty 'recommendations:list'
   .onValue (val) ->
-    rawSocket.emit 'res:recommendations:list', val.newValue
+    rawSocket.emit 'res:recommendations:list', val.value
 
   # emit terminal output
-  watcherModel.propertyToKefir 'terminal:output'
+  ks.fromProperty 'terminal:output'
   .filter (val) ->
-    return true if val.newValue?.length > 0
+    return true if val.value?.length > 0
   .map (val) ->
-    return val.newValue.shift()
+    return val.value.pop()
   .onValue (val) ->
     rawSocket.emit 'terminal:output', val
 
-  watcherModel.propertyToKefir "backend:errors"
+  ks.fromProperty "backend:errors"
   .onValue (val) ->
-    rawSocket.emit "res:backend:errors", val.newValue
+    rawSocket.emit "res:backend:errors", val.value
 
   connections_.onValue (socket) ->
-    socket.emit 'states:live', watcherModel.get 'states:live'
+    socket.emit 'states:live', ks.get 'states:live'
 
     _r.fromEvents socket, 'terminal:input'
     .filter()
@@ -113,7 +100,7 @@ states = (connections_, rawSocket) ->
 
     _r.fromEvents socket, 'projects:list'
     .onValue () ->
-      socket.emit 'res:projects:list', watcherModel.get 'projects:list'
+      socket.emit 'res:projects:list', ks.get 'projects:list'
 
     _r.fromEvents socket, 'states:restart'
     .onValue () ->
@@ -121,32 +108,31 @@ states = (connections_, rawSocket) ->
 
     _r.fromEvents socket, 'containers:list'
     .onValue () ->
-      socket.emit 'res:containers:list', watcherModel.get 'containers:list'
+      socket.emit 'res:containers:list', ks.get 'containers:list'
+
+    _r.fromEvents socket, 'containers:inspect'
+    .onValue () ->
+      socket.emit 'res:containers:inspect', ks.get 'containers:inspect'
 
     _r.fromEvents socket, 'apps:list'
     .onValue () ->
-      socket.emit 'res:apps:list', watcherModel.get 'apps:list'
+      socket.emit 'res:apps:list', ks.get 'apps:list'
 
     _r.fromEvents socket, 'projects:install'
     .filter()
     .onValue (val) ->
-      watcherModel.set 'res:projects:install', null
+      ks.set 'res:projects:install', null
       projectsModel.installProject val, (err, result) ->
         res = {}
         res.errorMessage = err.message if err? && typeof err == 'object'
         res.status = if err then 'error' else 'success'
         res.project = result if result?
-        watcherModel.set 'res:projects:install', res
+        ks.set 'res:projects:install', res
 
     _r.fromEvents socket, 'project:detail'
     .filter()
     .onValue (id) ->
-      projects = watcherModel.get 'projects:list'
-      project = {}
-      if typeIsArray projects
-        for x,i in projects
-          project = x if x.id == id
-      socket.emit "res:project:detail:#{id}", project
+      socket.emit "res:project:detail:#{id}", ks.get 'project:detail:' + id
 
     _r.fromEvents socket, 'project:start'
     .filter (x) ->
@@ -180,11 +166,11 @@ states = (connections_, rawSocket) ->
 
     _r.fromEvents socket, 'settings:list'
     .onValue () ->
-      socket.emit 'res:settings:list', watcherModel.get 'settings:list'
+      socket.emit 'res:settings:list', ks.get 'settings:list'
 
     _r.fromEvents socket, 'recommendations:list'
     .onValue (url) ->
-      socket.emit 'res:recommendations:list', watcherModel.get 'recommendations:list'
+      socket.emit 'res:recommendations:list', ks.get 'recommendations:list'
 
     _r.fromEvents socket, 'container:start'
     .filter (x) ->

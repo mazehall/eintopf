@@ -2,8 +2,7 @@ config = require 'config'
 jetpack = require 'fs-jetpack'
 spawn = require('child_process').spawn
 _r = require('kefir');
-
-watcherModel = require '../stores/watcher.coffee'
+ks = require 'kefir-storage'
 
 model = {}
 
@@ -111,10 +110,10 @@ model.runCmd = (cmd, config, logName, callback) ->
     return callback? new Error(stdErr || "Command failed"), stdOut if code != 0
     callback? null, stdOut
   proc.stdout.on 'data', (chunk) ->
-    watcherModel.log logName, chunk.toString() if logName
+    ks.log logName, chunk.toString() if logName
     stdOut += chunk.toString()
   proc.stderr.on 'data', (chunk) ->
-    watcherModel.log logName, chunk.toString() if logName
+    ks.log logName, chunk.toString() if logName
     stdErr += chunk.toString()
 
 model.syncCerts = (path, files, callback) ->

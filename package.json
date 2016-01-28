@@ -24,6 +24,7 @@
     "build": "./node_modules/.bin/gulp build",
     "release": "./node_modules/.bin/gulp release --env=production",
     "start": "node ./tasks/start",
-    "test": "cd app && npm test"
+    "test": "cd app && npm test",
+    "test-e2e": "node tests/e2e.js"
   }
 }

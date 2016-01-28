@@ -1,7 +1,6 @@
 spawn = require('child_process').spawn
 stripAnsi = require 'strip-ansi'
-
-watcherModel = require '../stores/watcher.coffee'
+ks = require 'kefir-storage'
 
 # current pty stream
 ptyStream = null
@@ -37,7 +36,7 @@ model.createPTYStream = (cmd, options, callback) ->
   return callback new Error 'No command specified' if ! cmd
   error = null
 
-  watcherModel.log 'terminal:output', {text: 'running cmd: ' + cmd}
+  ks.log 'terminal:output', {text: 'running cmd: ' + cmd}
 
   ptyStream = model._createPTY cmd, options
   ptyStream.stdout.on 'data', (val) ->
@@ -47,25 +46,25 @@ model.createPTYStream = (cmd, options, callback) ->
     if ptyStream.pty && (opts.text.match /(\[sudo\] password|Password:)/ )
       opts.input = true
       opts.secret = true
-    watcherModel.log 'terminal:output', opts
+    ks.log 'terminal:output', opts
 
   # use stdin and stderr when not in pty mode
   if !ptyStream.pty
     ptyStream.stdin.on 'data', (val) ->
-      watcherModel.log 'terminal:output', {text: model.formatTerminalOutput(val), input: true, secret: true}
+      ks.log 'terminal:output', {text: model.formatTerminalOutput(val), input: true, secret: true}
     ptyStream.stderr.on 'data', (val) ->
-      watcherModel.log 'terminal:output', {text: model.formatTerminalOutput(val), error: true}
+      ks.log 'terminal:output', {text: model.formatTerminalOutput(val), error: true}
 
   ptyStream.on 'error', (err) ->
     return false if err.code == "EIO" # ignore EIO error -> just means terminal was stopped
     error = err
-    watcherModel.log 'terminal:output', {text: err.toString()}
+    ks.log 'terminal:output', {text: err.toString()}
   ptyStream.on 'close', () -> # when child_process.* fails on spawning then exit will not be emitted
     ptyStream.emit 'exit', 1 if error && ptyStream && !ptyStream.pty
   ptyStream.on 'exit', (code) ->
     ptyStream = null # reset terminal instance
     return callback error || new Error 'Error: command failed' if code != 0
-    watcherModel.log 'terminal:output', {text: 'done cmd: ' + cmd}
+    ks.log 'terminal:output', {text: 'done cmd: ' + cmd}
     return callback null, true
 
 # removes ansi escape sequences and ending new line
