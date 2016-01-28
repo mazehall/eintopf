@@ -35,7 +35,7 @@ module.exports = {
 
         browser.expect.element(".cssToolbar li.stop > a").to.be.present;
         browser.click(".cssToolbar li.stop > a");
-        browser.waitForElementNotPresent(".cssMenu li#eintopfphpdev i.fa-spin", 30000);
+        browser.waitForElementNotPresent(".cssMenu li#eintopfphpdev i.fa-cog", 30000);
         browser.assert.cssClassPresent(".cssMenu li#eintopfphpdev i", "fa-power-off", "Project is not running");
 
         browser.assert.containsText("ul.cssTab > li.cssActive", "Logs");

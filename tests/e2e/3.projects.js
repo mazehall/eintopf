@@ -26,7 +26,7 @@ module.exports = {
         browser.waitForEintopfStart();
         browser.expect.element(".cssMenu li#eintopfphpdev").to.be.present;
         browser.assert.cssClassPresent(".cssMenu li#eintopfphpdev i", "fa-power-off");
-        browser.assert.cssClassNotPresent(".cssMenu li#eintopfphpdev i", "fa-spin", "Okay project PHP dev is not running");
+        browser.assert.cssClassNotPresent(".cssMenu li#eintopfphpdev i", "fa-cog", "Okay project PHP dev is not running");
         browser.endSession();
     },
 
@@ -37,7 +37,7 @@ module.exports = {
         browser.waitForElementPresent(".cssToolbar", 1000);
         browser.expect.element(".cssToolbar li.run > a").to.be.present;
         browser.click(".cssToolbar li.run > a");
-        browser.waitForElementPresent(".cssMenu li#eintopfphpdev i.fa-spin", 120000);
+        browser.waitForElementPresent(".cssMenu li#eintopfphpdev i.fa-cog", 120000);
         browser.endSession();
     },
 
