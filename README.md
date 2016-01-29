@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mazehall/eintopf.svg)](https://travis-ci.org/mazehall/eintopf)
+[![Build Status](https://travis-ci.org/mazehall/eintopf.svg?branch=master)](https://travis-ci.org/mazehall/eintopf)
 
 #[Eintopf](https://www.eintopf.io/)
 
