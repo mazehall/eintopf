@@ -1,90 +1,131 @@
-## 1.2.0
+Fixed:
 
-[Added] end to end tests
+- shuffling of project list order
 
-[Fixed] error handling on proxy installation
-[Fixed] shuffling of project list order
-[Fixed] unnecessary proxy installation error messages on startup
+## 1.2.0 (28.01.2016)
 
-[Changed] updated README
-[Changed] fetching docker containers info to lessen cpu load
-[Changed] replaced watchjs with kefir-storage
-[Changed] increased eintopf proxy version to use increased proxy timeout
-[Changed] renamed steps in setup view
+Added:
 
-## 1.1.1
+- end to end tests
 
-[Fixed] registry exception on startup
+Fixed:
 
-## 1.1.0
+- error handling on proxy installation
+- unnecessary proxy installation error messages on startup
 
-[Added] container list in project detail view
-[Added] running apps in project detail view
-[Added] Eintopf version info in application menu
-[Added] password input on vagrant up for unix/macos
-[Added] additional private registry listing
+Changed:
 
-[Fixed] multiple change event emits on watchermodel.set when watchermodel.get was used beforehand
-[Fixed] project state update in frontend
+- updated README
+- fetching docker containers info to lessen cpu load
+- replaced watchjs with kefir-storage
+- increased eintopf proxy version to use increased proxy timeout
+- renamed steps in setup view
 
-[Changed] improved vagrant backup functionality
-[Changed] project ids to match name in docker-compose
-[Changed] improved eintopf proxy monitoring
-[Changed] updated README
+## 1.1.1 (07.12.2015)
 
-## 1.0.2
+Fixed:
 
-[Added] update project detail view on changes
+- registry exception on startup
 
-[Fixed] switch to log view after actions were triggered
-[Fixed] url for project resources should not directly use the project id
-[Fixed] observe the VM and renew the .vagrant backup on changes
-[Fixed] exception when vboxmanage is not available
+## 1.1.0 (27.11.2015)
 
-[Changed] monitoring of vagrant ssh config only on startup
-[Changed] view design
-[Changed] updated docker-compose version to 1.4.2 in vagrant default file
-[Changed] default projects definition
+Added:
 
-## 1.0.1
+- container list in project detail view
+- running apps in project detail view
+- Eintopf version info in application menu
+- password input on vagrant up for unix/macos
+- additional private registry listing
 
-[Fixed] startup without default folder
+Fixed: 
 
-[Changed] removed unnecessary async helper function in tests 
+- multiple change event emits on watchermodel.set when watchermodel.get was used beforehand
+- project state update in frontend
 
-## 1.0.0
+Changed:
+ 
+- improved vagrant backup functionality
+- project ids to match name in docker-compose
+- improved eintopf proxy monitoring
+- updated README
 
-[Added] proxy deploying/monitoring through Eintopf
-[Added] reload project configurations in an interval
-[Added] maintainers list in package.json
+## 1.0.2 (15.10.2015)
 
-[Fixed] proxy should redirect to configured SSL port
-[Fixed] occasional 'Cannot get /' Error on startup
-[Fixed] creating a project which already exists deletes the existing project
-[Fixed] missing DOCKER_HOST env for project scripts
-[Fixed] only show SSL URLs when registered in proxy
-[Fixed] project looses running states after reloading projects
+Added: 
 
-[Changed] configuration abstraction
-[Changed] project certs synchronisation
+- update project detail view on changes
 
-## 0.1.4 (pre-release)
+Fixed:
 
-[Fixed] copy/paste in electron browser
-[Fixed] nodejs should not be a requirement to do project actions
+- switch to log view after actions were triggered
+- url for project resources should not directly use the project id
+- observe the VM and renew the .vagrant backup on changes
+- exception when vboxmanage is not available
 
-[Changed] running start/stop and custom actions of projects
-[Changed] improved release building
-[Changed] updated README
+Changed:
 
-## 0.1.3 (pre-release)
+- monitoring of vagrant ssh config only on startup
+- view design
+- updated docker-compose version to 1.4.2 in vagrant default file
+- default projects definition
 
-[Fixed] incorrect container order
-[Fixed] wrong app renaming while building
-[Fixed] missing property check before accessing the object in list.coffee
+## 1.0.1 (06.10.2015)
 
-[Changed] improved release building
-[Changed] fetching docker containers info
-[Changed] updated README
+Fixed:
+ 
+- startup without default folder
 
-## 0.1.2 (pre-release)
+Changed:
+
+- removed unnecessary async helper function in tests 
+
+## 1.0.0 (05.10.2015)
+
+Added:
+ 
+- proxy deploying/monitoring through Eintopf
+- reload project configurations in an interval
+- maintainers list in package.json
+
+Fixed:
+ 
+- proxy should redirect to configured SSL port
+- occasional 'Cannot get /' Error on startup
+- creating a project which already exists deletes the existing project
+- missing DOCKER_HOST env for project scripts
+- only show SSL URLs when registered in proxy
+- project looses running states after reloading projects
+
+Changed:
+ 
+- configuration abstraction
+- project certs synchronisation
+
+## 0.1.4 (pre-release - 28.09.2015)
+
+Fixed:
+ 
+- copy/paste in electron browser
+- nodejs should not be a requirement to do project actions
+
+Changed:
+
+- running start/stop and custom actions of projects
+- improved release building
+- updated README
+
+## 0.1.3 (pre-release - 18.09.2015)
+
+Fixed:
+ 
+- incorrect container order
+- wrong app renaming while building
+- missing property check before accessing the object in list.coffee
+
+Changed:
+ 
+- improved release building
+- fetching docker containers info
+- updated README
+
+## 0.1.2 (pre-release - 16.09.2015)
