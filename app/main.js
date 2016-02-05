@@ -81,6 +81,19 @@ app.on('ready', function () {
     mainWindow.maximize();
   }
 
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.openDevTools();
+  }
+
+  process.on('uncaughtException', function(e) {
+    if (e.code == 'EADDRINUSE') {
+      var queryParams = 'code=' + e.code + '&message=' + e.message;
+      mainWindow.loadUrl('file://' + __dirname + '/app_modules/gui/public/src/index.html#/error?' + queryParams);
+    }
+
+    console.log('uncaught Exception:', e);
+  });
+
   process.on('app:serverstarted', function () {
     var appUrl = "http://localhost:" + port;
     mainWindow.loadUrl(appUrl, {userAgent: "electron"});

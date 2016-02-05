@@ -44,6 +44,12 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       controller: "setupCtrl"
     })
 
+    .state('error', {
+      url: "/error?{code}{message}",
+      templateUrl: "partials/error.html",
+      controller: "errorCtrl"
+    })
+
     .state('cooking', {
       abstract: true,
       url: "/cooking",

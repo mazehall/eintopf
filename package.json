@@ -23,7 +23,7 @@
     "app-install": "node ./tasks/app_npm_install",
     "build": "./node_modules/.bin/gulp build",
     "release": "./node_modules/.bin/gulp release --env=production",
-    "start": "node ./tasks/start",
+    "start": "NODE_ENV=development node ./tasks/start",
     "test": "cd app && npm test",
     "test-e2e": "node tests/e2e.js"
   }

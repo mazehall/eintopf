@@ -7,6 +7,12 @@ angular.module('eintopf')
       backendErrors.$assignProperty($scope, "backendErrors");
     }
   ])
+  .controller('errorCtrl',
+  ['$scope', '$stateParams',
+    function($scope, $stateParams) {
+      $scope.error = $stateParams;
+    }
+  ])
   .controller('setupCtrl',
   ['$scope', 'setupLiveResponse', 'setupRestart', '$state',
     function($scope, setupLiveResponse, setupRestart, $state) {
