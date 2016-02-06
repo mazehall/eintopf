@@ -64,10 +64,16 @@ angular.module('eintopf')
     }
   ])
   .controller('cookingCtrl',
-  ['$scope', 'reqProjectList', 'resProjectsList',
-    function($scope, reqProjectsList, resProjectsList) {
+  ['$scope', 'reqProjectList', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
+    function($scope, reqProjectsList, resProjectsList, reqProjectStart, reqProjectStop) {
       resProjectsList.$assignProperty($scope, 'projects');
       reqProjectsList.emit();
+      $scope.startProject = function(project) {
+        reqProjectStart.emit(project);
+      };
+      $scope.stopProject = function(project) {
+        reqProjectStop.emit(project)
+      };
     }
   ])
   .controller('containersCtrl',

@@ -14,18 +14,22 @@
     <div class="cssMenu p1 m0">
       <ul class="list--unstyled  p0 m0">
 
-        <li ng-repeat="(key, value) in projects" class="m0 grd-row txt--left" id="{{value.id}}">
+        <li ng-repeat="(key, project) in projects" class="m0 grd-row txt--left" id="{{project.id}}">
           <a class="grd-row-col-6 py2 btn--link txt--left"
-             ui-sref="cooking.projects.recipe({id: '{{value.id}}'})" ui-sref-active='active'>
+             ui-sref="cooking.projects.recipe({id: '{{project.id}}'})" ui-sref-active='active'>
             <div class="media">
               <div class="media-body txt--left">
                 <p class="m0 p0">
-                  {{value.name}}
+                  {{project.name}}
                 </p>
               </div>
               <div class="media-figure m0">
-                <i ng-class="{'fa-cog fnt-eintopf-green': value.state == 'running', 'fa-power-off fnt--light-gray': value.state != 'running'}"
-                   class="fa"></i>
+                <button class="bg--white btn--link" title="running" ng-click="stopProject(project);" ng-if="project.state == 'running'">
+                  <i class="fa fa-cog fnt-eintopf-green"></i>
+                </button>
+                <button class="bg--white btn--link" title="stopped" ng-click="startProject(project);" ng-if="project.state != 'running'">
+                  <i class="fa fa-power-off fnt--light-gray"></i>
+                </button>
               </div>
             </div>
           </a>
