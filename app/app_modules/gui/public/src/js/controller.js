@@ -64,15 +64,28 @@ angular.module('eintopf')
     }
   ])
   .controller('cookingCtrl',
-  ['$scope', 'reqProjectList', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
-    function($scope, reqProjectsList, resProjectsList, reqProjectStart, reqProjectStop) {
+  ['$scope', '$state', 'storage', 'reqProjectList', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
+    function($scope, $state, storage, reqProjectsList, resProjectsList, reqProjectStart, reqProjectStop) {
       resProjectsList.$assignProperty($scope, 'projects');
       reqProjectsList.emit();
       $scope.startProject = function(project) {
-        reqProjectStart.emit(project);
+        emitStartStop(reqProjectStart, project);
       };
       $scope.stopProject = function(project) {
-        reqProjectStop.emit(project)
+        emitStartStop(reqProjectStop, project);
+      };
+
+      var emitStartStop = function(reqProject, project){
+        if (!(reqProject.emit && project.id)){
+          return false;
+        }
+
+        storage.set("frontend.tabs"+ project.id+ ".lastActive", "protocol");
+        reqProject.emit(project);
+
+        if ($state.is("cooking.projects.recipe", {id: project.id})){
+          $state.reload();
+        }
       };
     }
   ])
