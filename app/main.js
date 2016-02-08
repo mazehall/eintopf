@@ -7,7 +7,7 @@ var Menu = require('menu');
 process.cwd = app.getAppPath;
 
 var server = require('./server.js');
-var mainWindow, webContents;
+var mainWindow, webContents, instance;
 var port = process.env.PORT = process.env.PORT || 31313;
 // Preserver of the window size and position between app launches.
 var mainWindowState = windowStateKeeper('main', {
@@ -66,6 +66,16 @@ initMenu = function () {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 };
 
+instance = app.makeSingleInstance(function() {
+  if (mainWindow.isMinimized()){
+    mainWindow.restore()
+  }
+
+  mainWindow.focus();
+
+  return true;
+});
+
 app.on('ready', function () {
   initMenu();
 
@@ -115,3 +125,7 @@ app.on('ready', function () {
 app.on('window-all-closed', function () {
   app.quit();
 });
+
+if (instance){
+  return app.quit();
+}
