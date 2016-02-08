@@ -4,8 +4,6 @@ var BrowserWindow = require('browser-window');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 var Menu = require('menu');
 
-process.cwd = app.getAppPath;
-
 var server = require('./server.js');
 var mainWindow, webContents, instance;
 var port = process.env.PORT = process.env.PORT || 31313;
