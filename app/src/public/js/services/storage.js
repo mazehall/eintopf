@@ -1,5 +1,6 @@
 'use strict';
 
+//@todo fix socket.io replacement
 angular.module("eintopf.services.storage", []).factory("storage", ["socket", function(socket){
 
     var ioEvent = socket.io.connect("/eintopf.services.storage");
