@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "4.2"
-  - "4.1"
+  - "5.0"
+  - "5.1"
 script: cd app && npm test
 # requirements for building on node.js 4.0 / io.js v3
 addons:

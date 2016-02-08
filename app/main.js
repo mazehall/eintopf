@@ -4,8 +4,6 @@ var BrowserWindow = require('browser-window');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 var Menu = require('menu');
 
-process.cwd = app.getAppPath;
-
 var server = require('./server.js');
 var mainWindow, webContents, instance;
 var port = process.env.PORT = process.env.PORT || 31313;
@@ -98,7 +96,7 @@ app.on('ready', function () {
   process.on('uncaughtException', function(e) {
     if (e.code == 'EADDRINUSE') {
       var queryParams = 'code=' + e.code + '&message=' + e.message;
-      mainWindow.loadUrl('file://' + __dirname + '/app_modules/gui/public/src/index.html#/error?' + queryParams);
+      mainWindow.loadURL('file://' + __dirname + '/app_modules/gui/public/src/index.html#/error?' + queryParams);
     }
 
     console.log('uncaught Exception:', e);
@@ -106,7 +104,7 @@ app.on('ready', function () {
 
   process.on('app:serverstarted', function () {
     var appUrl = "http://localhost:" + port;
-    mainWindow.loadUrl(appUrl, {userAgent: "electron"});
+    mainWindow.loadURL(appUrl, {userAgent: "electron"});
     webContents.on("will-navigate", function (event, targetUrl) {
       if (targetUrl.indexOf(appUrl) === -1) {
         shell.openExternal(targetUrl);
