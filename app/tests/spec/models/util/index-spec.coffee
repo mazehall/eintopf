@@ -3,6 +3,7 @@
 config = require 'config'
 rewire = require 'rewire'
 
+model = null
 
 fromPromise = (value) ->
   return new Promise (resolve) -> resolve value
@@ -12,7 +13,6 @@ failFromPromise = (error) ->
 
 describe "set config", ->
 
-  model = null
   beforeEach ->
     model = rewire "../../../../models/util/index.coffee"
     model.setConfig config
@@ -24,27 +24,100 @@ describe "set config", ->
   it 'should return true when object was set', ->
     expect(model.setConfig(config)).toBeTruthy()
 
-describe "get Eintopf home", ->
-  orig = process.env
 
-  model = null
+describe "resolve path", ->
+  orig = null
+
   beforeEach ->
+    orig = process.env
     model = rewire "../../../../models/util/index.coffee"
     model.setConfig config
+
+    spyOn(model, 'getHome').andCallFake -> '/home/mock'
 
   afterEach ->
     process.env = orig
 
-  it "should return windows home"
-  it "should return linux home"
+  it "should return same on absolute path", ->
+    expect(model.resolvePath('/ab/so/lute')).toBe '/ab/so/lute'
 
-  it "should return custom home", ->
+  it "should map relative paths", ->
+    expect(model.resolvePath('./lu/te')).toBe process.cwd() + '/lu/te'
+
+  it "should map relative home paths (~)", ->
+    expect(model.resolvePath('~/.lu/te')).toBe '/home/mock/.lu/te'
+    expect(model.resolvePath('~')).toBe '/home/mock'
+
+
+describe "get home", ->
+  origEnvs = null
+
+  beforeEach ->
+    origEnvs = process.env
+    this.originalPlatform = process.platform
+
+    model = rewire "../../../../models/util/index.coffee"
+    model.setConfig config
+
+    Object.defineProperty process, 'platform', value: 'linux'
+    process.env.USERPROFILE = 'c:/Users/someone'
+    process.env.HOME = '/home/someone'
+    process.env.EINTOPF_HOME = ''
+
+  afterEach ->
+    process.env = origEnvs
+    Object.defineProperty process, 'platform',
+      value: this.originalPlatform
+
+  it "should return windows home", ->
+    Object.defineProperty process, 'platform', value: 'win32'
+
+    expect(model.getHome()).toBe(process.env.USERPROFILE);
+
+  it "should return linux home", ->
+    expect(model.getHome()).toBe(process.env.HOME);
+
+  it "should ignore EINTOPF_HOME env", ->
+    process.env.EINTOPF_HOME = '/totally/different/path'
+    expect(model.getHome()).toBe(process.env.HOME);
+
+
+describe "get Eintopf home", ->
+  origEnvs = null
+
+  beforeEach ->
+    origEnvs = process.env
+    model = rewire "../../../../models/util/index.coffee"
+    model.setConfig config
+
+    spyOn(model, 'getHome').andCallFake -> '/home/mock'
+    spyOn(model, 'resolvePath').andCallFake -> '/home/custom/mock'
+    process.env.EINTOPF_HOME = ''
+
+  afterEach ->
+    process.env = origEnvs
+
+  it "should return getHome()", ->
+    result = model.getEintopfHome()
+    expect(model.getHome).toHaveBeenCalled()
+    expect(result).toBe('/home/mock')
+
+  it "should return resolvePath result", ->
     process.env.EINTOPF_HOME = '/my/custom/home';
-    expect(model.getEintopfHome()).toBe(process.env.EINTOPF_HOME);
+
+    result = model.getEintopfHome()
+
+    expect(model.resolvePath).toHaveBeenCalledWith(process.env.EINTOPF_HOME)
+    expect(result).toBe('/home/custom/mock');
+
+  it "should return null on relative path", ->
+    process.env.EINTOPF_HOME = './relative/home';
+
+    result = model.getEintopfHome()
+    expect(result).toBeNull()
 
 describe "remove file async", ->
 
-  model = null
   beforeEach ->
     model = rewire "../../../../models/util/index.coffee"
     model.__set__ "model.getConfigModulePath", -> return "/tmp/eintopf/default"

@@ -12,19 +12,32 @@ model.setConfig = (newConfig) ->
   config = newConfig
   return true
 
-model.getPathResolvedWithRelativeHome = (fsPath) ->
-  return null if typeof fsPath != "string"
-  homePath = @getEintopfHome()
-  fsPath = fsPath.replace /^(~|~\/)/, homePath if homePath?
-  return fsPath
+# resolves relative paths
+model.resolvePath = (path) ->
+  return null if typeof path != "string"
 
-model.getEintopfHome = () ->
-  return process.env.EINTOPF_HOME if process.env.EINTOPF_HOME
+  if path.match /^~/
+    return null if ! (home = @getHome())
+    path = path.replace /^(~|~\/)/, home
+  if path.match /^\./
+    path = path.replace /^(\.|\.\/)/, process.cwd()
+
+  return path
+
+model.getHome = () ->
   return process.env.USERPROFILE if process.platform == 'win32'
   return process.env.HOME
 
+# get resolved eintopf home path
+model.getEintopfHome = () ->
+  if process.env.EINTOPF_HOME
+    return null if process.env.EINTOPF_HOME.match /^\./ #disable relative paths here
+    return model.resolvePath process.env.EINTOPF_HOME
+  return model.getHome()
+
 model.getConfigPath = () ->
-  return @getPathResolvedWithRelativeHome "#{@getEintopfHome()}/.eintopf";
+  return null if !(home = model.getEintopfHome())
+  return  home + "/.eintopf";
 
 model.getConfigModulePath = () ->
   return null if ! (configPath = @getConfigPath())? || ! config?.app?.defaultNamespace

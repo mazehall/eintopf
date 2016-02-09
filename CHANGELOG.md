@@ -1,6 +1,7 @@
 Fixed:
 
 - shuffling of project list order
+- incorrect path building with EINTOPF_HOME env
 
 ## 1.2.0 (28.01.2016)
 
