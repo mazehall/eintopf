@@ -18,6 +18,8 @@
     "zeroclipboard": "~2.2.0",
     "ng-clip": "~0.2.6",
     "angular-scroll-glue": "2.0.6",
-    "angular-marked": "~0.0.21"
+    "angular-marked": "~0.0.21",
+    "angular.panels": "~1.0.3",
+    "nsPopover": "^0.6.8"
   }
 }

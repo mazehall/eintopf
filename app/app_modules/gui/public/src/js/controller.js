@@ -2,8 +2,13 @@
 
 angular.module('eintopf')
   .controller("rootCtrl",
-  ["$scope", "backendErrors",
-    function($scope, backendErrors) {
+  ["$scope", "backendErrors", 'panels',
+    function($scope, backendErrors, panels) {
+      $scope.openPanel = function() {
+        console.log('openpanel');
+        panels.open('panelcontent');
+      };
+
       backendErrors.$assignProperty($scope, "backendErrors");
     }
   ])
@@ -58,12 +63,16 @@ angular.module('eintopf')
     }
   ])
   .controller('cookingCtrl',
-  ['$scope', 'reqProjectList', 'resProjectsList',
-    function($scope, reqProjectsList, resProjectsList) {
+  ['$scope', 'reqProjectList', 'resProjectsList', 'panels',
+    function($scope, reqProjectsList, resProjectsList, panels) {
       resProjectsList.$assignProperty($scope, 'projects');
       reqProjectsList.emit();
     }
   ])
+  .controller('panelCtrl', function($scope) {
+
+  })
+
   .controller('containersCtrl',
   ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
     function($scope, resContainersList, reqContainerActions, resContainersLog) {

@@ -1,42 +1,16 @@
 <div class="grd-row-col-6 p1 m0 cssContainer">
-    <div class="grd-row">
-        <ul class="grd-row-col-6 m1 p0 cssToolbar list--unstyled">
-            <li class="flt--left run">
-            <a href="#" class="btn small" ng-click="startProject(project);currentTab = 'protocol';" ng-disabled="loading">
-                <i class="fa fa fa-cog fnt--green"></i>
-                <span class="fnt--green">run</span>
-            </a>
-            </li>
-            <li class="flt--left stop">
-            <a href="#" class="btn small" ng-click="stopProject(project);currentTab = 'protocol';" ng-disabled="loading">
-                <i class="fa fa-ban fnt--mid-gray"></i>
-                <span class="fnt--mid-gray">stop</span>
-            </a>
-            </li>
-            <li class="flt--left update">
-            <a href="#" class="btn small" ng-click="updateProject(project);currentTab = 'protocol';">
-                <i class="fa fa-refresh fnt--blue small"></i>
-                <span class="fnt--blue">update</span>
-            </a>
-            </li>
-            <li class="flt--left delete">
-            <a href="#" class="btn small" ng-click="deleteProject(project)">
-                <i class="fa fa-trash-o fnt--red"></i>
-                <span class="fnt--red">delete</span>
-            </a>
-            </li>
-        </ul>
-    </div>
+
     <div class="grd-row p1">
         <div class="grd-row-col-6">
             <div class="media mx1">
-                <div class="media-figure m0">
-                    <img src="img/dummy_project1.png" alt="project"/>
-                </div>
+
                 <div class="media-body txt--left">
-                    <h6 class="m0 p0">
+                    <h3 class="m0 p0">
                         {{project.name}}
-                    </h6>
+                    </h3>
+                    <div class="media-figure m0">
+                        <img src="img/dummy_project1.png" alt="project"/>
+                    </div>
                     <small class="m0 p0">
                         {{project.description}}
                     </small>

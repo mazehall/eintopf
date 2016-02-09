@@ -5,7 +5,8 @@ var eintopf = angular.module('eintopf', [
   'luegg.directives',
   'hc.marked',
   'eintopf.services.socket.states',
-  'eintopf.services.storage'
+  'eintopf.services.storage',
+  'angular.panels'
 ]);
 
 eintopf.factory('currentProject', [function () {
@@ -25,6 +26,19 @@ eintopf.config(['terminalConfigurationProvider', function (terminalConfiguration
   terminalConfigurationProvider.inputOnlyMode = true;
   terminalConfigurationProvider.promptConfiguration = { end: '', user: '', separator: '', path: '' };
 }]);
+
+
+eintopf.config(['panelsProvider', function (panelsProvider) {
+  panelsProvider
+      .add({
+        id: 'panelcontent',
+        position: 'right',
+        size: '60%',
+        templateUrl: 'partials/panelcontent.html',
+        controller: 'panelCtrl'
+      });
+}]);
+
 
 eintopf.config(function($stateProvider, $urlRouterProvider) {
   //
