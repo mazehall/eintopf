@@ -6,7 +6,8 @@ var eintopf = angular.module('eintopf', [
   'hc.marked',
   'eintopf.services.socket.states',
   'eintopf.services.storage',
-  'angular.panels'
+  'angular.panels',
+  'nsPopover'
 ]);
 
 eintopf.factory('currentProject', [function () {

@@ -11,9 +11,6 @@ body {
     height:auto;
     min-height:100%;
 }
-.cssBgWhite{
-    background-color: rgba(255, 255, 255, 1.0);
-}
 .cssBgGreen{
     background-color: rgba(228, 240, 232, 1.0);
 }
@@ -470,42 +467,3 @@ li.cssPanelBox:hover{
 
 
 
-
-.ns-popover-list-theme {
-    z-index:1040;
-
-}
-.cssPopover{
-    box-sizing: border-box;
-    border: solid 1px #d8d8d8;
-    border-radius: 3px;
-    background-color: #fff;
-    margin-top:20px;
-    -webkit-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
-    box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
-}
-.triangle{
-    margin-top:20px;
-    display: block;
-    width: 0;
-    height: 0;
-    border: solid 11px;
-    border-color: transparent;
-    position: absolute;
-}
-.triangle:after {
-    content: " ";
-    display: block;
-    width:0;
-    height:0;
-    border: solid 10px;
-    border-color: transparent;
-    position: absolute;
-}
-.ns-popover-bottom-placement .triangle{
-    border-bottom-color:#d8d8d8;
-    left:50%;
-    top: -21px;
-    margin-left: -10px;
-}
