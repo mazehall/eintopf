@@ -60,4 +60,4 @@ function initElectronContextMenu() {
   }, false);
 }
 
-if(navigator && navigator.userAgent == "electron") initElectronContextMenu();
+initElectronContextMenu();

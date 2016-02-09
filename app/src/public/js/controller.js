@@ -102,10 +102,6 @@ angular.module('eintopf')
   .controller('appsCtrl',
   ['$scope', 'resAppsList',
     function($scope, resAppsList) {
-      $scope.isElectron = false;
-      if (navigator.userAgent && navigator.userAgent.match(/^electron/)) {
-        $scope.isElectron = true;
-      }
       resAppsList.$assignProperty($scope, 'apps');
     }
   ])
@@ -201,7 +197,6 @@ angular.module('eintopf')
         reqContainerActions.remove(container.id);
       };
 
-      $scope.isElectron = navigator.userAgent && navigator.userAgent.match(/^electron/);
     }
   ])
   .controller('createProjectCtrl',

@@ -97,11 +97,16 @@ app.on('ready', function () {
     mainWindowState.saveState(mainWindow);
   });
 
-  webContents.on("will-navigate", function (event, targetUrl) {
-    if (targetUrl.indexOf(appUrl) === -1) {
-      shell.openExternal(targetUrl);
-      event.preventDefault();
-    }
+  // behavior for normal a hrefs
+  webContents.on("will-navigate", function (event, url) {
+    event.preventDefault();
+    if (url.match(/^http/)) shell.openExternal(url);
+  });
+
+  // behavior for '_blank' a hrefs
+  webContents.on('new-window', function(event, url){
+    event.preventDefault();
+    if (url.match(/^http/)) shell.openExternal(url);
   });
 
   process.on('uncaughtException', function(e) {
