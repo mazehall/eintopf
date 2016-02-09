@@ -18,9 +18,9 @@ model.resolvePath = (path) ->
 
   if path.match /^~/
     return null if ! (home = @getHome())
-    path = path.replace /^(~|~\/)/, home
+    path = path.replace /^~/, home
   if path.match /^\./
-    path = path.replace /^(\.|\.\/)/, process.cwd()
+    path = path.replace /^\./, process.cwd()
 
   return path
 

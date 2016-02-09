@@ -43,10 +43,12 @@ describe "resolve path", ->
 
   it "should map relative paths", ->
     expect(model.resolvePath('./lu/te')).toBe process.cwd() + '/lu/te'
+    expect(model.resolvePath('./')).toBe process.cwd() + '/'
 
   it "should map relative home paths (~)", ->
     expect(model.resolvePath('~/.lu/te')).toBe '/home/mock/.lu/te'
     expect(model.resolvePath('~')).toBe '/home/mock'
+    expect(model.resolvePath('~/')).toBe '/home/mock/'
 
 
 describe "get home", ->
