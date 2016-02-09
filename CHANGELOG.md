@@ -1,3 +1,5 @@
+## 1.2.1
+
 Fixed:
 
 - shuffling of project list order
