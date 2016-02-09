@@ -54,7 +54,7 @@
                 <li class="grd-row-col-1-6 tab_actions" ng-click="onClickTab('actions')" ng-class="{cssActive: currentTab =='actions'}" ng-if="project.actions && project.actions.length">
                     <p class="txt--center m0">Actions</p>
                 </li>
-                <li class="grd-row-col-1-6 tab_readme" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.markdowns[0]">
+                <li class="grd-row-col-1-6 tab_readme" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.readme">
                     <p class="txt--center m0">Readme</p>
                 </li>
                 <li class="grd-row-col-1-6 tab_containers" ng-click="onClickTab('containers')"
@@ -71,8 +71,8 @@
                     <div class="fnt--off-white" marked="protocol"></div>
                 </div>
 
-                <div class="grd-row-col-6  p1 " ng-if="project.markdowns[0]" ng-show="currentTab == 'readme'">
-                    <div class="cssReadme" marked src="'/projects/'+ project.id +'/'+ project.markdowns[0].name"></div>
+                <div class="grd-row-col-6  p1 " ng-if="project.readme" ng-show="currentTab == 'readme'">
+                    <div class="cssReadme" marked="project.readme"></div>
                 </div>
 
                 <div class="grd-row-col-6  p1 " ng-if="project.actions && project.actions.length" ng-show="currentTab == 'actions'">
