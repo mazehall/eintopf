@@ -1,25 +1,21 @@
 <div class="grd-row-col-6 p1 m0 cssContainer">
 
-    <div class="grd-row p1">
-        <div class="grd-row-col-6">
-            <div class="media mx1">
-
-                <div class="media-body txt--left">
-                    <h3 class="m0 p0">
-                        {{project.name}}
-                    </h3>
-                    <div class="media-figure m0">
-                        <img src="img/dummy_project1.png" alt="project"/>
-                    </div>
-                    <small class="m0 p0">
-                        {{project.description}}
-                    </small>
-                </div>
-            </div>
+    <div class="grd-row m0 py1">
+        <div class="grd-row-col-3-6 px2">
+            <h4 class="m0 p0 bold fnt-eintopf-darkgreen">
+                {{project.name}}
+            </h4>
+            <b class="small p0 m0">Project is running</b>
+        </div>
+        <div class="grd-row-col-3-6 px2">
+            <h4 class="m0 p0">Description</h4>
+            <small class="m0 p0">
+                {{project.description}}
+            </small>
         </div>
     </div>
 
-    <div class="grd-row">
+    <div class="grd-row py2 my2">
         <div class="grd-row-col-6 p2">
             <ul class="grd-row cssTab cssBgGreenAlpha list--unstyled p0 m0">
                 <li class="grd-row-col-1-6 " ng-click="onClickTab('protocol')" ng-class="{cssActive: currentTab == 'protocol'}">

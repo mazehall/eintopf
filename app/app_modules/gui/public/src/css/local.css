@@ -290,13 +290,8 @@ button{
         text-align:center;
 
     }
-    .cssNav ul{
-        float:left;
-        width:100%;
-    }
-    .cssNav ul li{
-        width:23%;
-    }
+
+
     .cssToolbar li a span{
         display:none;
     }
