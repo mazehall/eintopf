@@ -215,12 +215,12 @@ _r.interval 10000
     return cb new Error messageProxyAlreadyInstalling if runningProxyDeployment is true
     runningProxyDeployment = true
     model.deployProxy cb
+.onAny (val) ->
+  runningProxyDeployment = false if val.type != "error" || val.value.message != messageProxyAlreadyInstalling
 .filterErrors (err) ->
   ignoredErrorMessages = [messageProxyAlreadyInstalling]
   ignoredErrorCodes = ['ECONNREFUSED', 'ECONNRESET']
   return true if ignoredErrorMessages.indexOf(err.message) < 0 && ignoredErrorCodes.indexOf(err.code) < 0
-.onAny (val) ->
-  runningProxyDeployment = false if val.type != "error" || val.value.message != messageProxyAlreadyInstalling
 .onError (err) ->
   return ks.set "backend:errors", [] if err.message == messageProxyUpToDate
 
