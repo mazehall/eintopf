@@ -6,24 +6,27 @@
     <div class="grd-row-col-5-6--lg grd-row-col-4-6--sm cssNav">
 
       <ul class="list--unstyled flt--right m0 p0">
-        <li class="flt--left on"  ui-sref-active='active'>
+        <li class="flt--left on active">
           <button ns-popover class="cssIcon"
-                  ns-popover-template="partials/panelmenu.html">
+                  ns-popover-template="partials/pop.vm.html">
             <i class="fa fa-cube"></i>
           </button>
-          <a href="#" class="cssIcon">
-            <i class="fa fa-cube"></i>
-          </a>
+
         </li>
-        <li class="flt--left on active">
-          <a href="#" class="cssIcon">
+        <li class="flt--left on ">
+          <button ns-popover class="cssIcon"
+                  ns-popover-template="partials/pop.proxy.html">
+
             <i class="fa fa-sitemap"></i>
+          </button>
           </a>
         </li>
         <li class="flt--left off"  ui-sref-active='active'>
-          <a href="#" class=" cssIcon">
+          <button ns-popover class="cssIcon"
+                  ns-popover-template="partials/pop.net.html">
             <i class="fa fa-cloud"></i>
-          </a>
+          </button>
+
         </li>
         <li class="flt--left"  ui-sref-active='active'>
           <a href="" ng-click="openPanel()" class="btn--link">

@@ -6,6 +6,10 @@ body {
     padding: 60px 0 0 0;
     overflow-x: hidden;
 }
+button{
+    outline: none;
+}
+
 .cssHeightFull{
     height:100% !important;
     height:auto;
@@ -44,6 +48,9 @@ body {
 .py05{
     padding:0.5rem 0;
 }
+.p05{
+    padding:0.5rem;
+}
 .cssHeader{
     max-height:60px;
     border-bottom:2px solid rgba(215, 228, 219, 1.0);
@@ -76,13 +83,17 @@ body {
 }
 .cssHeader ul li button {
     border:none;
-
+    background:none;
+    margin:.5rem 0;
 }
-.cssHeader ul li.on button{
+.cssHeader ul li button i{
+    padding: .7rem;
+}
+.cssHeader ul li.on button i{
     background-color: rgba(180,199,186,1.0);
     color:#02565f;
 }
-.cssHeader ul li.off button{
+.cssHeader ul li.off button i{
     background-color: rgba(220,230,223,1.0);
 }
 .cssHeader ul li button i{
@@ -98,8 +109,7 @@ body {
     min-height:60px;
     height:60px;
     max-height:60px;
-    margin-left:5px;
-    padding:0 .1rem;
+
 }
 .cssHeader ul li:last-child{
     margin-left:10rem;
@@ -153,7 +163,7 @@ body {
     border-width:1px;
     padding: .5rem;
     margin: 0 0 0 .5rem;
- }
+}
 .cssSetup ul li p.h4{
     margin:0;
 }
@@ -163,7 +173,6 @@ body {
     height:auto;
     min-height:100%;
 }
-
 .scroll {
     width: 100%;
     height: 400px;
@@ -295,9 +304,7 @@ body {
         font-size:100%;
     }
 }
-.cssSwitchBg{
-
-}
+/* -------------- switch ----------------- */
 .cssSwitchBg span {
     background: white;
     border-radius: 2em;
@@ -376,6 +383,8 @@ body {
     color:#ccc;
     font-size: .6em;
 }
+/* -------------- pattern ----------------- */
+
 .cssPatterns{
     margin-top:8rem;
 }
@@ -433,6 +442,7 @@ body {
     max-height:4rem;
 
 }
+/* -------------- panel ----------------- */
 button.close{
     outline: none;
     border: none;
@@ -468,17 +478,16 @@ li.cssPanelBox:hover{
     width:10%;
 }
 
-
-
+/* -------------- popover ----------------- */
 
 .ns-popover-list-theme {
     z-index:1040;
-
+    min-width:20rem;
 }
 .cssPopover{
     box-sizing: border-box;
     border: solid 1px #d8d8d8;
-    border-radius: 3px;
+    border-radius: 10px;
     background-color: #fff;
     margin-top:20px;
     -webkit-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
@@ -504,8 +513,24 @@ li.cssPanelBox:hover{
     position: absolute;
 }
 .ns-popover-bottom-placement .triangle{
-    border-bottom-color:#d8d8d8;
+    border-bottom-color:#e1e1e1;
     left:50%;
     top: -21px;
     margin-left: -10px;
+}
+.cssPopoverHead{
+    border-bottom:1px solid #ccc;
+    -moz-border-radius: 10px 10px 0px 0px / 5px 5px;
+    border-radius: 10px 10px 0px 0px / 8px 8px;
+    background-color:#e1e1e1;
+}
+.cssPopoverFooter{
+    border-top:1px solid #ccc;
+    -moz-border-radius: 0px 0px 10px 10px / 5px 5px;
+    border-radius: 0px 0px 10px 10px / 8px 8px;
+    background-color:#e1e1e1;
+
+}
+.cssPopoverBody{
+    min-height:6rem;
 }
