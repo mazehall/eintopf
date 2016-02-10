@@ -5,7 +5,6 @@ angular.module('eintopf')
   ["$scope", "backendErrors", 'panels',
     function($scope, backendErrors, panels) {
       $scope.openPanel = function() {
-        console.log('openpanel');
         panels.open('panelcontent');
       };
 
@@ -69,10 +68,20 @@ angular.module('eintopf')
       reqProjectsList.emit();
     }
   ])
-  .controller('panelCtrl', function($scope) {
-
-  })
-
+  .controller('panelCtrl',
+  ['$scope', 'panels',
+    function($scope, panels) {
+      $scope.openContainersPanel = function () {
+        panels.open('containers');
+      };
+      $scope.openAppsPanel = function () {
+        panels.open('apps');
+      };
+      $scope.openVagrantPanel = function () {
+        panels.open('vagrant');
+      };
+    }
+  ])
   .controller('containersCtrl',
   ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
     function($scope, resContainersList, reqContainerActions, resContainersLog) {

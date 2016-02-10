@@ -37,6 +37,27 @@ eintopf.config(['panelsProvider', function (panelsProvider) {
         size: '60%',
         templateUrl: 'partials/panelcontent.html',
         controller: 'panelCtrl'
+      })
+      .add({
+        id: 'containers',
+        position: 'right',
+        size: '60%',
+        templateUrl: 'partials/cooking.containers.html',
+        controller: 'containersCtrl'
+      })
+      .add({
+        id: 'apps',
+        position: 'right',
+        size: '60%',
+        templateUrl: 'partials/cooking.apps.html',
+        controller: 'appsCtrl'
+      })
+      .add({
+        id: 'vagrant',
+        position: 'right',
+        size: '60%',
+        templateUrl: 'partials/cooking.settings.html',
+        controller: 'settingsCtrl'
       });
 }]);
 
