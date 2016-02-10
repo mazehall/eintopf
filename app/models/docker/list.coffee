@@ -161,7 +161,7 @@ model.loadContainers = ->
     for container in containers
       container.id = container.Id
       container.status = container.Status
-      container.name = container.Names[0].replace(/\//g, '') if utilModel.typeIsArray container.Names # strip docker-compose slashes
+      container.name = container.Names[0].replace(/\//g, '') if container.Names?[0]? # strip docker-compose slashes
       container.running = if container.status.match(/^Up/) then true else false
     containers
   .map (containers) ->
