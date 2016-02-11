@@ -4,10 +4,8 @@ var BrowserWindow = require('browser-window');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 var Menu = require('menu');
 
-process.cwd = app.getAppPath;
-
 var server = require('./server.js');
-var mainWindow, webContents;
+var mainWindow, webContents, instance;
 var port = process.env.PORT = process.env.PORT || 31313;
 // Preserver of the window size and position between app launches.
 var mainWindowState = windowStateKeeper('main', {
@@ -66,6 +64,16 @@ initMenu = function () {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 };
 
+instance = app.makeSingleInstance(function() {
+  if (mainWindow.isMinimized()){
+    mainWindow.restore()
+  }
+
+  mainWindow.focus();
+
+  return true;
+});
+
 app.on('ready', function () {
   initMenu();
 
@@ -81,9 +89,22 @@ app.on('ready', function () {
     mainWindow.maximize();
   }
 
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.openDevTools();
+  }
+
+  process.on('uncaughtException', function(e) {
+    if (e.code == 'EADDRINUSE') {
+      var queryParams = 'code=' + e.code + '&message=' + e.message;
+      mainWindow.loadURL('file://' + __dirname + '/app_modules/gui/public/src/index.html#/error?' + queryParams);
+    }
+
+    console.log('uncaught Exception:', e);
+  });
+
   process.on('app:serverstarted', function () {
     var appUrl = "http://localhost:" + port;
-    mainWindow.loadUrl(appUrl, {userAgent: "electron"});
+    mainWindow.loadURL(appUrl, {userAgent: "electron"});
     webContents.on("will-navigate", function (event, targetUrl) {
       if (targetUrl.indexOf(appUrl) === -1) {
         shell.openExternal(targetUrl);
@@ -102,3 +123,7 @@ app.on('ready', function () {
 app.on('window-all-closed', function () {
   app.quit();
 });
+
+if (instance){
+  return app.quit();
+}

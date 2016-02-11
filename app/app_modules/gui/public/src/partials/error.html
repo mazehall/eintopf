@@ -1,0 +1,26 @@
+<div class="measure grd">
+
+  <div>
+    <h1>
+      There was an error!
+    </h1>
+  </div>
+
+  <div ng-if="error.code == 'EADDRINUSE'">
+    <p>
+      The Eintopf port <b>31313</b> is already in use.
+    </p>
+    <p>
+      Please stop the application which occupies the port and restart Eintopf.
+    </p>
+  </div>
+
+  <div ng-if="error.code != 'EADDRINUSE'">
+    <div>
+      code: {{error.code}}
+    </div>
+    <div>
+      message: {{error.message}}
+    </div>
+  <div>
+</div>

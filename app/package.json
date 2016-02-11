@@ -4,7 +4,7 @@
   "productName": "Eintopf",
   "identifier": "com.mazehall.eintopf",
   "description": "The smartest way to share and administrate docker projects.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "Jens Klose <jens.klose@mazehall.com>",
   "maintainers": [
     "jens klose <jens.klose@mazehall.com>",

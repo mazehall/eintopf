@@ -1,6 +1,17 @@
+
+Added:
+
+- quick start/stop of projects through the project list
+
+
+## 1.2.1
+
 Fixed:
 
 - shuffling of project list order
+- incorrect path building with EINTOPF_HOME env
+- eintopf proxy not installing after building new vm
+- fixed exception when docker container had no name entry
 
 ## 1.2.0 (28.01.2016)
 

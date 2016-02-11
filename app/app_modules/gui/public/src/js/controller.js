@@ -11,6 +11,12 @@ angular.module('eintopf')
       backendErrors.$assignProperty($scope, "backendErrors");
     }
   ])
+  .controller('errorCtrl',
+  ['$scope', '$stateParams',
+    function($scope, $stateParams) {
+      $scope.error = $stateParams;
+    }
+  ])
   .controller('setupCtrl',
   ['$scope', 'setupLiveResponse', 'setupRestart', '$state',
     function($scope, setupLiveResponse, setupRestart, $state) {
@@ -62,10 +68,29 @@ angular.module('eintopf')
     }
   ])
   .controller('cookingCtrl',
-  ['$scope', 'reqProjectList', 'resProjectsList', 'panels',
-    function($scope, reqProjectsList, resProjectsList, panels) {
+  ['$scope', '$state', 'storage', 'reqProjectList', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
+    function($scope, $state, storage, reqProjectsList, resProjectsList, reqProjectStart, reqProjectStop) {
       resProjectsList.$assignProperty($scope, 'projects');
       reqProjectsList.emit();
+      $scope.startProject = function(project) {
+        emitStartStop(reqProjectStart, project);
+      };
+      $scope.stopProject = function(project) {
+        emitStartStop(reqProjectStop, project);
+      };
+
+      var emitStartStop = function(reqProject, project){
+        if (!(reqProject.emit && project.id)){
+          return false;
+        }
+
+        storage.set("frontend.tabs"+ project.id+ ".lastActive", "protocol");
+        reqProject.emit(project);
+
+        if ($state.is("cooking.projects.recipe", {id: project.id})){
+          $state.reload();
+        }
+      };
     }
   ])
   .controller('panelCtrl',

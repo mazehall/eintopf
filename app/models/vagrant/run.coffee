@@ -1,4 +1,5 @@
 _r = require 'kefir'
+ks = require 'kefir-storage'
 vagrant = require 'node-vagrant'
 
 utilModel = require '../util/'
@@ -36,6 +37,8 @@ model.getSshConfig = (callback) ->
 
 model.up = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
+
+  ks.log 'terminal:output', {text: 'starts vagrant from ' + machine.opts.cwd}
 
   terminalModel.createPTYStream 'vagrant up', {cwd: machine.opts.cwd, env: machine.opts.env}, (err) ->
     return callback err if err
