@@ -1,3 +1,9 @@
+
+Added:
+
+- quick start/stop of projects through the project list
+
+
 ## 1.2.1
 
 Fixed:
