@@ -1,12 +1,12 @@
+require('coffee-script/register');
 var app = require('app');
 var shell = require('shell');
 var BrowserWindow = require('browser-window');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 var Menu = require('menu');
 
-var server = require('./server.js');
+var application = require('./app.coffee');
 var mainWindow, webContents, instance;
-var port = process.env.PORT = process.env.PORT || 31313;
 // Preserver of the window size and position between app launches.
 var mainWindowState = windowStateKeeper('main', {
   width: 1000,
@@ -93,31 +93,30 @@ app.on('ready', function () {
     mainWindow.openDevTools();
   }
 
-  process.on('uncaughtException', function(e) {
-    if (e.code == 'EADDRINUSE') {
-      var queryParams = 'code=' + e.code + '&message=' + e.message;
-      mainWindow.loadURL('file://' + __dirname + '/app_modules/gui/public/src/index.html#/error?' + queryParams);
-    }
-
-    console.log('uncaught Exception:', e);
-  });
-
-  process.on('app:serverstarted', function () {
-    var appUrl = "http://localhost:" + port;
-    mainWindow.loadURL(appUrl, {userAgent: "electron"});
-    webContents.on("will-navigate", function (event, targetUrl) {
-      if (targetUrl.indexOf(appUrl) === -1) {
-        shell.openExternal(targetUrl);
-        event.preventDefault();
-      }
-    });
-  });
-  process.emit('app:startserver', port);
-
   mainWindow.on('close', function () {
     mainWindowState.saveState(mainWindow);
   });
 
+  // behavior for normal a hrefs
+  webContents.on("will-navigate", function (event, url) {
+    event.preventDefault();
+    if (url.match(/^http/)) shell.openExternal(url);
+  });
+
+  // behavior for '_blank' a hrefs
+  webContents.on('new-window', function(event, url){
+    event.preventDefault();
+    if (url.match(/^http/)) shell.openExternal(url);
+  });
+
+  process.on('uncaughtException', function(e) {
+    console.log('uncaught Exception:', e);
+  });
+
+  mainWindow.loadURL('file://' + __dirname + '/src/public/index.html');
+
+  // start Eintopf
+  application(webContents);
 });
 
 app.on('window-all-closed', function () {
