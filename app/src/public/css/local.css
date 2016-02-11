@@ -166,13 +166,42 @@ button{
     background:transparent;
     vertical-align:middle;
 }
-.btn-round i{
-
+.cssSidebar ul li a.btn--link .cssProjectState button.stopped:hover{
+    background:rgba(180,199,186,.5);
+    color:rgba(180,199,186,1.0);
+    border-color:rgba(180,199,186,1.0);
 }
-.cssSidebar ul li a.btn--link .cssProjectState button.stopped:hover, .cssSidebar ul li a.btn--link .cssProjectState button.running:hover {
-    background:rgba(220,230,223,1.0)
+.cssSidebar ul li a.btn--link .cssProjectState button.running:hover {
+    background:rgba(220,230,223,1.0);
+    color:rgba(2,86,95,.99);
+    border-color:rgba(180,199,186,1.0);
 }
-.cssSidebar ul li a.btn--link.active .cssProjectState button.stopped:hover, .cssSidebar ul li a.btn--link.active .cssProjectState button.running:hover {
+.cssSidebar ul li a.btn--link.active .cssProjectState button.running:hover {
+    background:rgba(220,230,223,1.0);
+    color:rgba(2,86,95,.99);
+    border-color:rgba(180,199,186,1.0);
+}
+.cssSidebar ul li a.btn--link.active .cssProjectState button.stopped {
+    background:rgba(180,199,186,.5);
+    color:rgba(180,199,186,1.0);
+    border-color:rgba(180,199,186,1.0);
+}
+.cssSidebar ul li a.btn--link .cssProjectState button.stopped{
+    background:rgba(225,225,225,0.3);
+    color:rgba(225,225,225,1.0);
+    border-color:rgba(225,225,225,1.0);
+}
+.cssSidebar ul li a.btn--link.active .cssProjectState button.stopped:hover{
+    background:#fff;
+}
+.cssSidebar ul li a.btn--link .cssProjectState button.stopped:hover{
+    color:rgba(180,199,186,1.0);
+}
+.cssSidebar ul li a.btn--link .cssProjectState button.running {
+    background:rgba(220,230,223,1.0);
+    color:rgba(2,86,95,.99);
+}
+.cssSidebar ul li a.btn--link.active .cssProjectState button.running:hover {
     background:#fff;
 }
 .cssSidebar .cssProjectState button.stopped:hover .fa:before {
