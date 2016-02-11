@@ -4,15 +4,13 @@ var eintopf = angular.module('eintopf', [
   'vtortola.ng-terminal',
   'luegg.directives',
   'hc.marked',
-  'eintopf.services.socket.states',
+  'eintopf.services.ipc',
   'eintopf.services.storage',
   'angular.panels',
   'nsPopover',
   'ct.ui.router.extras.core',
   'ct.ui.router.extras.sticky',
   'ct.ui.router.extras.previous'
-  'eintopf.services.ipc',
-  'eintopf.services.storage'
 ]);
 
 eintopf.factory('currentProject', [function () {
