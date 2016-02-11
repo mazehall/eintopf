@@ -94,19 +94,31 @@ angular.module('eintopf')
     }
   ])
   .controller('panelCtrl',
-  ['$scope', 'panels',
-    function($scope, panels) {
-      $scope.openContainersPanel = function () {
-        panels.open('containers');
-      };
-      $scope.openAppsPanel = function () {
-        panels.open('apps');
-      };
-      $scope.openVagrantPanel = function () {
-        panels.open('vagrant');
-      };
+  ['$scope', '$previousState',
+    function($scope, $previousState) {
+      $scope.previousState = $previousState;
     }
   ])
+  .controller('panelMainCtrl',
+  ['$scope',
+    function($scope) {
+    }
+  ])
+  .controller('panelAppsCtrl',
+    ['$scope',
+      function($scope) {
+      }
+    ])
+  .controller('panelContainersCtrl',
+    ['$scope',
+      function($scope) {
+      }
+    ])
+  .controller('panelSettingsCtrl',
+    ['$scope',
+      function($scope) {
+      }
+    ])
   .controller('containersCtrl',
   ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
     function($scope, resContainersList, reqContainerActions, resContainersLog) {

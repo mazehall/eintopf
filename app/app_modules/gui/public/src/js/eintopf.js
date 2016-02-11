@@ -7,7 +7,10 @@ var eintopf = angular.module('eintopf', [
   'eintopf.services.socket.states',
   'eintopf.services.storage',
   'angular.panels',
-  'nsPopover'
+  'nsPopover',
+  'ct.ui.router.extras.core',
+  'ct.ui.router.extras.sticky',
+  'ct.ui.router.extras.previous'
 ]);
 
 eintopf.factory('currentProject', [function () {
@@ -35,29 +38,11 @@ eintopf.config(['panelsProvider', function (panelsProvider) {
         id: 'panelcontent',
         position: 'right',
         size: '60%',
-        templateUrl: 'partials/panelcontent.html',
-        controller: 'panelCtrl'
-      })
-      .add({
-        id: 'containers',
-        position: 'right',
-        size: '60%',
-        templateUrl: 'partials/cooking.containers.html',
-        controller: 'containersCtrl'
-      })
-      .add({
-        id: 'apps',
-        position: 'right',
-        size: '60%',
-        templateUrl: 'partials/cooking.apps.html',
-        controller: 'appsCtrl'
-      })
-      .add({
-        id: 'vagrant',
-        position: 'right',
-        size: '60%',
-        templateUrl: 'partials/cooking.settings.html',
-        controller: 'settingsCtrl'
+        templateUrl: 'partials/panel.renderer.html',
+        controller: 'panelCtrl',
+        closeCallbackFunction: function($scope) {
+          if($scope.previousState.get('panel').state != null) $scope.previousState.go('panel'); // previousState must be set in controller scope due to loss of injector
+        }
       });
 }]);
 
@@ -88,9 +73,61 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
 
     .state('cooking', {
       abstract: true,
+      sticky: true,
       url: "/cooking",
       templateUrl: 'partials/cooking.html'
     })
+
+    .state('panel', {
+      abstract: true,
+      url: "/panel",
+      views: {
+        'panel': {
+          templateUrl: 'partials/panelcontent.html'
+        }
+      },
+      onEnter: function (panels, $previousState) {
+        $previousState.memo("panel"); // remember the previous state with memoName "panel"
+        panels.open('panelcontent');
+      }
+    })
+    .state('panel.main', {
+      url: "/main",
+      views: {
+        'panelContent': {
+          controller: 'panelMainCtrl',
+          templateUrl: 'partials/panel.main.html'
+        }
+      }
+    })
+    .state('panel.containers', {
+      url: "/containers",
+      views: {
+        'panelContent': {
+          controller: 'panelContainersCtrl',
+          templateUrl: 'partials/cooking.containers.html'
+        }
+      }
+    })
+    .state('panel.apps', {
+      url: "/apps",
+      views: {
+        'panelContent': {
+          controller: 'panelAppsCtrl',
+          templateUrl: 'partials/cooking.apps.html'
+        }
+      }
+    })
+    .state('panel.settings', {
+      url: "/settings",
+      views: {
+        'panelContent': {
+          controller: 'panelSettingsCtrl',
+          templateUrl: 'partials/cooking.settings.html'
+        }
+      }
+    })
+
     .state('cooking.projects', {
       url: "/projects",
       templateUrl: "partials/cooking.projects.html",
@@ -128,6 +165,16 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
 eintopf.run(function($rootScope, $state, currentProject) {
   $rootScope.$on('$stateChangeStart',
     function(event, toState, toParams, fromState, fromParams){
+      //// Is initial transition and is going to panel.*?
+      if (fromState.name === '' && /panel.*/.exec(toState.name)) {
+        event.preventDefault(); // cancel initial transition
+
+        // go to top.people.managerlist, then go to modal1.whatever
+        $state.go("cooking.projects.create", null, { location: false }).then(function() {
+          $state.go(toState, toParams); }
+        );
+      }
+
       if(typeof toState != "object" || toState.name != "cooking.projects") return false;
       event.preventDefault();
       if (! currentProject.getProjectId()) return $state.go("cooking.projects.create");

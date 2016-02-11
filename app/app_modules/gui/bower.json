@@ -19,6 +19,7 @@
     "angular-marked": "~0.0.21",
     "angular.panels": "~1.0.3",
     "nsPopover": "^0.6.8",
-    "less": "^2.6.0"
+    "less": "^2.6.0",
+    "ui-router-extras": "^0.1.0"
   }
 }
