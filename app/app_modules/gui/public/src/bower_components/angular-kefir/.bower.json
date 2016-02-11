@@ -37,6 +37,5 @@
   },
   "_source": "git://github.com/mazelab/angular-kefir.git",
   "_target": "~1.0.0",
-  "_originalSource": "angular-kefir",
-  "_direct": true
+  "_originalSource": "angular-kefir"
 }
