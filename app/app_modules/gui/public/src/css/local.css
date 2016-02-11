@@ -111,6 +111,18 @@ body {
     margin-left:1em;
     margin-right:0;
 }
+.cssSidebar .cssProjectState button {
+    background: transparent;
+    padding: 0 5px;
+    border: none;
+}
+.cssSidebar .cssProjectState button.stopped:hover .fa:before {
+    content: "\f04b";
+}
+.cssSidebar .cssProjectState button.running:hover .fa:before {
+    content: "\f04d";
+}
+
 .cssToolbar .btn.active, .cssToolbar .active i{
     color:#fff;
 }
