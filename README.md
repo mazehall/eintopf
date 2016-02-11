@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mazehall/eintopf.svg)](https://travis-ci.org/mazehall/eintopf)
+[![Build Status](https://travis-ci.org/mazehall/eintopf.svg?branch=master)](https://travis-ci.org/mazehall/eintopf)
 
 #[Eintopf](https://www.eintopf.io/)
 
@@ -22,9 +22,10 @@ MacOS, Windows and Linux Version available:
 [Download the latest version of eintopf] (https://eintopf.io/download/)
 
 For MacOS homebrewer:
-```brew cask install eintopf``
 
+``` brew cask install eintopf ```
 
+> On MaxOS and Linux the Eintopf VM is running with a NFS shared folder to speed up your projects. Please check your ```/etc/exports``` after an uninstall. Delete the line with the ```<$EINTOPF_HOME>/eintopf``` entry, if you also remove this folder.
 
 ## How does it work?
 

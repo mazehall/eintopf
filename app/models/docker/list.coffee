@@ -161,7 +161,7 @@ model.loadContainers = ->
     for container in containers
       container.id = container.Id
       container.status = container.Status
-      container.name = container.Names[0].replace(/\//g, '') if utilModel.typeIsArray container.Names # strip docker-compose slashes
+      container.name = container.Names[0].replace(/\//g, '') if container.Names?[0]? # strip docker-compose slashes
       container.running = if container.status.match(/^Up/) then true else false
     containers
   .map (containers) ->
@@ -215,12 +215,12 @@ _r.interval 10000
     return cb new Error messageProxyAlreadyInstalling if runningProxyDeployment is true
     runningProxyDeployment = true
     model.deployProxy cb
+.onAny (val) ->
+  runningProxyDeployment = false if val.type != "error" || val.value.message != messageProxyAlreadyInstalling
 .filterErrors (err) ->
   ignoredErrorMessages = [messageProxyAlreadyInstalling]
   ignoredErrorCodes = ['ECONNREFUSED', 'ECONNRESET']
   return true if ignoredErrorMessages.indexOf(err.message) < 0 && ignoredErrorCodes.indexOf(err.code) < 0
-.onAny (val) ->
-  runningProxyDeployment = false if val.type != "error" || val.value.message != messageProxyAlreadyInstalling
 .onError (err) ->
   return ks.set "backend:errors", [] if err.message == messageProxyUpToDate
 
