@@ -45,6 +45,7 @@ button{
     background-color: rgba(2, 86, 95, 1.0);
     border-color: rgba(19, 103, 112, 1.0);
 }
+
 .py05{
     padding:0.5rem 0;
 }
@@ -155,16 +156,26 @@ button{
     margin-left:1em;
     margin-right:0;
 }
+.btn-round{
+    border-radius: 50%;
+    border: 1px solid;
+    border-color: rgba(180,199,186,1.0);
+    height: 1.8rem;
+    width: 1.8rem;
+    background:transparent;
+    vertical-align:middle;
+}
+.btn-round i{
+
+}
 .cssSidebar .cssProjectState button {
-    background: transparent;
-    padding: 0 5px;
-    border: none;
+
 }
 .cssSidebar .cssProjectState button.stopped:hover .fa:before {
     content: "\f04b";
 }
 .cssSidebar .cssProjectState button.running:hover .fa:before {
-    content: "\f04d";
+    content: "\f04c";
 }
 
 .cssToolbar .btn.active, .cssToolbar .active i{
