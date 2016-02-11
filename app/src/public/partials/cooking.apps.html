@@ -1,0 +1,26 @@
+<ul class="grd list--unstyled cssContainer">
+    <li class="grd-row muted">
+      <span class="mx1 grd-row-col-1-6">
+          running apps
+      </span>
+
+      <span class="mx1 grd-row-col-3-6">
+
+      </span>
+    </li>
+    <li class="grd-row py1" ng-repeat="app in apps" ng-if="app.running" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+        <div class="mx1 grd-row-col-3-6" ng-if="app.https != true">
+            <a href="http://{{app.host}}:4480" target="_blank">
+                http://{{app.host}}:4480
+            </a>
+        </div>
+        <div class="mx1 grd-row-col-3-6" ng-if="app.https == true">
+            <a href="https://{{app.host}}:4443" target="_blank">
+                https://{{app.host}}:4443
+            </a>
+        </div>
+        <!--<div class="mx1 txt&#45;&#45;right grd-row-col-3-6">-->
+           <!--&lt;!&ndash;<a href="#"class="btn small"><i class="fa fa-file-text-o fnt&#45;&#45;dark-gray"></i><span>  show log</span></a>&ndash;&gt;-->
+        <!--</div>-->
+    </li>
+</ul>
