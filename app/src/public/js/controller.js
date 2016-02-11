@@ -121,10 +121,6 @@ angular.module('eintopf')
   .controller('appsCtrl',
   ['$scope', 'resAppsList',
     function($scope, resAppsList) {
-      $scope.isElectron = false;
-      if (navigator.userAgent && navigator.userAgent.match(/^electron/)) {
-        $scope.isElectron = true;
-      }
       resAppsList.$assignProperty($scope, 'apps');
     }
   ])
@@ -192,10 +188,10 @@ angular.module('eintopf')
       }).$assignProperty($scope, "protocol");
       storage.notify("project.log.complete."+ $stateParams.id);
 
-      $scope.$fromWatch("project.markdowns").skip(1).onValue(function(value){
-          if (value.newValue.length === 0 || storage.get("project.log.complete."+ $stateParams.id)){
-              return $scope.currentTab = "protocol";
-          }
+      $scope.$fromWatch("project.readme").skip(1).onValue(function(value){
+        if (value.newValue.length === 0 || storage.get("project.log.complete."+ $stateParams.id)){
+            return $scope.currentTab = "protocol";
+        }
       });
 
       $scope.doAction = function(project, action){
@@ -220,7 +216,6 @@ angular.module('eintopf')
         reqContainerActions.remove(container.id);
       };
 
-      $scope.isElectron = navigator.userAgent && navigator.userAgent.match(/^electron/);
     }
   ])
   .controller('createProjectCtrl',

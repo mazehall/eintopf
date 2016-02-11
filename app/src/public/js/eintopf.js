@@ -4,7 +4,7 @@ var eintopf = angular.module('eintopf', [
   'vtortola.ng-terminal',
   'luegg.directives',
   'hc.marked',
-  'eintopf.services.socket.states',
+  'eintopf.services.ipc',
   'eintopf.services.storage'
 ]);
 
@@ -26,11 +26,11 @@ eintopf.config(['terminalConfigurationProvider', function (terminalConfiguration
   terminalConfigurationProvider.promptConfiguration = { end: '', user: '', separator: '', path: '' };
 }]);
 
+//@todo fix partials loading non absolute path
 eintopf.config(function($stateProvider, $urlRouterProvider) {
-  //
   //// For any unmatched url, redirect to /state1
   $urlRouterProvider.otherwise("/setup");
-  //
+
   // Now set up the states
   $stateProvider
     .state('first', {

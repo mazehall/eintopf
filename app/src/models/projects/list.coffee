@@ -62,8 +62,8 @@ model.loadProject = (projectPath, callback) ->
 
   packageStream = _r.fromNodeCallback (cb) ->
     utilModel.loadJsonAsync projectDir.path("package.json"), cb
-  markDownStream = _r.fromNodeCallback (cb) ->
-    utilModel.loadMarkdowns projectPath, (err, result) ->
+  readMeStream = _r.fromNodeCallback (cb) ->
+    utilModel.loadReadme projectPath, (err, result) ->
       return cb null, [] if err
       cb null, result
   certsStream = _r.fromNodeCallback (cb) ->
@@ -71,7 +71,7 @@ model.loadProject = (projectPath, callback) ->
       return cb null, [] if err
       cb null, result
 
-  _r.zip [packageStream, markDownStream, certsStream]
+  _r.zip [packageStream, readMeStream, certsStream]
   .endOnError()
   .onError callback
   .onValue (result) ->
@@ -82,7 +82,7 @@ model.loadProject = (projectPath, callback) ->
     project['path'] = projectPath
     project['scripts'] = config.scripts if config.scripts
     project['id'] = path.basename(projectPath).replace(/[^a-zA-Z0-9]/ig, "")
-    project['markdowns'] = result[1] if result[1]
+    project['readme'] = result[1] || ''
     project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
 
     # keep existing running states

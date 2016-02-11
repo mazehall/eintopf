@@ -65,12 +65,14 @@ model.loadJsonAsync = (path, callback) ->
   .then (json) ->
     callback null, json
 
-model.loadMarkdowns = (path, callback) ->
-  jetpack.findAsync path, {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect"
-  .fail (err) ->
-    callback err
-  .then (markdowns) ->
-    callback null, markdowns
+model.loadReadme = (path, callback) ->
+  _r.fromPromise jetpack.findAsync(path, {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect")
+  .flatMap (inspects) ->
+    return _r.constant null, '' if ! inspects?[0]?['absolutePath']?
+    _r.fromPromise jetpack.readAsync inspects[0]['absolutePath']
+  .onError callback
+  .onValue (val) ->
+    callback null, val
 
 model.loadCertFiles = (path, callback) ->
   jetpack.findAsync path, {matching: ['*.crt', '*.key'], absolutePath: true}, "inspect"

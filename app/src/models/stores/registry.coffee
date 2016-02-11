@@ -5,7 +5,7 @@ url = require 'url'
 ks = require 'kefir-storage'
 
 config = require '../stores/config'
-defaultRegistry = require '../../config/default.registry.json'
+defaultRegistry = require '../../../config/default.registry.json'
 utilsModel = require '../util/index'
 
 registryConfig = config.get 'registry'
