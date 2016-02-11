@@ -88,7 +88,7 @@ angular.module('eintopf')
         reqProject.emit(project);
 
         if ($state.is("cooking.projects.recipe", {id: project.id})){
-          $state.reload();
+          $state.reload($state.current);
         }
       };
     }
