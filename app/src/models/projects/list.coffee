@@ -1,7 +1,6 @@
 _r = require 'kefir'
 git  = require 'gift'
 jetpack = require 'fs-jetpack'
-mazehall = require 'mazehall/lib/modules'
 fs = require 'fs'
 path = require "path"
 child = require 'child_process'
