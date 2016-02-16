@@ -13,6 +13,7 @@ angular.module('eintopf.services.ipc', [])
   };
   ipc.emit = function(eventName, value) {
     if (!eventName) return false;
+    if (typeof value === 'object') value = JSON.parse(JSON.stringify(value));
     ipcRenderer.send(eventName, value);
   };
 
