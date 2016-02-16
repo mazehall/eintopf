@@ -170,7 +170,7 @@ handleEvents = (webContents) ->
     projectsModel.updateProject x.value, () ->
 
   ipcToKefir 'project:action:script'
-  .filter (x) -> x if x.value?.id?
+  .filter (x) -> x if x.value?.id? && x.value.action?
   .onValue (x) ->
     projectsModel.callAction x.value, x.value.action
 

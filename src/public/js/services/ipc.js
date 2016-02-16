@@ -121,7 +121,7 @@ angular.module('eintopf.services.ipc', [])
   }
 }])
 
-.service('reqProjectStartAction', ['ipc', function (ipc){
+.service('reqProjectAction', ['ipc', function (ipc){
   return {
     emit: function (data){
       ipc.emit('project:action:script', data);
@@ -258,7 +258,7 @@ angular.module('eintopf.services.ipc', [])
   }
 }])
 
-.factory('resProjectStartAction', ['ipc', 'storage', function (ipc, storage) {
+.factory('resProjectAction', ['ipc', 'storage', function (ipc, storage) {
   var streams = {};
   return {
     fromProject: function (project){

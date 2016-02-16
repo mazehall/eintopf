@@ -10,30 +10,26 @@ var releaseForOs = {
   windows: require('./tasks/release_windows')
 };
 
-gulp.task('build', function() {
-  return require('./tasks/build.js')();
-});
-
 gulp.task("copy", function() {
   var buildDir = jetpack.cwd("./build").dir(".", {empty: true});
 
-  return jetpack.copy("./app", buildDir.path(), {
-    overwrite: true
+  return jetpack.copyAsync("./src", buildDir.path('src'), {overwrite: true})
+  .then(function() {
+    jetpack.copy("./config", buildDir.path('config'), {overwrite: true});
+  })
+  .then(function() {
+    jetpack.copy("./package.json", buildDir.path('package.json'), {overwrite: true});
+  })
+  .then(function() {
+    jetpack.copy("./tasks", buildDir.path('tasks'), {overwrite: true});
   });
 });
 
-gulp.task("cleanup dependencies", ["copy"], function() {
-
-  /**
-   * remove all packages specified in the 'devDependencies' section
-   *
-   * runs postinstall again to fix missing optional dependencies
-   */
-
+gulp.task("cleanup dependencies", ["copy"], function(cb) {
   var buildDir = jetpack.cwd("./build").dir(".");
-  var process = exec("npm prune --production && npm run postinstall", {cwd: buildDir.path()});
 
-  return process.stdout;
+  // install all packages against the electron nodejs
+  exec("npm run app-install --production", {cwd: buildDir.path()}, cb);
 });
 
 gulp.task('release', ['cleanup dependencies'], function () {

@@ -2,7 +2,7 @@
 
 config = require 'config'
 
-customConfig = require "../../../../models/stores/config.coffee"
+customConfig = require "../../../../src/models/stores/config.coffee"
 
 describe "config store", ->
 

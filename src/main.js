@@ -2,8 +2,12 @@ require('coffee-script/register');
 var app = require('app');
 var shell = require('shell');
 var BrowserWindow = require('browser-window');
-var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
+var windowStateKeeper = require('./utils/window_state');
 var Menu = require('menu');
+
+// set path env
+process.env.ELECTRON_APP_DIR = app.getAppPath();
+process.env.NODE_CONFIG_DIR = process.env.ELECTRON_APP_DIR + '/config';
 
 var application = require('./app.coffee');
 var mainWindow, webContents, instance;
@@ -113,7 +117,7 @@ app.on('ready', function () {
     console.log('uncaught Exception:', e);
   });
 
-  mainWindow.loadURL('file://' + __dirname + '/src/public/index.html');
+  mainWindow.loadURL('file://' + __dirname + '/public/index.html');
 
   // start Eintopf
   application(webContents);

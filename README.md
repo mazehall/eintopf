@@ -282,7 +282,12 @@ Sits on path: `eintopf/app/package.json`. This is **real** manifest of the appli
 ```
 npm install
 ```
-It will also download Electron runtime, and install dependencies for second `package.json` file inside `app` folder.
+Installs package dependencies.
+
+```
+npm run app-install
+```
+Compiles package dependencies against the nodejs version of electron.
 
 
 ### Starting the app

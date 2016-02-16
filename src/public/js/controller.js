@@ -125,8 +125,8 @@ angular.module('eintopf')
     }
   ])
   .controller('recipeCtrl',
-  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectStartAction', 'reqProjectStartAction', 'reqContainerActions', 'reqContainersList', 'resContainersLog',
-    function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectStartAction, reqProjectStartAction, reqContainerActions, reqContainersList, resContainersLog) {
+  ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'reqContainerActions', 'reqContainersList', 'resContainersLog',
+    function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, reqContainerActions, reqContainersList, resContainersLog) {
       $scope.project = {
         id: $stateParams.id
       };
@@ -196,8 +196,8 @@ angular.module('eintopf')
 
       $scope.doAction = function(project, action){
         project.action = action;
-        reqProjectStartAction.emit(project);
-        resProjectStartAction.fromProject($stateParams.id);
+        reqProjectAction.emit(project);
+        resProjectAction.fromProject($stateParams.id);
         $scope.currentTab = "protocol"
       };
 

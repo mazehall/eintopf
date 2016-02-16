@@ -12,8 +12,7 @@ var runApp = function () {
   var deferred = Q.defer();
 
   var app = childProcess.spawn(electron, ['.'], {
-    stdio: 'inherit',
-    cwd: 'app'
+    stdio: 'inherit'
   });
 
   app.on('close', function (code) {

@@ -14,7 +14,7 @@ failFromPromise = (error) ->
 describe "set config", ->
 
   beforeEach ->
-    model = rewire "../../../../models/util/index.coffee"
+    model = rewire "../../../../src/models/util/index.coffee"
     model.setConfig config
 
   it 'should return false when no object was set', ->
@@ -30,7 +30,7 @@ describe "resolve path", ->
 
   beforeEach ->
     orig = process.env
-    model = rewire "../../../../models/util/index.coffee"
+    model = rewire "../../../../src/models/util/index.coffee"
     model.setConfig config
 
     spyOn(model, 'getHome').andCallFake -> '/home/mock'
@@ -58,7 +58,7 @@ describe "get home", ->
     origEnvs = process.env
     this.originalPlatform = process.platform
 
-    model = rewire "../../../../models/util/index.coffee"
+    model = rewire "../../../../src/models/util/index.coffee"
     model.setConfig config
 
     Object.defineProperty process, 'platform', value: 'linux'
@@ -89,7 +89,7 @@ describe "get Eintopf home", ->
 
   beforeEach ->
     origEnvs = process.env
-    model = rewire "../../../../models/util/index.coffee"
+    model = rewire "../../../../src/models/util/index.coffee"
     model.setConfig config
 
     spyOn(model, 'getHome').andCallFake -> '/home/mock'
@@ -121,7 +121,7 @@ describe "get Eintopf home", ->
 describe "remove file async", ->
 
   beforeEach ->
-    model = rewire "../../../../models/util/index.coffee"
+    model = rewire "../../../../src/models/util/index.coffee"
     model.__set__ "model.getConfigModulePath", -> return "/tmp/eintopf/default"
     model.__set__ "jetpack.removeAsync", () -> return fromPromise true
 

@@ -13,7 +13,7 @@ describe "check backup", ->
 
   model = null
   beforeEach ->
-    model = rewire "../../../../models/vagrant/backup.coffee"
+    model = rewire "../../../../src/models/vagrant/backup.coffee"
     model.match = ["id", "index_uuid"]
     model.__set__ "utilModel.getConfigModulePath", -> return "/tmp/eintopf/default"
     model.__set__ "model.createBackup", (backupPath, restorePath, callback) -> return callback null, true
@@ -136,7 +136,7 @@ describe "create Backup", ->
 
   model = null
   beforeEach ->
-    model = rewire "../../../../models/vagrant/backup.coffee"
+    model = rewire "../../../../src/models/vagrant/backup.coffee"
     model.match = ["id", "index_uuid"]
     model.__set__ "utilModel.getConfigModulePath", -> return "/tmp/eintopf/default"
     model.__set__ "asar.createPackage", (restorePath, backupPath, callback) -> return callback null, true
@@ -163,7 +163,7 @@ describe "restore backup", ->
 
   model = null
   beforeEach ->
-    model = rewire "../../../../models/vagrant/backup.coffee"
+    model = rewire "../../../../src/models/vagrant/backup.coffee"
     model.match = ["id", "index_uuid"]/
     model.__set__ "utilModel.getConfigModulePath", -> return "/tmp/eintopf/default"
     model.__set__ "jetpack.exists", (backupPath) -> return true
@@ -310,7 +310,7 @@ describe "restore backup", ->
 describe "restore eintopf machine", ->
   model = null
   beforeEach ->
-    model = rewire "../../../../models/vagrant/backup.coffee"
+    model = rewire "../../../../src/models/vagrant/backup.coffee"
     model.__set__ "utilModel.getConfigModulePath", -> "."
     model.ID_OR_DIRECTORY_NOT_FOUND = "No machine or vagrant directory found"
 

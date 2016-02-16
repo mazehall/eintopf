@@ -20,7 +20,7 @@ samples =
 describe "updateRegistryInstallFlags", ->
 
   beforeEach ->
-    model = rewire "../../../../models/stores/registry.coffee"
+    model = rewire "../../../../src/models/stores/registry.coffee"
     model.__set__ 'ks',
       get: jasmine.createSpy('ks.get').andCallFake -> samples.recommendationsList
       set: jasmine.createSpy('ks.set').andCallFake ->

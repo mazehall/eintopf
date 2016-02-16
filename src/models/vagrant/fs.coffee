@@ -10,7 +10,7 @@ model.copyVagrantFile = (callback) ->
   pathDefaultVagrantFile = appConfig.pathDefaultVagrantFile
   return cb new Error 'copy failed due to misconfiguration' if ! configModulePath? || ! pathDefaultVagrantFile?
 
-  src = jetpack.cwd(appConfig.pathDefaultVagrantFile).path()
+  src = jetpack.cwd(process.env.ELECTRON_APP_DIR).path(appConfig.pathDefaultVagrantFile)
 
   jetpack.dirAsync configModulePath
   .then (dir) ->
