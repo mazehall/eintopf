@@ -2,9 +2,11 @@ Vagrant.require_version ">= 1.7.0"
 
 
 project = "eintopf"
-projectDir = Dir.home + "/eintopf"
-
-Dir.mkdir(projectDir) unless Dir.exist?(projectDir)
+if ENV['EINTOPF_HOME']
+  projectDir = "#{ENV['EINTOPF_HOME']}/eintopf"
+else
+  projectDir = Dir.home + "/eintopf"
+end
 
 Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
@@ -37,9 +39,9 @@ Vagrant.configure("2") do |config|
   if host =~ /darwin/ or host =~ /linux/
     config.vm.network "private_network", type: "dhcp"
     config.vm.synced_folder ".", "/vagrant", type: "nfs"
-    config.vm.synced_folder projectDir, "/projects", type: "nfs"
+    config.vm.synced_folder projectDir, "/projects", type: "nfs", create: true
   else
-    config.vm.synced_folder projectDir, "/projects"
+    config.vm.synced_folder projectDir, "/projects", create: true
   end
 
   # docker provisioning fails without first update
