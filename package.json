@@ -50,7 +50,7 @@
     "rcedit": "^0.3.0"
   },
   "scripts": {
-    "app-install": "node ./tasks/app_npm_install",
+    "app-install": "node ./tasks/app_npm_install --no-optional",
     "postinstall": "node ./tasks/postinstall",
     "release": "./node_modules/.bin/gulp release --env=production",
     "start": "node ./tasks/start-dev",

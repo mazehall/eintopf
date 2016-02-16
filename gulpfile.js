@@ -29,7 +29,7 @@ gulp.task("cleanup dependencies", ["copy"], function(cb) {
   var buildDir = jetpack.cwd("./build").dir(".");
 
   // install all packages against the electron nodejs
-  exec("npm run app-install --production", {cwd: buildDir.path()}, cb);
+  exec("npm run app-install --production --no-optional", {cwd: buildDir.path()}, cb);
 });
 
 gulp.task('release', ['cleanup dependencies'], function () {
