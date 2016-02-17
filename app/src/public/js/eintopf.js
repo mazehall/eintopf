@@ -6,7 +6,7 @@ var eintopf = angular.module('eintopf', [
   'hc.marked',
   'eintopf.services.ipc',
   'eintopf.services.storage',
-  'angular.panels',
+  "pageslide-directive",
   'nsPopover',
   'ct.ui.router.extras.core',
   'ct.ui.router.extras.sticky',
@@ -30,22 +30,6 @@ eintopf.config(['terminalConfigurationProvider', function (terminalConfiguration
   terminalConfigurationProvider.inputOnlyMode = true;
   terminalConfigurationProvider.promptConfiguration = { end: '', user: '', separator: '', path: '' };
 }]);
-
-
-eintopf.config(['panelsProvider', function (panelsProvider) {
-  panelsProvider
-      .add({
-        id: 'panelcontent',
-        position: 'right',
-        size: '60%',
-        templateUrl: 'partials/panel.renderer.html',
-        controller: 'panelCtrl',
-        closeCallbackFunction: function($scope) {
-          if($scope.previousState.get('panel').state != null) $scope.previousState.go('panel'); // previousState must be set in controller scope due to loss of injector
-        }
-      });
-}]);
-
 
 eintopf.config(function($stateProvider, $urlRouterProvider) {
   //// For any unmatched url, redirect to /state1
@@ -82,12 +66,13 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       url: "/panel",
       views: {
         'panel': {
-          templateUrl: 'partials/panelcontent.html'
+          templateUrl: 'partials/panel.content.html',
+          controller: 'panelCtrl'
         }
       },
-      onEnter: function (panels, $previousState) {
+      onEnter: function($rootScope, $previousState) {
         $previousState.memo("panel"); // remember the previous state with memoName "panel"
-        panels.open('panelcontent');
+        $rootScope.pageSlide = true;
       }
     })
     .state('panel.main', {
@@ -104,7 +89,7 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       views: {
         'panelContent': {
           controller: 'panelContainersCtrl',
-          templateUrl: 'partials/cooking.containers.html'
+          templateUrl: 'partials/panel.containers.html'
         }
       }
     })
@@ -113,7 +98,7 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       views: {
         'panelContent': {
           controller: 'panelAppsCtrl',
-          templateUrl: 'partials/cooking.apps.html'
+          templateUrl: 'partials/panel.apps.html'
         }
       }
     })
@@ -122,7 +107,7 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       views: {
         'panelContent': {
           controller: 'panelSettingsCtrl',
-          templateUrl: 'partials/cooking.settings.html'
+          templateUrl: 'partials/panel.settings.html'
         }
       }
     })
@@ -141,21 +126,6 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       url: "/create",
       controller: "createProjectCtrl",
       templateUrl: "partials/cooking.projects.create.html"
-    })
-    .state('cooking.containers', {
-      url: "/containers",
-      controller: "containersCtrl",
-      templateUrl: "partials/cooking.containers.html"
-    })
-    .state('cooking.settings', {
-      url: "/settings",
-      controller: "settingsCtrl",
-      templateUrl: "partials/cooking.settings.html"
-    })
-    .state('cooking.apps', {
-      url: "/apps",
-      controller: "appsCtrl",
-      templateUrl: "partials/cooking.apps.html"
     });
 
 });

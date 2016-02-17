@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="bower_components/furtive/css/furtive.min.css"/>
   <link rel="stylesheet" type="text/css" href="bower_components/font-awesome/css/font-awesome.min.css"/>
   <link rel="stylesheet" type="text/css" href="css/vtortola.ng-terminal.css"/>
-  <link rel="stylesheet" type="text/css" href="bower_components/angular.panels/dist/angular.panels.min.css"/>
+  <link rel="stylesheet" type="text/css" href="css/slide.css"/>
 
   <!-- endbuild -->
 
@@ -24,7 +24,10 @@
 
 <body>
 
-  <div data-panels="true"></div>
+  <pageslide ps-open="pageSlide" ps-size="60%" ps-body-class="ng-pageslide">
+    <div ui-view="panel"></div>
+  </pageslide>
+
   <div id="layout" ui-view class="cssHeightFull" ng-controller="rootCtrl"></div>
   <!-- build:remove -->
 
@@ -38,7 +41,7 @@
   <script src="bower_components/angular-scroll-glue/src/scrollglue.js"></script>
   <script src="bower_components/angular-marked/angular-marked.js"></script>
   <script src="js/vtortola.ng-terminal.js"></script>
-  <script src="bower_components/angular.panels/dist/angular.panels.min.js"></script>
+  <script src="bower_components/angular-pageslide-directive/dist/angular-pageslide-directive.min.js"></script>
   <script src="bower_components/nsPopover/src/nsPopover.js"></script>
   <script src="bower_components/ui-router-extras/release/ct-ui-router-extras.min.js"></script>
 

@@ -2,10 +2,10 @@
 
 angular.module('eintopf')
   .controller("rootCtrl",
-  ["$scope", "backendErrors", 'panels',
-    function($scope, backendErrors, panels) {
+  ["$scope", '$previousState', "backendErrors",
+    function($scope, $previousState, backendErrors) {
       $scope.openPanel = function() {
-        panels.open('panelcontent');
+        $scope.$root.pageSlide = true;
       };
 
       backendErrors.$assignProperty($scope, "backendErrors");
@@ -94,9 +94,12 @@ angular.module('eintopf')
     }
   ])
   .controller('panelCtrl',
-  ['$scope', '$previousState',
-    function($scope, $previousState) {
-      $scope.previousState = $previousState;
+  ['$scope', '$state', '$stickyState', '$previousState',
+    function($scope, $state, $stickyState, $previousState) {
+      $scope.closePanel = function() {
+        $scope.$root.pageSlide = false;
+        $previousState.go("panel"); // go to state prior to panel
+      }
     }
   ])
   .controller('panelMainCtrl',
@@ -105,34 +108,25 @@ angular.module('eintopf')
     }
   ])
   .controller('panelAppsCtrl',
-    ['$scope',
-      function($scope) {
-      }
-    ])
+  ['$scope', 'resAppsList',
+    function($scope, resAppsList) {
+      resAppsList.$assignProperty($scope, 'apps');
+    }
+  ])
   .controller('panelContainersCtrl',
-    ['$scope',
-      function($scope) {
-      }
-    ])
-  .controller('panelSettingsCtrl',
-    ['$scope',
-      function($scope) {
-      }
-    ])
-  .controller('containersCtrl',
   ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
     function($scope, resContainersList, reqContainerActions, resContainersLog) {
       resContainersList.$assignProperty($scope, 'containers');
 
       $scope.logs = [];
       resContainersLog
-      .filter(function(x) {
-        if(x.message) return x;
-      })
-      .onValue(function(val) {
-        val.read = false;
-        $scope.logs.push(val);
-      });
+        .filter(function(x) {
+          if(x.message) return x;
+        })
+        .onValue(function(val) {
+          val.read = false;
+          $scope.logs.push(val);
+        });
 
       $scope.startContainer = function(container) {
         if(typeof container.id != "string") return false;
@@ -148,10 +142,10 @@ angular.module('eintopf')
       };
     }
   ])
-  .controller('appsCtrl',
-  ['$scope', 'resAppsList',
-    function($scope, resAppsList) {
-      resAppsList.$assignProperty($scope, 'apps');
+  .controller('panelSettingsCtrl',
+  ['$scope', 'resSettingsList',
+    function($scope, resSettingsList) {
+      resSettingsList.$assignProperty($scope, 'settings');
     }
   ])
   .controller('recipeCtrl',
@@ -278,12 +272,6 @@ angular.module('eintopf')
         $scope.newProject = project.url;
         $scope.install(project.url);
       };
-    }
-  ])
-  .controller('settingsCtrl',
-  ['$scope', 'resSettingsList',
-    function($scope, resSettingsList) {
-        resSettingsList.$assignProperty($scope, 'settings');
     }
   ])
 ;
