@@ -94,9 +94,26 @@ angular.module('eintopf')
     }
   ])
   .controller('panelCtrl',
-  ['$scope', '$state', '$rootScope', '$previousState',
-    function($scope, $state, $rootScope, $previousState) {
+  ['$scope', '$state', '$rootScope', '$previousState', 'resContainersList', 'resAppsList',
+    function($scope, $state, $rootScope, $previousState, resContainersList, resAppsList) {
       var panelLabels = {'panel.containers': 'Containers', 'panel.apps': 'Apps', 'panel.settings': 'Settings'};
+
+      resContainersList
+      .map(function(x) {
+        return x.length || 0;
+      })
+      .$assignProperty($scope, 'containerCount');
+
+      resAppsList
+      .map(function(x) {
+        var count = 0;
+
+        for(var y in x) {
+          if (x[y].running === true) count ++;
+        };
+        return count;
+      })
+      .$assignProperty($scope, 'appCount');
 
       $rootScope.$on('$stateChangeStart', function(event, toState){
           setPanelLabelFromState(toState.name);
