@@ -26,6 +26,24 @@ eintopf.factory('currentProject', [function () {
   };
 }]);
 
+eintopf.directive('panelOverlay',[function()  {
+  return {
+    restrict: 'A',
+    link: function($scope, element) {
+      element.on('click', function(e) {
+        if (! angular.element(e.target).hasClass('ng-pageslide-body-open')) return false;
+        $scope.closePanel();
+      });
+    },
+    controller: function($scope, $previousState) {
+      $scope.closePanel = function() {
+        $scope.pageSlide = false;
+        $previousState.go('panel');
+      }
+    }
+  };
+}]);
+
 eintopf.config(['terminalConfigurationProvider', function (terminalConfigurationProvider) {
   terminalConfigurationProvider.inputOnlyMode = true;
   terminalConfigurationProvider.promptConfiguration = { end: '', user: '', separator: '', path: '' };

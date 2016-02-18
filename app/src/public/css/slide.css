@@ -4,13 +4,17 @@ html {
 }
 .ng-pageslide {
     background: #ffffff;
-    overflow-y: inherit !important;
+    overflow-y: auto !important;
     z-index: 1090 !important;
 }
+body.ng-pageslide-body-open {
+    overflow: hidden;
+}
+
 body.ng-pageslide-body-open::before {
     content: '.';
     display: block;
-    position: absolute;
+    position: fixed;
     top: 0;
     background-color: rgb(0,0,0);
     left: 0;
@@ -25,7 +29,7 @@ body.ng-pageslide-body-closed::before {
     opacity: 0;
     content: '.';
     display: block;
-    position: absolute;
+    position: fixed;
     top: 0;
     background-color: rgb(0,0,0);
     left: 0;
