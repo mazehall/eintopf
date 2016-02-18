@@ -94,8 +94,20 @@ angular.module('eintopf')
     }
   ])
   .controller('panelCtrl',
-  ['$scope', '$state', '$stickyState', '$previousState',
-    function($scope, $state, $stickyState, $previousState) {
+  ['$scope', '$state', '$rootScope', '$previousState',
+    function($scope, $state, $rootScope, $previousState) {
+      var panelLabels = {'panel.containers': 'Containers', 'panel.apps': 'Apps', 'panel.settings': 'Settings'};
+
+      $rootScope.$on('$stateChangeStart', function(event, toState){
+          setPanelLabelFromState(toState.name);
+      });
+
+      var setPanelLabelFromState = function(state) {
+        if (! panelLabels[state]) return delete $scope.panelPageLabel;
+        $scope.panelPageLabel = panelLabels[state];
+      };
+      setPanelLabelFromState($state.current.name);
+
       $scope.closePanel = function() {
         $scope.$root.pageSlide = false;
         $previousState.go("panel"); // go to state prior to panel
