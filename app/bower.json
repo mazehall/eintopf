@@ -12,7 +12,6 @@
     "angular-kefir": "~1.0.0",
     "angular-scroll-glue": "2.0.6",
     "angular-marked": "~0.0.21",
-    "nsPopover": "^0.6.8",
     "less": "^2.6.0",
     "ui-router-extras": "^0.1.0",
     "angular-pageslide-directive": "^1.0.8"

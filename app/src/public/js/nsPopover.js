@@ -1,3 +1,12 @@
+﻿/**
+ * original from https://github.com/nohros/nsPopover
+ * date: 19.02.16
+ *
+ * use the original if the missing features were implemented
+ *
+ * extended with the following:
+ *  - optional active class: sets class to element parent when popover is open and removes it on close
+ */
 (function(window, angular, undefined){
   'use strict';
 
@@ -23,7 +32,8 @@
       hideOnOutsideClick: true,
       hideOnButtonClick: true,
       mouseRelative: '',
-      popupDelay: 0
+      popupDelay: 0,
+      activeClass: ''
     };
 
     this.setDefaults = function(newDefaults) {
@@ -63,7 +73,8 @@
             hideOnButtonClick: toBoolean(attrs.nsPopoverHideOnButtonClick || defaults.hideOnButtonClick),
             mouseRelative: attrs.nsPopoverMouseRelative,
             popupDelay: attrs.nsPopoverPopupDelay || defaults.popupDelay,
-            group: attrs.nsPopoverGroup
+            group: attrs.nsPopoverGroup,
+            activeClass: attrs.nsPopoverActiveClass || defaults.activeClass
           };
 
           if (options.mouseRelative) {
@@ -125,6 +136,8 @@
                   // Hide the popover without delay on the button click events.
                   elm.on('click', buttonClickHandler);
                 }
+
+                if (options.activeClass) elm.parent().addClass(options.activeClass);
               }, delay*1000);
             },
 
@@ -158,6 +171,7 @@
                   $popover.isOpen = false;
                   displayer_.cancel();
                   $popover.css('display', 'none');
+                  if (options.activeClass) elm.parent().removeClass(options.activeClass);
                 }, delay*1000);
               }
             },
