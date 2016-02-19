@@ -55,11 +55,6 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
 
   // Now set up the states
   $stateProvider
-    .state('first', {
-      url: "/first",
-      templateUrl: "partials/first.html",
-      controller: "firstCtrl"
-    })
     .state('setup', {
       url: "/setup",
       templateUrl: "partials/setup.html",
@@ -76,7 +71,8 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
       abstract: true,
       sticky: true,
       url: "/cooking",
-      templateUrl: 'partials/cooking.html'
+      templateUrl: 'partials/cooking.html',
+      controller: 'cookingCtrl'
     })
 
     .state('panel', {
@@ -133,7 +129,7 @@ eintopf.config(function($stateProvider, $urlRouterProvider) {
     .state('cooking.projects', {
       url: "/projects",
       templateUrl: "partials/cooking.projects.html",
-      controller: 'cookingCtrl'
+      controller: 'cookingProjectsCtrl'
     })
     .state('cooking.projects.recipe', {
       url: "/recipe/{id}",

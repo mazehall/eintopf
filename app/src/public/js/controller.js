@@ -1,16 +1,6 @@
 'use strict';
 
 angular.module('eintopf')
-  .controller("rootCtrl",
-  ["$scope", '$previousState', "backendErrors",
-    function($scope, $previousState, backendErrors) {
-      $scope.openPanel = function() {
-        $scope.$root.pageSlide = true;
-      };
-
-      backendErrors.$assignProperty($scope, "backendErrors");
-    }
-  ])
   .controller('errorCtrl',
   ['$scope', '$stateParams',
     function($scope, $stateParams) {
@@ -68,10 +58,17 @@ angular.module('eintopf')
     }
   ])
   .controller('cookingCtrl',
+  ['$scope', 'backendErrors',
+    function($scope, backendErrors) {
+      backendErrors.$assignProperty($scope, "backendErrors");
+    }
+  ])
+  .controller('cookingProjectsCtrl',
   ['$scope', '$state', 'storage', 'reqProjectList', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
     function($scope, $state, storage, reqProjectsList, resProjectsList, reqProjectStart, reqProjectStop) {
       resProjectsList.$assignProperty($scope, 'projects');
       reqProjectsList.emit();
+
       $scope.startProject = function(project) {
         emitStartStop(reqProjectStart, project);
       };
@@ -110,7 +107,7 @@ angular.module('eintopf')
 
         for(var y in x) {
           if (x[y].running === true) count ++;
-        };
+        }
         return count;
       })
       .$assignProperty($scope, 'appCount');
