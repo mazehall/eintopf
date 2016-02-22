@@ -20,7 +20,8 @@ angular.module('eintopf.services.ipc', [])
 }])
 
 .service('setupLiveResponse', ['ipc', function (ipc) {
-  return ipc.toKefir('states:live').toProperty();
+  ipc.emit('req:states');
+  return ipc.toKefir('states').toProperty();
 }])
 
 .service('resProjectsList', ['ipc', function (ipc) {
@@ -29,10 +30,6 @@ angular.module('eintopf.services.ipc', [])
 
 .service('resProjectsInstall', ['ipc', function (ipc) {
   return ipc.toKefir('res:projects:install');
-}])
-
-.service("backendErrors", ["ipc", function(ipc) {
-  return ipc.toKefir('res:backend:errors').toProperty();
 }])
 
 .service('resContainersLog', ['ipc', function (ipc) {

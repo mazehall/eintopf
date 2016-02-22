@@ -58,9 +58,9 @@ angular.module('eintopf')
     }
   ])
   .controller('cookingCtrl',
-  ['$scope', 'backendErrors',
-    function($scope, backendErrors) {
-      backendErrors.$assignProperty($scope, "backendErrors");
+  ['$scope', 'setupLiveResponse',
+    function($scope, setupLiveResponse) {
+      setupLiveResponse.$assignProperty($scope, 'states');
     }
   ])
   .controller('cookingProjectsCtrl',
@@ -107,7 +107,7 @@ angular.module('eintopf')
 
         for(var y in x) {
           if (x[y].running === true) count ++;
-        }
+        };
         return count;
       })
       .$assignProperty($scope, 'appCount');

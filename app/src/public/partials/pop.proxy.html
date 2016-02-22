@@ -4,23 +4,36 @@
         <div class="grd-row-col-6 p05">
             <div class="px1 m0">
                 <i class="fa fa-sitemap"></i>
-                <span class="px1">Proxy</span>
+                <span class="px1">
+                  Proxy
+                </span>
             </div>
         </div>
     </div>
     <div class="grd-row cssPopoverBody">
-        <div class="grd-row-col-6 cssBgWhite">
-            <div class="m0 p1">
-
-                </div>
-        </div>
+      <div class="grd-row-col-6 cssBgWhite">
+          <div class="m0 p1 bg--red" ng-if="states.proxyError">
+            {{states.proxyError}}
+          </div>
+      </div>
     </div>
     <div class="grd-row cssPopoverFooter ">
         <div class="grd-row-col-6 p05">
-            <div class="px1 m0 ">
+
+            <div class="px1 m0" ng-if="states.proxy">
                 <i class="fa fa-check-circle fnt--green"></i>
-                <span class="small px1"> is running</span>
+                <span class="small px1">
+                  is running
+                </span>
             </div>
+
+            <div class="px1 m0" ng-if="!states.proxy">
+                <i class="fa fa-times-circle fnt--red"></i>
+                <span class="small px1">
+                  is not running
+                </span>
+            </div>
+
         </div>
     </div>
 </div>
