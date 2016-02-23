@@ -106,7 +106,7 @@ handleEvents = (webContents) ->
 
   ipcToKefir 'states:restart'
   .onValue () ->
-    setupModel.restart()
+    setupModel.run()
 
   ipcToKefir 'containers:list'
   .onValue (val) ->

@@ -8,6 +8,7 @@ dockerListModel = require '../models/docker/list.coffee'
 dockerEventStream = require '../models/docker/events.coffee'
 projectsModel = require '../models/projects/list.coffee'
 registryModel = require '../models/stores/registry.coffee'
+vagrantRunModel = require '../models/vagrant/run.coffee'
 
 beat = _r.interval 2000, 'tick'
 
@@ -42,8 +43,18 @@ dockerEventStream
 
 
 ###########
+# monitor vm state
+beat.throttle 10000
+.flatMap ->
+  _r.fromNodeCallback (cb) ->
+    vagrantRunModel.getStatus cb
+.onValue (val) ->
+  ks.setChildProperty 'states:live', 'vagrant', if val == 'running' then true else false
+
+
+###########
 # update internet state
-beat.throttle 5000
+beat.throttle 10000
 .flatMap ->
   _r.fromNodeCallback (cb) ->
     isOnline cb
