@@ -9,17 +9,18 @@ dockerEventStream = require '../models/docker/events.coffee'
 projectsModel = require '../models/projects/list.coffee'
 registryModel = require '../models/stores/registry.coffee'
 
+beat = _r.interval 2000, 'tick'
+
 
 ###########
 # update docker container list
-_r.interval 2000
-.onValue () ->
+beat.onValue () ->
   dockerListModel.loadContainers()
 
 
 ###########
 # reload projects every minute
-projectsEventStream = _r.interval(60000, 'reload')
+beat.throttle 60000
 .onValue () ->
   projectsModel.loadProjects()
 
@@ -42,7 +43,7 @@ dockerEventStream
 
 ###########
 # update internet state
-_r.interval 5000
+beat.throttle 5000
 .flatMap ->
   _r.fromNodeCallback (cb) ->
     isOnline cb
@@ -78,7 +79,7 @@ dockerEventStream
 
 ###########
 # persist available ssl certs
-_r.interval 5000, 'reload'
+beat.throttle 5000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
     return cb new Error 'Could not get proxy certs path' if ! (proxyCertsPath = utilModel.getProxyCertsPath())
@@ -96,7 +97,7 @@ _r.interval 5000, 'reload'
 
 ###########
 # monitor proxy container
-_r.interval 10000, 'tick'
+beat.throttle 10000
 .flatMap () ->
   _r.fromNodeCallback (cb) ->
     dockerProxyModel.monitorProxy cb
