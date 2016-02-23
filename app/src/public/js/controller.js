@@ -93,7 +93,7 @@ angular.module('eintopf')
   .controller('panelCtrl',
   ['$scope', '$state', '$rootScope', '$previousState', 'resContainersList', 'resAppsList',
     function($scope, $state, $rootScope, $previousState, resContainersList, resAppsList) {
-      var panelLabels = {'panel.containers': 'Containers', 'panel.apps': 'Apps', 'panel.settings': 'Settings'};
+      var panelLabels = {'panel.containers': 'Containers', 'panel.apps': 'Running apps', 'panel.settings': 'Manage vagrant'};
 
       resContainersList
       .map(function(x) {
