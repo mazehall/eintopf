@@ -1,6 +1,4 @@
 _r = require 'kefir'
-jetpack = require "fs-jetpack"
-asar = require "asar"
 ks = require 'kefir-storage'
 
 config = require '../stores/config'
@@ -10,71 +8,51 @@ vagrantBackupModel = require '../vagrant/backup.coffee'
 
 appConfig = config.get 'app'
 
+inSetup = false
 defaultStates =
-  vagrantFile: false
-  vagrantRun: false
-  running: false
-  failed: false
-  errorMessage: null
+  setupVagrantFile: false
+  setupVagrantVM: false
+  setupError: null
   state: 'setup'
 
-inSetup = false
 
-states = JSON.parse(JSON.stringify(defaultStates));
+model = {};
 
-getVagrantSshConfigAndSetIt = (callback) ->
+model.getVagrantSshConfigAndSetIt = (callback) ->
   _r.fromNodeCallback (cb) -> vagrantRunModel.getSshConfig cb
   .onValue (val) ->
     ks.setChildProperty 'settings:list', 'vagrantSshConfig', val
-  .onEnd ->
-    callback? null
+    callback? null, val
 
-model = {};
-model.getState = () ->
-  states.datetime = new Date()
-  return states
-
-# 1 reset states
-# 2 run setup again
-model.restart = () ->
-  return false if inSetup
-  states = JSON.parse(JSON.stringify(defaultStates));
-  model.run()
-
-# 1 check vagrant file
-# 2 start and monitor vagrant
-# 3 profit
 model.run = () ->
   return false if inSetup
   inSetup = true
+  states = JSON.parse(JSON.stringify(defaultStates));
 
-  return _r
-  .fromNodeCallback (cb) ->
+  ks.set 'states:live', states # reset states
+
+  _r.fromNodeCallback (cb) -> # deploy vagrant file
     vagrantFsModel.copyVagrantFile cb
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       vagrantBackupModel.checkBackup (err, result) -> cb null, true
-  .flatMap () ->
-    states.vagrantFile = true
+  .flatMap () -> # start vagrant
+    states.setupVagrantFile = true
     ks.set 'states:live', states
-    return _r
-    .fromNodeCallback (cb) ->
+
+    _r.fromNodeCallback (cb) ->
       vagrantRunModel.run cb
   .flatMap ->
     _r.fromCallback (cb) ->
-      getVagrantSshConfigAndSetIt cb
-  .onValue () ->
-    states.vagrantRun = true
-    states.running = true
-    states.state = "cooking"
-    ks.set 'states:live', states
-    vagrantBackupModel.checkBackup -> return if vagrantBackupModel.needBackup is true
+      model.getVagrantSshConfigAndSetIt cb
+  .onValue ->
+    ks.setChildProperty 'states:live', 'setupVagrantVM', true
+    ks.setChildProperty 'states:live', 'state', 'cooking'
+    vagrantBackupModel.checkBackup -> return if vagrantBackupModel.needBackup is true #@todo does not create new backups
   .onError (err) ->
-    states.vagrantFile = "failed" if states.vagrantFile == false
-    states.vagrantRun = "failed" if states.vagrantRun == false
-    states.errorMessage = err.message
-    states.failed = true
-    ks.set 'states:live', states
+    ks.setChildProperty 'states:live', 'setupVagrantFile', 'failed' if states.setupVagrantFile == false
+    ks.setChildProperty 'states:live', 'setupVagrantVM', 'failed' if states.setupVagrantVM == false
+    ks.setChildProperty 'states:live', 'setupError', err.message
   .onEnd () ->
     inSetup = false
 

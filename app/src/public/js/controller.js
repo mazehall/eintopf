@@ -13,20 +13,12 @@ angular.module('eintopf')
       setupLiveResponse.$assignProperty($scope, 'states');
 
       $scope.$fromWatch('states')
-        .filter(function(val) {
-          if (val.newValue && val.newValue.state == 'cooking') return true;
-        })
-        .onValue(function() {
-          $state.go('cooking.projects');
-        });
-
-      $scope.$fromWatch('states')
-        .filter(function(val) {
-          if (val.newValue && val.newValue.state == 'first') return true;
-        })
-        .onValue(function() {
-          $state.go('first');
-        });
+      .filter(function(val) {
+        if (val.newValue && val.newValue.state == 'cooking') return true;
+      })
+      .onValue(function() {
+        $state.go('cooking.projects');
+      });
 
       $scope.setupRestart = function() {
         setupRestart.emit();
