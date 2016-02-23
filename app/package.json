@@ -29,6 +29,7 @@
     "express": "4.12.4",
     "fs-jetpack": "^0.7.0",
     "gift": "^0.6.1",
+    "is-online": "^5.1.1",
     "kefir": "2.7.0",
     "kefir-storage": "^1.1.2",
     "mazehall": "2.1.0",

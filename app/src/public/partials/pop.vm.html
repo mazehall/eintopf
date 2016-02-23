@@ -17,10 +17,22 @@
     </div>
     <div class="grd-row cssPopoverFooter ">
         <div class="grd-row-col-6 p05">
-            <div class="px1 m0 ">
-                <i class="fa fa-check-circle fnt--green"></i>
-                <span class="small px1"> is running</span>
-            </div>
+
+          <div class="px1 m0" ng-if="states.vagrantRun">
+            <i class="fa fa-check-circle fnt--green"></i>
+                <span class="small px1">
+                  is running
+                </span>
+          </div>
+
+          <div class="px1 m0 fnt--red" ng-if="!states.vagrantRun">
+            <i class="fa fa-ban">
+                <span class="small px1">
+                  is not running
+                </span>
+            </i>
+          </div>
+
         </div>
     </div>
 </div>

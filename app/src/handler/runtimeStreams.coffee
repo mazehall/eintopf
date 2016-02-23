@@ -1,5 +1,6 @@
 _r = require 'kefir'
 ks = require 'kefir-storage'
+isOnline = require 'is-online'
 
 utilModel = require '../models/util'
 dockerProxyModel = require '../models/docker/proxy.coffee'
@@ -37,6 +38,16 @@ dockerEventStream
   event?.value?.id && event.type == 'destroy'
 .onValue (event) ->
   ks.setChildProperty 'containers:inspect', event.value.id, null
+
+
+###########
+# update internet state
+_r.interval 5000
+.flatMap ->
+  _r.fromNodeCallback (cb) ->
+    isOnline cb
+.onValue (value) ->
+  ks.setChildProperty 'states:live', 'internet', value
 
 
 ###########
