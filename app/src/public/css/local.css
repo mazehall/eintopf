@@ -499,6 +499,8 @@ button.close{
     border: none;
     background: transparent;
     box-shadow: none;
+
+    z-index:10000;
 }
 button.close:hover{
     color:rgba(19, 103, 112, 1.0);
