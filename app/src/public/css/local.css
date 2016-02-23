@@ -79,7 +79,7 @@ button{
 .cssHeader ul li:last-child:hover{
     border-bottom:2px solid rgba(215, 228, 219, 1.0);
 }
-.cssHeader ul li.active{
+.cssHeader ul li:focus{
     border-bottom:2px solid #f2695e;
 }
 .cssHeader ul li button {
@@ -538,7 +538,7 @@ li.cssPanelBox:hover{
 .cssPopover{
     box-sizing: border-box;
     border: solid 1px #d8d8d8;
-    border-radius: 10px;
+    border-radius: 5px;
     background-color: #fff;
     margin-top:20px;
     -webkit-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
@@ -571,14 +571,14 @@ li.cssPanelBox:hover{
 }
 .cssPopoverHead{
     border-bottom:1px solid #ccc;
-    -moz-border-radius: 10px 10px 0px 0px / 5px 5px;
-    border-radius: 10px 10px 0px 0px / 8px 8px;
+    -moz-border-radius: 5px 5px 0px 0px / 5px 5px;
+    border-radius: 5px 5px 0px 0px / 5px 5px;
     background-color:#e1e1e1;
 }
 .cssPopoverFooter{
     border-top:1px solid #ccc;
-    -moz-border-radius: 0px 0px 10px 10px / 5px 5px;
-    border-radius: 0px 0px 10px 10px / 8px 8px;
+    -moz-border-radius: 0px 0px 5px 5px / 5px 5px;
+    border-radius: 0px 0px 5px 5px / 5px 5px;
     background-color:#e1e1e1;
 
 }
