@@ -88,9 +88,4 @@ model.loadRegistry (err, result) ->
   return ks.set 'recommendations:list', {public: defaultRegistry} if err
   ks.set 'recommendations:list', model.mapRegistryData result
 
-# reevaluate recommendations -> projects mapping
-ks.fromProperty 'projects:list'
-.throttle(200)
-.onValue model.updateRegistryInstallFlags
-
 module.exports = model;

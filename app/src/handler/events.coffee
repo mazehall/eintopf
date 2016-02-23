@@ -4,7 +4,7 @@ ipcMain = require('electron').ipcMain;
 
 setupModel = require '../models/setup/setup.coffee'
 projectsModel = require '../models/projects/list.coffee'
-dockerModel = require '../models/docker/list.coffee'
+dockerModel = require '../models/docker'
 terminalModel = require '../models/util/terminal.coffee'
 
 ipcToKefir = (eventName) ->
@@ -15,7 +15,7 @@ handleEvents = (webContents) ->
 
   # initial emits on page load
   webContents.on 'dom-ready', ->
-    webContents.send 'states:live', ks.get 'states:live'
+    webContents.send 'states', ks.get 'states:live'
 
   ###############
   # watcher
@@ -33,7 +33,7 @@ handleEvents = (webContents) ->
   # emit changes in live states
   ks.fromProperty 'states:live'
   .onValue (val) ->
-    webContents.send 'states:live', val.value
+    webContents.send 'states', val.value
 
   # emit changes in docker container list
   ks.fromProperty 'containers:list'
@@ -92,13 +92,13 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send 'terminal:output', val
 
-  ks.fromProperty "backend:errors"
-  .onValue (val) ->
-    webContents.send "res:backend:errors", val.value
-
   ###############
   # listener
   ###############
+
+  ipcToKefir 'req:states'
+  .onValue (val) ->
+    val.event.sender.send 'states', ks.get 'states:live'
 
   ipcToKefir 'projects:list'
   .onValue (val) ->
@@ -195,7 +195,7 @@ handleEvents = (webContents) ->
       x.event.sender.send 'res:containers:log', ret
 
   ipcToKefir 'container:remove'
-  .filter (x) -> typeof x == "string"
+  .filter (x) -> typeof x.value == "string"
   .onValue (x) ->
     dockerModel.removeContainer x.value, (err, result) ->
       return false if ! err

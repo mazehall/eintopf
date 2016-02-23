@@ -1,0 +1,24 @@
+<div class="grd cssPanel mx1">
+    <div class="grd-row py1 cssPanelHead">
+
+        <h4 class="fnt--dark-gray m0 p0 grd-row-col-5-6--lg grd-row-col-4-6--sm">
+          <button ui-sref="panel.main" ng-show="panelPageLabel">
+            Back
+          </button>
+          {{panelPageLabel || 'Settings'}}
+        </h4>
+
+        <div class="grd-row-col-1-6--lg grd-row-col-2-6--sm txt--right">
+            <button type="button" class="close icon-x fnt--light-gray" ng-click="closePanel();">
+                <i class="fa fa-times">
+                    <span class="ng-hide">Close</span>
+                </i>
+            </button>
+        </div>
+
+    </div>
+    <div class="grd-row cssPanelBody" ui-view="panelContent"></div>
+</div>
+
+
+

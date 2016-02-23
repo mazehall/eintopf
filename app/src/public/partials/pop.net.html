@@ -24,12 +24,20 @@
     </div>
     <div class="grd-row cssPopoverFooter ">
         <div class="grd-row-col-6 p05">
-            <div class="px1 m0 fnt--red">
-                <i class="fa fa-ban ">
-                    <span class="small px1">no connection</span>
-                </i>
 
+            <div class="px1 m0" ng-if="states.internet">
+                <i class="fa fa-check-circle fnt--green"></i>
+                <span class="small px1">
+                  connected
+                </span>
             </div>
+
+            <div class="px1 m0 fnt--red" ng-if="!states.internet">
+                <i class="fa fa-ban">
+                    <span class="small px1">not connection</span>
+                </i>
+            </div>
+
         </div>
     </div>
 </div>
