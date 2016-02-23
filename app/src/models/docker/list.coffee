@@ -88,7 +88,7 @@ model.loadContainers = ->
       return -1 if a.name < b.name
       return 1 if a.name > b.name
       return 0;
-  .onError (error) -> # reset on connection error
+  .onError -> # reset on connection error
     ks.set 'containers:list', []
     ks.set 'containers:inspect', {}
     ks.set 'apps:list', {}
@@ -97,28 +97,3 @@ model.loadContainers = ->
     model.inspectContainers containers
 
 module.exports = model;
-
-#######################
-# runtime streams
-#
-
-# update docker container list
-_r.interval 2000
-.onValue () ->
-  model.loadContainers()
-
-# persist available ssl certs
-_r.interval 5000, 'reload'
-.flatMap () ->
-  _r.fromNodeCallback (cb) ->
-    return cb new Error 'Could not get proxy certs path' if ! (proxyCertsPath = utilModel.getProxyCertsPath())
-    utilModel.loadCertFiles proxyCertsPath, cb
-.map (certFiles) ->
-  certs = {}
-  for file in certFiles
-    file.host = file.name.slice(0, -4)
-    certs[file.host] = {files: []} if ! certs[file.host]
-    certs[file.host]['files'].push file
-  return certs
-.onValue (certs) ->
-  ks.set 'proxy:certs', certs
