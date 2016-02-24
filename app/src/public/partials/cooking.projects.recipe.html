@@ -5,7 +5,8 @@
             <h4 class="m0 p0 bold fnt-eintopf-darkgreen">
                 {{project.name}}
             </h4>
-            <b class="small p0 m0">Project is running</b>
+            <b class="small p0 m0"  ng-if="apps.length">Project is running</b>
+            <b class="small p0 m0" ng-if="!apps.length">Project is not running</b>
         </div>
         <div class="grd-row-col-3-6 px2">
             <h4 class="m0 p0">Description</h4>
