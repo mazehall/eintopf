@@ -1,0 +1,41 @@
+<div class="grd px2 my1">
+    <h4 class="muted m0 py1">
+        Clone Project
+    </h4>
+</div>
+
+<div class="grd px2 my1">
+    <div class="p0 m0">
+        <div class="grd-row-col-6--lg my1 bg--red">
+            <a href="" class="fnt--white flt--right " ng-click="result.errorMessage = null">
+                <i class="fnt--white fa fa-times"></i>
+            </a>
+            <p class="fnt--white">{{result.errorMessage}}</p>
+        </div>
+    </div>
+</div>
+
+<div class="grd px2 my1">
+    <div class="p0 m0">
+        <form>
+            <label>
+                Id:
+            </label>
+            <input name="id" ng-model="project.id"/>
+
+            <label>
+                Name:
+            </label>
+            <input name="name" ng-model="project.name"/>
+            
+            <label>
+                Description:
+            </label>
+            <textarea name="description" ng-model="project.description"></textarea>
+
+            <button ui-sref='cooking.projects.create'>Back</button>
+            <button ng-click="clone()" ng-disabled="cloning">Clone</button>
+        </form>
+    </div>
+</div>
+

@@ -54,6 +54,42 @@ model.installProject = (gitUrl, callback) ->
     model.deleteProject {id: projectId, path: projectDir.path()}, () ->
       return callback new Error err?.message || 'Error: failed to clone git repository'
 
+model.cloneProject = (project, callback) ->
+  return callback new Error 'Invalid description data' if ! project?.patternId || ! project.patternUrl || ! project.id
+  return callback new Error 'Could not resolve config path' if ! (projectsPath = utilModel.getProjectsPath())?
+  return callback new Error 'Project description with this id already exists' if utilModel.isProjectInstalled project.id
+
+  projectDir = jetpack.cwd projectsPath, project.id
+  packagePath = projectDir.cwd('package.json')
+  mappedId = project.id.replace(/[^a-zA-Z0-9]/ig, "")
+
+  _r.fromNodeCallback (cb) ->
+    git.clone project.patternUrl, projectDir.path(), cb
+  .flatMap -> # load project definition
+    _r.fromNodeCallback (cb) ->
+      utilModel.loadJsonAsync packagePath.path(), cb
+  .flatMap (packageData) -> # set changed config
+    packageData.name = project.id;
+    packageData.eintopf = {} if ! packageData.eintopf
+    packageData.eintopf.name = project.name;
+    packageData.eintopf.description = project.description;
+
+    _r.fromNodeCallback (cb) ->
+      utilModel.writeJsonAsync packagePath.path(), packageData, cb
+  .flatMap -> # remove .git folder
+    _r.fromNodeCallback (cb) ->
+      utilModel.removeFileAsync projectDir.path('.git'), cb
+  .flatMap -> # reload projects
+    _r.fromNodeCallback (cb) ->
+      model.loadProjects cb
+  .onError (err) -> # remove files on error
+    model.deleteProject {id: mappedId, path: projectDir.path()}, () ->
+      return callback new Error err?.message || 'failed to clone project pattern'
+  .onValue (val) ->
+    project.id = mappedId
+    callback null, project
+
+
 model.loadProject = (projectPath, callback) ->
   return callback new Error 'invalid project dir given' if ! projectPath?
   projectDir = jetpack.cwd projectPath

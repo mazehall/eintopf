@@ -292,4 +292,25 @@ angular.module('eintopf')
       };
     }
   ])
+  .controller('cookingProjectsCloneCtrl',
+  ['$scope', '$state', '$stateParams', 'clonePatternFactory',
+    function($scope, $state, $stateParams, clonePatternFactory) {
+      $scope.cloning = false;
+
+      clonePatternFactory.getPatternStream($stateParams.id).$assignProperty($scope, 'project');
+      clonePatternFactory.getCloneStream($stateParams.id)
+      .onValue(function(result) {
+        if(result.status == 'success') $state.go("cooking.projects.recipe", {id: result.project.id});
+        $scope.cloning = false;
+      })
+      .$assignProperty($scope, 'result');
+
+      $scope.clone = function() {
+        $scope.result = {};
+        $scope.cloning = true;
+        clonePatternFactory.emitClone($scope.project)
+      };
+
+    }
+  ])
 ;

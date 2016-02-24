@@ -19,6 +19,50 @@ angular.module('eintopf.services.ipc', [])
   return ipc;
 }])
 
+.service('ipcGetPattern', ['ipc', function(ipc) {
+  return function(id) {
+    if (!id) return false;
+    ipc.emit('req:pattern', id);
+    return ipc.toKefir('pattern:' + id).toProperty();
+  }
+}])
+
+.service('ipcClonePattern', ['ipc', function(ipc) {
+  return function(id) {
+    if (!id) return false;
+    ipc.emit('project:clone', id)
+  }
+}])
+
+.service('ipcCloneResult', ['ipc', function(ipc) {
+  return function(id) {
+    return ipc.toKefir('project:clone:' + id).toProperty();
+  }
+}])
+
+.factory('clonePatternFactory', ['ipc', 'ipcGetPattern', 'ipcClonePattern', 'ipcCloneResult', function(ipc, ipcGetPattern, ipcClonePattern, ipcCloneResult) {
+  var model = {};
+
+  model.emitClone = ipcClonePattern;
+  model.getCloneStream = ipcCloneResult;
+  model.getPatternStream = function(id) {
+    return ipcGetPattern(id)
+    .map(function(pattern) {
+      var result = {};
+
+      result.patternId = pattern.id;
+      result.patternUrl = pattern.url;
+      result.id = pattern.id;
+      result.name = pattern.name;
+      result.description = pattern.description;
+
+      return result;
+    });
+  };
+
+  return model;
+}])
+
 .service('setupLiveResponse', ['ipc', function (ipc) {
   ipc.emit('req:states');
   return ipc.toKefir('states').toProperty();

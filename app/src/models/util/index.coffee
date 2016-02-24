@@ -65,6 +65,14 @@ model.loadJsonAsync = (path, callback) ->
   .then (json) ->
     callback null, json
 
+model.writeJsonAsync = (path, data , callback) ->
+  return callback new Error 'Invalid path' if ! path
+
+  _r.fromPromise jetpack.writeAsync path, data, {atomic: true}
+  .onError callback
+  .onValue ->
+    callback null, data
+
 model.loadReadme = (path, callback) ->
   _r.fromPromise jetpack.findAsync(path, {matching: ["README*.{md,markdown,mdown}"], absolutePath: true}, "inspect")
   .flatMap (inspects) ->

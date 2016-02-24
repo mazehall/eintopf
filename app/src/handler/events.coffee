@@ -133,6 +133,27 @@ handleEvents = (webContents) ->
   .onValue (x) ->
     terminalModel.writeIntoPTY x.value
 
+  # request pattern data
+  ipcToKefir 'req:pattern'
+  .filter (val) -> val.value?
+  .onValue (val) ->
+    id = val.value
+    patterns = ks.getChildProperty 'recommendations:list', 'public'
+
+    for i in patterns
+      return val.event.sender.send 'pattern:' + id, i if i.id == id
+
+  ipcToKefir 'project:clone'
+  .filter (val) -> val.value?
+  .onValue (val) ->
+    projectsModel.cloneProject val.value, (err, project) ->
+      response = {}
+      response.errorMessage = err.message if err?.message
+      response.status = if err then 'error' else 'success'
+      response.project = project if project?
+
+      val.event.sender.send 'project:clone:' + val.value.patternId, response
+
   ipcToKefir 'projects:install'
   .filter (x) -> x.value?
   .onValue (x) ->
