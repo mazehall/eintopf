@@ -23,7 +23,6 @@ model.monitorProxy = (callback) ->
 
   _r.fromNodeCallback (cb) ->
     if runningProxyDeployment
-      console.log 'test'
       return setTimeout ->
         cb new Error messageProxyAlreadyInstalling
         , 1
