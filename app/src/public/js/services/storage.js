@@ -26,8 +26,8 @@ angular.module("eintopf.services.storage", [])
      * @return {factory}
      */
     set: function (key, value) {
-      ioEvent.plug(Kefir.constant({name: key, value: value, type: "set"}));
       storage[key] = value;
+      ioEvent.plug(Kefir.constant({name: key, value: value, type: "set"}));
 
       return this;
     },

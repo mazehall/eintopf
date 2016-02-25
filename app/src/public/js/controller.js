@@ -75,10 +75,6 @@ angular.module('eintopf')
 
         storage.set("frontend.tabs"+ project.id+ ".lastActive", "protocol");
         reqProject.emit(project);
-
-        if ($state.is("cooking.projects.recipe", {id: project.id})){
-          $state.reload($state.current);
-        }
       };
     }
   ])
@@ -219,9 +215,12 @@ angular.module('eintopf')
        * Tab section
        */
 
+      storage.stream("frontend.tabs"+ $stateParams.id+ ".lastActive").onValue(function(tab) {
+        $scope.currentTab = tab;
+      });
+
       $scope.currentTab = storage.get("frontend.tabs"+ $stateParams.id+ ".lastActive") || "readme";
       $scope.onClickTab = function(tab){
-          $scope.currentTab = tab;
           storage.set("frontend.tabs"+ $stateParams.id+ ".lastActive", tab);
       };
 
