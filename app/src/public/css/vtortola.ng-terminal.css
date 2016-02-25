@@ -1,4 +1,4 @@
-﻿﻿/**
+﻿/**
  * original from https://github.com/vtortola/ng-terminal-emulator
  * date: 06.11.15
  */
@@ -12,6 +12,7 @@
     border-radius: 0;
     display: inline;
 }
+
 .terminal {
     background-color:#000;
     height: 500px;
