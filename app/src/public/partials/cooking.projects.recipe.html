@@ -22,7 +22,7 @@
                 <li class="grd-row-col-1-6 " ng-click="onClickTab('protocol')" ng-class="{cssActive: currentTab == 'protocol'}">
                     <p class="txt--center m0">Logs</p>
                 </li>
-                <li class="grd-row-col-1-6 tab_actions" ng-click="onClickTab('actions')" ng-class="{cssActive: currentTab =='actions'}" ng-if="project.actions && project.actions.length">
+                <li class="grd-row-col-1-6 tab_actions" ng-click="onClickTab('actions')" ng-class="{cssActive: currentTab =='actions'}">
                     <p class="txt--center m0">Actions</p>
                 </li>
                 <li class="grd-row-col-1-6 tab_readme" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.readme">
@@ -46,15 +46,38 @@
                     <div class="cssReadme" marked="project.readme"></div>
                 </div>
 
-                <div class="grd-row-col-6  p1 " ng-if="project.actions && project.actions.length" ng-show="currentTab == 'actions'">
+                <div class="grd-row-col-6  p1 " ng-show="currentTab == 'actions'">
                     <ul class="grd list--unstyled cssContainer m0 p0">
-                        <li class="grd-row py1" ng-repeat="action in project.actions" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+
+                        <li class="grd-row py1 bg--white">
+                            <div class="mx1 grd-row-col-5-6">
+                                <p class="m0 p0">Update project description</p>
+                                <small>Fetch new version</small>
+                            </div>
+                            <div class="mx1 txt--right grd-row-col-1-6">
+                                <a href="" class="btn small" ng-click="updateProject(project); currentTab = 'protocol';">
+                                <i class="fa fa-play-circle"></i><span> go!</span></a>
+                            </div>
+                        </li>
+
+                        <li class="grd-row py1 bg--off-white">
+                            <div class="mx1 grd-row-col-5-6">
+                                <p class="m0 p0">Hide project description</p>
+                                <small>Removes project description from listing</small>
+                            </div>
+                            <div class="mx1 txt--right grd-row-col-1-6">
+                                <a href="" class="btn small" ng-click="deleteProject(project)">
+                                <i class="fa fa-play-circle"></i><span> go!</span></a>
+                            </div>
+                        </li>
+
+                        <li class="grd-row py1" ng-repeat="action in project.actions" ng-class-odd="'bg--white'" ng-class-even="'bg--off-white'">
                             <div class="mx1 grd-row-col-5-6">
                                 <p class="m0 p0">{{action.name}}</p>
                                 <small>{{action.warning}}</small>
                             </div>
                             <div class="mx1 txt--right grd-row-col-1-6">
-                                <a href="#" class="btn small" ng-click="doAction(project, action)"><i class="fa fa-play-circle"></i><span> go!</span></a>
+                                <a href="" class="btn small" ng-click="doAction(project, action)"><i class="fa fa-play-circle"></i><span> go!</span></a>
                             </div>
                         </li>
                     </ul>
