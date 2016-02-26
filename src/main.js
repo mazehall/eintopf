@@ -3,7 +3,7 @@ var app = require('app');
 var shell = require('shell');
 var BrowserWindow = require('browser-window');
 var windowStateKeeper = require('./utils/window_state');
-var Menu = require('menu');
+var windowMenu = require('./utils/window_menu');
 
 // set path env
 process.env.ELECTRON_APP_DIR = app.getAppPath();
@@ -17,57 +17,6 @@ var mainWindowState = windowStateKeeper('main', {
   height: 600
 });
 
-initMenu = function () {
-  //if (Menu.getApplicationMenu()) return; // ignore if menu is present
-
-  var template = [
-    {
-      label: app.getName(),
-      submenu: [
-        {
-          label: "About", click: function () {
-          shell.openExternal('https://github.com/mazehall/eintopf');
-        }
-        },
-        {type: "separator"},
-        {
-          label: "Reload", accelerator: "CmdOrCtrl+R", click: function (item, focusedWindow) {
-          if (focusedWindow) focusedWindow.reload();
-        }
-        },
-        {type: "separator"},
-        {
-          label: "Quit", accelerator: "CmdOrCtrl+Q", click: function () {
-          app.quit();
-        }
-        },
-        {type: "separator"},
-        {
-          label: app.getName()+ " v" +app.getVersion(),
-          enabled: false
-        }
-      ]
-    }
-  ];
-
-  if (process.platform == 'darwin') { // set edit actions for OS X
-    template.push({
-      label: "Edit",
-      submenu: [
-        {label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:"},
-        {label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:"},
-        {type: "separator"},
-        {label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:"},
-        {label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:"},
-        {label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:"},
-        {label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:"}
-      ]
-    });
-  }
-
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-};
-
 instance = app.makeSingleInstance(function() {
   if (mainWindow.isMinimized()){
     mainWindow.restore()
@@ -79,7 +28,7 @@ instance = app.makeSingleInstance(function() {
 });
 
 app.on('ready', function () {
-  initMenu();
+  windowMenu.init();
 
   mainWindow = new BrowserWindow({
     x: mainWindowState.x,
