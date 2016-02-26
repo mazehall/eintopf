@@ -284,34 +284,15 @@ npm install
 ```
 Installs package dependencies.
 
-```
-npm run app-install
-```
-Compiles package dependencies against the nodejs version of electron.
-
-
 ### Starting the app
 
 ```
 npm start
 ```
+### Npm package building
 
-### Adding pure-js npm modules to your app
-
-Remember to add your dependency to `app/package.json` file, so do:
-```
-cd app
-npm install name_of_npm_module --save
-```
-
-### Adding native npm modules to your app
-
-If you want to install native module you need to compile it agains Electron, not Node.js you are firing in command line by typing `npm install` [(Read more)](https://github.com/atom/electron/blob/master/docs/tutorial/using-native-node-modules.md).
-```
-npm run app-install -- name_of_npm_module
-```
-Of course this method works also for pure-js modules, so you can use it all the time if you're able to remember such an ugly command.
-
+All npm packages are build against the electron node version. This is configured in the .npmrc file.
+Look [(here)](https://github.com/atom/electron/blob/master/docs/tutorial/using-native-node-modules.md) for more info.
 
 ### Making a release
 

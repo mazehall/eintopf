@@ -31,7 +31,7 @@
     "strip-ansi": "^3.0.0"
   },
   "devDependencies": {
-    "electron-prebuilt": "^0.36.7",
+    "electron-prebuilt": "0.36.9",
     "jasmine-node": "^1.14.5",
     "rewire": "^2.3.4",
     "gulp": "^3.9.0",
@@ -51,10 +51,9 @@
     "rcedit": "^0.3.0"
   },
   "scripts": {
-    "app-install": "node ./tasks/app_npm_install --no-optional",
+    "start": "node ./tasks/start-dev",
     "postinstall": "node ./tasks/postinstall",
     "release": "./node_modules/.bin/gulp release --env=production",
-    "start": "node ./tasks/start-dev",
     "test": "node_modules/.bin/jasmine-node --coffee tests/spec",
     "test-e2e": "node tests/e2e.js"
   }

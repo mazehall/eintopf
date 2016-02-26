@@ -21,6 +21,9 @@ gulp.task("copy", function() {
     jetpack.copy("./package.json", buildDir.path('package.json'), {overwrite: true});
   })
   .then(function() {
+    jetpack.copy("./.npmrc", buildDir.path('.npmrc'), {overwrite: true});
+  })
+  .then(function() {
     jetpack.copy("./tasks", buildDir.path('tasks'), {overwrite: true});
   });
 });
@@ -28,8 +31,8 @@ gulp.task("copy", function() {
 gulp.task("cleanup dependencies", ["copy"], function(cb) {
   var buildDir = jetpack.cwd("./build").dir(".");
 
-  // install all packages against the electron nodejs
-  exec("npm run app-install --production --no-optional", {cwd: buildDir.path()}, cb);
+  // install prod packages (against electron node version - see .npmrc)
+  exec("npm install --production --no-optional", {cwd: buildDir.path()}, cb);
 });
 
 gulp.task('release', ['cleanup dependencies'], function () {
