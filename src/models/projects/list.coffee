@@ -3,7 +3,6 @@ git  = require 'gift'
 jetpack = require 'fs-jetpack'
 fs = require 'fs'
 path = require "path"
-child = require 'child_process'
 crypto = require "crypto"
 ks = require 'kefir-storage'
 
@@ -168,32 +167,3 @@ model.callAction = (project, action, callback) ->
   utilModel.runCmd project.scripts[action.script], {cwd: project.path}, logName
 
 module.exports = model;
-
-ks.fromProperty 'containers:inspect'
-.throttle 2000
-.map (containers) ->
-  runningProjects = {}
-  for id, container of containers.value
-    runningProjects[container.project] = true if container?.running && container.project
-  runningProjects
-.onValue (runningProjects) ->
-  projects = ks.get "projects:list"
-
-  for project in projects
-    project.state = if runningProjects[project.id] then 'running' else null
-
-  ks.set "projects:list", projects
-
-# monitor certificate changes and sync them accordingly
-_r.merge [ks.fromProperty('projects:certs'), ks.fromProperty('proxy:certs')]
-.throttle 5000
-.onValue (val) ->
-  return false if ! (proxyCertsPath = utilModel.getProxyCertsPath())?
-  projectCerts = if val.name == 'projects:certs' then val.value else ks.get 'projects:certs'
-
-  utilModel.syncCerts proxyCertsPath, projectCerts, ->
-
-# reload projects every minute
-projectsEventStream = _r.interval(60000, 'reload')
-.onValue () ->
-  model.loadProjects()

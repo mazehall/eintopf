@@ -1,4 +1,4 @@
-﻿describe('ng-terminal-example.command.tools', function () {
+﻿﻿describe('ng-terminal-example.command.tools', function () {
 
     beforeEach(module('ng-terminal-example.command.tools'));
 

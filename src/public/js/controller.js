@@ -1,12 +1,6 @@
 'use strict';
 
 angular.module('eintopf')
-  .controller("rootCtrl",
-  ["$scope", "backendErrors",
-    function($scope, backendErrors) {
-      backendErrors.$assignProperty($scope, "backendErrors");
-    }
-  ])
   .controller('errorCtrl',
   ['$scope', '$stateParams',
     function($scope, $stateParams) {
@@ -19,20 +13,12 @@ angular.module('eintopf')
       setupLiveResponse.$assignProperty($scope, 'states');
 
       $scope.$fromWatch('states')
-        .filter(function(val) {
-          if (val.newValue && val.newValue.state == 'cooking') return true;
-        })
-        .onValue(function() {
-          $state.go('cooking.projects');
-        });
-
-      $scope.$fromWatch('states')
-        .filter(function(val) {
-          if (val.newValue && val.newValue.state == 'first') return true;
-        })
-        .onValue(function() {
-          $state.go('first');
-        });
+      .filter(function(val) {
+        if (val.newValue && val.newValue.state == 'cooking') return true;
+      })
+      .onValue(function() {
+        $state.go('cooking.projects');
+      });
 
       $scope.setupRestart = function() {
         setupRestart.emit();
@@ -64,10 +50,17 @@ angular.module('eintopf')
     }
   ])
   .controller('cookingCtrl',
+  ['$scope', 'setupLiveResponse',
+    function($scope, setupLiveResponse) {
+      setupLiveResponse.$assignProperty($scope, 'states');
+    }
+  ])
+  .controller('cookingProjectsCtrl',
   ['$scope', '$state', 'storage', 'reqProjectList', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
     function($scope, $state, storage, reqProjectsList, resProjectsList, reqProjectStart, reqProjectStop) {
       resProjectsList.$assignProperty($scope, 'projects');
       reqProjectsList.emit();
+
       $scope.startProject = function(project) {
         emitStartStop(reqProjectStart, project);
       };
@@ -82,27 +75,72 @@ angular.module('eintopf')
 
         storage.set("frontend.tabs"+ project.id+ ".lastActive", "protocol");
         reqProject.emit(project);
-
-        if ($state.is("cooking.projects.recipe", {id: project.id})){
-          $state.reload();
-        }
       };
     }
   ])
-  .controller('containersCtrl',
+  .controller('panelCtrl',
+  ['$scope', '$state', '$rootScope', '$previousState', 'resContainersList', 'resAppsList',
+    function($scope, $state, $rootScope, $previousState, resContainersList, resAppsList) {
+      var panelLabels = {'panel.containers': 'Containers', 'panel.apps': 'Running apps', 'panel.settings': 'Manage vagrant'};
+
+      resContainersList
+      .map(function(x) {
+        return x.length || 0;
+      })
+      .$assignProperty($scope, 'containerCount');
+
+      resAppsList
+      .map(function(x) {
+        var count = 0;
+
+        for(var y in x) {
+          if (x[y].running === true) count ++;
+        };
+        return count;
+      })
+      .$assignProperty($scope, 'appCount');
+
+      $rootScope.$on('$stateChangeStart', function(event, toState){
+          setPanelLabelFromState(toState.name);
+      });
+
+      var setPanelLabelFromState = function(state) {
+        if (! panelLabels[state]) return delete $scope.panelPageLabel;
+        $scope.panelPageLabel = panelLabels[state];
+      };
+      setPanelLabelFromState($state.current.name);
+
+      $scope.closePanel = function() {
+        $scope.$root.pageSlide = false;
+        $previousState.go("panel"); // go to state prior to panel
+      }
+    }
+  ])
+  .controller('panelMainCtrl',
+  ['$scope',
+    function($scope) {
+    }
+  ])
+  .controller('panelAppsCtrl',
+  ['$scope', 'resAppsList',
+    function($scope, resAppsList) {
+      resAppsList.$assignProperty($scope, 'apps');
+    }
+  ])
+  .controller('panelContainersCtrl',
   ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
     function($scope, resContainersList, reqContainerActions, resContainersLog) {
       resContainersList.$assignProperty($scope, 'containers');
 
       $scope.logs = [];
       resContainersLog
-      .filter(function(x) {
-        if(x.message) return x;
-      })
-      .onValue(function(val) {
-        val.read = false;
-        $scope.logs.push(val);
-      });
+        .filter(function(x) {
+          if(x.message) return x;
+        })
+        .onValue(function(val) {
+          val.read = false;
+          $scope.logs.push(val);
+        });
 
       $scope.startContainer = function(container) {
         if(typeof container.id != "string") return false;
@@ -118,10 +156,10 @@ angular.module('eintopf')
       };
     }
   ])
-  .controller('appsCtrl',
-  ['$scope', 'resAppsList',
-    function($scope, resAppsList) {
-      resAppsList.$assignProperty($scope, 'apps');
+  .controller('panelSettingsCtrl',
+  ['$scope', 'resSettingsList',
+    function($scope, resSettingsList) {
+      resSettingsList.$assignProperty($scope, 'settings');
     }
   ])
   .controller('recipeCtrl',
@@ -177,9 +215,12 @@ angular.module('eintopf')
        * Tab section
        */
 
+      storage.stream("frontend.tabs"+ $stateParams.id+ ".lastActive").onValue(function(tab) {
+        $scope.currentTab = tab;
+      });
+
       $scope.currentTab = storage.get("frontend.tabs"+ $stateParams.id+ ".lastActive") || "readme";
       $scope.onClickTab = function(tab){
-          $scope.currentTab = tab;
           storage.set("frontend.tabs"+ $stateParams.id+ ".lastActive", tab);
       };
 
@@ -248,12 +289,6 @@ angular.module('eintopf')
         $scope.newProject = project.url;
         $scope.install(project.url);
       };
-    }
-  ])
-  .controller('settingsCtrl',
-  ['$scope', 'resSettingsList',
-    function($scope, resSettingsList) {
-        resSettingsList.$assignProperty($scope, 'settings');
     }
   ])
 ;

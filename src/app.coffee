@@ -2,6 +2,7 @@ eventHandler = require './handler/events.coffee'
 setupModel = require './models/setup/setup.coffee'
 projectsModel = require './models/projects/list.coffee'
 registryModel = require './models/stores/registry.coffee'
+runTimeStreams = require './handler/runtimeStreams.coffee'
 
 model = (webContents) ->
 

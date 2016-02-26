@@ -6,10 +6,17 @@ body {
     padding: 60px 0 0 0;
     overflow-x: hidden;
 }
+button{
+    outline: none;
+}
+
 .cssHeightFull{
     height:100% !important;
     height:auto;
     min-height:100%;
+}
+.cssBgWhite{
+    background-color: rgba(255, 255, 255, 1.0);
 }
 .cssBgGreen{
     background-color: rgba(228, 240, 232, 1.0);
@@ -19,6 +26,12 @@ body {
 }
 .fnt-eintopf-green{
     color:rgba(180,199,186,1.0);
+}
+.fnt-eintopf-red{
+    color:#f2695e;
+}
+.fnt-eintopf-darkgreen{
+    color:rgba(19, 103, 112, 1.0);
 }
 .btn-green{
     border-color: rgba(19, 103, 112, 1.0);
@@ -35,8 +48,12 @@ body {
     background-color: rgba(2, 86, 95, 1.0);
     border-color: rgba(19, 103, 112, 1.0);
 }
+
 .py05{
     padding:0.5rem 0;
+}
+.p05{
+    padding:0.5rem;
 }
 .cssHeader{
     max-height:60px;
@@ -47,10 +64,17 @@ body {
     left: 0;
     z-index: 1030;
 }
-.cssHeader ul li a.btn--link{
+.cssHeader ul li a{
     color:#02565f;
     line-height:60px;
     border-radius:0;
+    padding:.7rem;
+
+}
+.cssIcon img{
+    height:1.5rem;
+    width:1.5rem;
+    vertical-align:middle;
 }
 .cssHeader ul li:hover{
     border-bottom:2px solid rgba(180, 199, 186, 1.0);
@@ -58,8 +82,29 @@ body {
 .cssHeader ul li:last-child:hover{
     border-bottom:2px solid rgba(215, 228, 219, 1.0);
 }
-.cssHeader ul li.active{
+.cssHeader ul li:focus{
     border-bottom:2px solid #f2695e;
+}
+.cssHeader ul li button {
+    border:none;
+    background:none;
+    margin:.5rem 0;
+}
+.cssHeader ul li button i{
+    padding: .7rem;
+}
+.cssHeader ul li.on button i{
+    background-color: rgba(180,199,186,1.0);
+    color:#02565f;
+}
+.cssHeader ul li.off button i{
+    background-color: rgba(220,230,223,1.0);
+}
+.cssHeader ul li button i{
+    font-size:110%;
+}
+.cssHeader ul li.off button i{
+    color:#cbcbcb;
 }
 .cssHeader ul li.active a.btn--link i, .cssHeader ul li:hover a.btn--link i{
     color:#02565f;
@@ -68,7 +113,10 @@ body {
     min-height:60px;
     height:60px;
     max-height:60px;
-    margin-left:5px;
+
+}
+.cssHeader ul li:last-child{
+    margin-left:10rem;
 }
 .cssSidebar{
     border-right:0px solid rgba(215, 228, 219, 0.8);
@@ -81,6 +129,7 @@ body {
     border-right:0;
     border-left: 2px solid rgba(215, 228, 219, 0.2);
     position:relative;
+    padding: .5rem .1rem .5rem 1rem;
 }
 .cssSidebar ul li a.btn--link:hover{
     border-left:2px solid rgba(215, 228, 219, 1.0);
@@ -111,16 +160,58 @@ body {
     margin-left:1em;
     margin-right:0;
 }
-.cssSidebar .cssProjectState button {
-    background: transparent;
-    padding: 0 5px;
-    border: none;
+.btn-round{
+    border-radius: 50%;
+    border: 1px solid;
+    border-color: rgba(180,199,186,1.0);
+    height: 1.8rem;
+    width: 1.8rem;
+    background:transparent;
+    vertical-align:middle;
+}
+.cssSidebar ul li a.btn--link .cssProjectState button.stopped:hover{
+    background:rgba(180,199,186,.5);
+    color:rgba(180,199,186,1.0);
+    border-color:rgba(180,199,186,1.0);
+}
+.cssSidebar ul li a.btn--link .cssProjectState button.running:hover {
+    background:rgba(220,230,223,1.0);
+    color:rgba(2,86,95,.99);
+    border-color:rgba(180,199,186,1.0);
+}
+.cssSidebar ul li a.btn--link.active .cssProjectState button.running:hover {
+    background:rgba(220,230,223,1.0);
+    color:rgba(2,86,95,.99);
+    border-color:rgba(180,199,186,1.0);
+}
+.cssSidebar ul li a.btn--link.active .cssProjectState button.stopped {
+    background:rgba(180,199,186,.5);
+    color:rgba(180,199,186,1.0);
+    border-color:rgba(180,199,186,1.0);
+}
+.cssSidebar ul li a.btn--link .cssProjectState button.stopped{
+    background:rgba(225,225,225,0.3);
+    color:rgba(225,225,225,1.0);
+    border-color:rgba(225,225,225,1.0);
+}
+.cssSidebar ul li a.btn--link.active .cssProjectState button.stopped:hover{
+    background:#fff;
+}
+.cssSidebar ul li a.btn--link .cssProjectState button.stopped:hover{
+    color:rgba(180,199,186,1.0);
+}
+.cssSidebar ul li a.btn--link .cssProjectState button.running {
+    background:rgba(220,230,223,1.0);
+    color:rgba(2,86,95,.99);
+}
+.cssSidebar ul li a.btn--link.active .cssProjectState button.running:hover {
+    background:#fff;
 }
 .cssSidebar .cssProjectState button.stopped:hover .fa:before {
     content: "\f04b";
 }
 .cssSidebar .cssProjectState button.running:hover .fa:before {
-    content: "\f04d";
+    content: "\f04c";
 }
 
 .cssToolbar .btn.active, .cssToolbar .active i{
@@ -131,7 +222,7 @@ body {
     border-width:1px;
     padding: .5rem;
     margin: 0 0 0 .5rem;
- }
+}
 .cssSetup ul li p.h4{
     margin:0;
 }
@@ -141,7 +232,6 @@ body {
     height:auto;
     min-height:100%;
 }
-
 .scroll {
     width: 100%;
     height: 400px;
@@ -259,13 +349,8 @@ body {
         text-align:center;
 
     }
-    .cssNav ul{
-        float:left;
-        width:100%;
-    }
-    .cssNav ul li{
-        width:23%;
-    }
+
+
     .cssToolbar li a span{
         display:none;
     }
@@ -273,9 +358,7 @@ body {
         font-size:100%;
     }
 }
-.cssSwitchBg{
-
-}
+/* -------------- switch ----------------- */
 .cssSwitchBg span {
     background: white;
     border-radius: 2em;
@@ -354,6 +437,8 @@ body {
     color:#ccc;
     font-size: .6em;
 }
+/* -------------- pattern ----------------- */
+
 .cssPatterns{
     margin-top:8rem;
 }
@@ -411,4 +496,97 @@ body {
     max-height:4rem;
 
 }
+/* -------------- panel ----------------- */
+button.close{
+    outline: none;
+    border: none;
+    background: transparent;
+    box-shadow: none;
 
+    z-index:10000;
+}
+button.close:hover{
+    color:rgba(19, 103, 112, 1.0);
+}
+.cssPanelBody a h5{
+}
+.cssPanelBox, .cssProgressbar, .cssProgress{
+    border-radius:5px;
+}
+.cssPanelBox a{
+    text-decoration:none;
+    position: relative;
+}
+.cssPanelBox i{
+
+
+}
+li.cssPanelBox:hover{
+    background-color: rgba(250,250,250,.99);
+}
+.cssProgress.CPU{
+    width:50%;
+}
+.cssProgress.RAM{
+    width:20%;
+}
+.cssProgress.IO{
+    width:10%;
+}
+
+/* -------------- popover ----------------- */
+
+.ns-popover-list-theme {
+    z-index:1040;
+    min-width:20rem;
+}
+.cssPopover{
+    box-sizing: border-box;
+    border: solid 1px #d8d8d8;
+    border-radius: 5px;
+    background-color: #fff;
+    margin-top:20px;
+    -webkit-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
+}
+.triangle{
+    margin-top:20px;
+    display: block;
+    width: 0;
+    height: 0;
+    border: solid 11px;
+    border-color: transparent;
+    position: absolute;
+}
+.triangle:after {
+    content: " ";
+    display: block;
+    width:0;
+    height:0;
+    border: solid 10px;
+    border-color: transparent;
+    position: absolute;
+}
+.ns-popover-bottom-placement .triangle{
+    border-bottom-color:#e1e1e1;
+    left:50%;
+    top: -21px;
+    margin-left: -10px;
+}
+.cssPopoverHead{
+    border-bottom:1px solid #ccc;
+    -moz-border-radius: 5px 5px 0px 0px / 5px 5px;
+    border-radius: 5px 5px 0px 0px / 5px 5px;
+    background-color:#e1e1e1;
+}
+.cssPopoverFooter{
+    border-top:1px solid #ccc;
+    -moz-border-radius: 0px 0px 5px 5px / 5px 5px;
+    border-radius: 0px 0px 5px 5px / 5px 5px;
+    background-color:#e1e1e1;
+
+}
+.cssPopoverBody{
+    min-height:6rem;
+}

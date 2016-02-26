@@ -1,4 +1,4 @@
-﻿describe('vtortola.ng-terminal', function () {
+﻿﻿describe('vtortola.ng-terminal', function () {
 
     beforeEach(module('vtortola.ng-terminal'));
 

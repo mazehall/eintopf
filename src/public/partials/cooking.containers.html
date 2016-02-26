@@ -1,7 +1,7 @@
 <ul class="grd">
     <li class="grd-row my1 bg--red" ng-repeat="(key, value) in logs | filter:{read: false}">
         <div class="grd-row-col-6 p1">
-            <a href="#" class="fnt--white flt--right " ng-click="value.read = true">
+            <a href="" class="fnt--white flt--right " ng-click="value.read = true">
                 <i class="fnt--white fa fa-times"></i>
             </a>
            <p class="fnt--white">{{value.message}}</p>
@@ -40,7 +40,7 @@
                         <div class="cssSwitch"></div>
                     </span>
                 </div>
-                <a href="#" class="small grd-row-col-1-6 cssRemoveButton" title="Remove" ng-click="removeContainer(value)">
+                <a href="" class="small grd-row-col-1-6 cssRemoveButton" title="Remove" ng-click="removeContainer(value)">
                     <i class="fa fa-times fa-2x fnt--light-gray"></i>
                 </a>
             </div>

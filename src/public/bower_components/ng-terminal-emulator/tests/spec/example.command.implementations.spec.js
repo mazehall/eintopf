@@ -1,4 +1,4 @@
-﻿describe('ng-terminal-example.command.implementations', function () {
+﻿﻿describe('ng-terminal-example.command.implementations', function () {
 
     beforeEach(module('ng-terminal-example.command.implementations', function ($provide) {
         $provide.value('$ga',function(){});

@@ -1,4 +1,4 @@
-﻿describe('ng-terminal-example.command.filesystem', function () {
+﻿﻿describe('ng-terminal-example.command.filesystem', function () {
 
     beforeEach(module('ng-terminal-example.command.implementations','ng-terminal-example.command.filesystem',  function ($provide) {
         $provide.value('storage', window.sessionStorage);

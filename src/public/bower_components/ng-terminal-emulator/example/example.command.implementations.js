@@ -1,4 +1,4 @@
-﻿angular.module('ng-terminal-example.command.implementations', ['ng-terminal-example.command.tools'])
+﻿﻿angular.module('ng-terminal-example.command.implementations', ['ng-terminal-example.command.tools'])
 
 .config(['commandBrokerProvider', function (commandBrokerProvider) {
 

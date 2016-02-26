@@ -4,33 +4,41 @@
       <img class="py05 cssLogoImg" src="img/logo.png" alt="einTOPF"/>
     </div>
     <div class="grd-row-col-5-6--lg grd-row-col-4-6--sm cssNav">
+
       <ul class="list--unstyled flt--right m0 p0">
-        <li class="flt--left"  ui-sref-active='active'>
-          <a ui-sref="cooking.apps" class="btn--link">Apps</a>
+        <li class="flt--left" ng-class="states.vagrant? 'on' : 'off'">
+          <button ns-popover class="cssIcon"
+                  ns-popover-active-class="active"
+                  ns-popover-template="partials/pop.vm.html">
+            <i class="fa fa-cube"></i>
+          </button>
+
+        </li>
+        <li class="flt--left" ng-class="states.proxy? 'on' : 'off'">
+          <button ns-popover class="cssIcon"
+                  ns-popover-active-class="active"
+                  ns-popover-template="partials/pop.proxy.html">
+
+            <i class="fa fa-sitemap"></i>
+          </button>
+          </a>
+        </li>
+        <li class="flt--left" ng-class="states.internet? 'on' : 'off'">
+          <button ns-popover class="cssIcon"
+                  ns-popover-active-class="active"
+                  ns-popover-template="partials/pop.net.html">
+            <i class="fa fa-cloud"></i>
+          </button>
+
         </li>
         <li class="flt--left"  ui-sref-active='active'>
-          <a ui-sref="cooking.containers" class="btn--link">Container</a>
-        </li>
-        <li class="flt--left"  ui-sref-active='active'>
-          <a ui-sref="cooking.projects" class="btn--link ">Projects</a>
-        </li>
-        <li class="flt--left"  ui-sref-active='active'>
-          <a ui-sref="cooking.settings" class="btn--link" title="settings"><i class="fa fa-align-justify fnt-eintopf-green"></i></a>
+          <a ui-sref="panel.main" class="btn--link">
+            <i class="fa fa-cog fnt-eintopf-green"></i>
+          </a>
         </li>
       </ul>
     </div>
   </div>
 </div>
-
-<ul class="grd">
-  <li class="grd-row my1 bg--red" ng-repeat="(index, error) in backendErrors | filter:{read: false} track by error.date">
-    <div class="grd-row-col-6 p1">
-      <a href="#" class="fnt--white flt--right " ng-click="error.read = true">
-        <i class="fnt--white fa fa-times"></i>
-      </a>
-      <p class="fnt--white">{{error.message}}</p>
-    </div>
-  </li>
-</ul>
 
 <div id="content" class="cssHeightFull"ui-view></div>

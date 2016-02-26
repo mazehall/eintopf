@@ -1,4 +1,4 @@
-﻿angular.module('ng-terminal-example.command.tools', [])
+﻿﻿angular.module('ng-terminal-example.command.tools', [])
 
 .provider('commandLineSplitter', function () {
     var provider = function () {

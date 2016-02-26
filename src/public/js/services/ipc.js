@@ -21,7 +21,8 @@ angular.module('eintopf.services.ipc', [])
 }])
 
 .service('setupLiveResponse', ['ipc', function (ipc) {
-  return ipc.toKefir('states:live').toProperty();
+  ipc.emit('req:states');
+  return ipc.toKefir('states').toProperty();
 }])
 
 .service('resProjectsList', ['ipc', function (ipc) {
@@ -30,10 +31,6 @@ angular.module('eintopf.services.ipc', [])
 
 .service('resProjectsInstall', ['ipc', function (ipc) {
   return ipc.toKefir('res:projects:install');
-}])
-
-.service("backendErrors", ["ipc", function(ipc) {
-  return ipc.toKefir('res:backend:errors').toProperty();
 }])
 
 .service('resContainersLog', ['ipc', function (ipc) {
@@ -185,10 +182,15 @@ angular.module('eintopf.services.ipc', [])
 }])
 
 .service('resAppsList', ['ipc', 'reqAppsList', function (ipc, reqAppsList) {
-  var appList_ = ipc.toKefir('res:apps:list').toProperty();
   reqAppsList.emit();
-  appList_.onValue(function() {});
-  return appList_;
+  return ipc.toKefir('res:apps:list')
+  .map(function(apps) { // only running apps
+    for (var key in apps) {
+      if (apps.hasOwnProperty(key) && !apps[key].running) delete apps[key];
+    }
+    return apps;
+  })
+  .toProperty();
 }])
 
 .service('reqContainerActions', ['ipc', function (ipc) {
