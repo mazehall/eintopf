@@ -1,0 +1,97 @@
+<div class="grd-row-col-6 p1 m0 cssContainer">
+
+    <div class="grd-row m0 py1">
+        <div class="grd-row-col-3-6 px2">
+            <h4 class="m0 p0 bold fnt-eintopf-darkgreen">
+                {{project.name}}
+
+            </h4>
+            <b class="small p0 m0 "  ng-if="apps.length"> Project is running</b>
+            <b class="small p0 m0 fnt-eintopf-red" ng-if="!apps.length"> Project is stopped</b>
+        </div>
+        <div class="grd-row-col-3-6 px2">
+            <h4 class="m0 p0">Description</h4>
+            <small class="m0 p0">
+                {{project.description}}
+            </small>
+        </div>
+    </div>
+
+    <div class="grd-row py2 my2">
+        <div class="grd-row-col-6 p2">
+            <ul class="grd-row cssTab cssBgGreenAlpha list--unstyled p0 m0">
+                <li class="grd-row-col-1-6 " ng-click="onClickTab('protocol')" ng-class="{cssActive: currentTab == 'protocol'}">
+                    <p class="txt--center m0">Logs</p>
+                </li>
+                <li class="grd-row-col-1-6 tab_actions" ng-click="onClickTab('actions')" ng-class="{cssActive: currentTab =='actions'}">
+                    <p class="txt--center m0">Actions</p>
+                </li>
+                <li class="grd-row-col-1-6 tab_readme" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.readme">
+                    <p class="txt--center m0">Readme</p>
+                </li>
+                <li class="grd-row-col-1-6 tab_containers" ng-click="onClickTab('containers')"
+                    ng-class="{cssActive: currentTab =='containers'}" ng-if="containers && containerLength">
+                    <p class="txt--center m0">Containers ({{containerLength}})</p>
+                </li>
+                <li class="grd-row-col-1-6 tab_running_apps" ng-click="onClickTab('apps')"
+                    ng-class="{cssActive: currentTab =='apps'}" ng-if="apps && apps.length">
+                    <p class="txt--center m0">Running Apps ({{apps.length}})</p>
+                </li>
+            </ul>
+            <div class="grd-row p0 m0 cssBorderWhitoutTop">
+                <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-glue ng-show="currentTab == 'protocol'">
+                    <div class="fnt--off-white" marked="protocol"></div>
+                </div>
+
+                <div class="grd-row-col-6  p1 " ng-if="project.readme" ng-show="currentTab == 'readme'">
+                    <div class="cssReadme" marked="project.readme"></div>
+                </div>
+
+                <div class="grd-row-col-6  p1 " ng-show="currentTab == 'actions'">
+                    <ul class="grd list--unstyled cssContainer m0 p0">
+
+                        <li class="grd-row py1 bg--white">
+                            <div class="mx1 grd-row-col-5-6">
+                                <p class="m0 p0">Update project description</p>
+                                <small>Fetch new version</small>
+                            </div>
+                            <div class="mx1 txt--right grd-row-col-1-6">
+                                <a href="" class="btn small" ng-click="updateProject(project); currentTab = 'protocol';">
+                                <i class="fa fa-play-circle"></i><span> go!</span></a>
+                            </div>
+                        </li>
+
+                        <li class="grd-row py1 bg--off-white">
+                            <div class="mx1 grd-row-col-5-6">
+                                <p class="m0 p0">Hide project description</p>
+                                <small>Removes project description from listing</small>
+                            </div>
+                            <div class="mx1 txt--right grd-row-col-1-6">
+                                <a href="" class="btn small" ng-click="deleteProject(project)">
+                                <i class="fa fa-play-circle"></i><span> go!</span></a>
+                            </div>
+                        </li>
+
+                        <li class="grd-row py1" ng-repeat="action in project.actions" ng-class-odd="'bg--white'" ng-class-even="'bg--off-white'">
+                            <div class="mx1 grd-row-col-5-6">
+                                <p class="m0 p0">{{action.name}}</p>
+                                <small>{{action.warning}}</small>
+                            </div>
+                            <div class="mx1 txt--right grd-row-col-1-6">
+                                <a href="" class="btn small" ng-click="doAction(project, action)"><i class="fa fa-play-circle"></i><span> go!</span></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="grd-row-col-6 p1" ng-show="currentTab == 'containers'">
+                    <div ng-include="'./partials/cooking.containers.html'"></div>
+                </div>
+
+                <div class="grd-row-col-6 p1" ng-show="currentTab == 'apps'">
+                    <div ng-include="'./partials/cooking.apps.html'"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

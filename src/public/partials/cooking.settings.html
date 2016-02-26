@@ -1,0 +1,24 @@
+<div id="container">
+    <div class="grd-row-col-6 px1 m0 " ng-show="settings.vagrantSshConfig">
+        <div class="cssSection py1">
+            <h4 class="muted m0 py1 ">Vagrant ssh config</h4>
+            <div class="grd-row">
+                <label class="grd-row-col-1-6 txt--right px2 muted"></label>
+                <h4 class="m0 py05"></h4>
+            </div>
+            <div class="grd-row">
+                <label class="grd-row-col-1-6 txt--right px2 muted">Host</label>
+                <input readonly class="grd-row-col-4-6 brdr--off-white" type="text" value=" {{settings.vagrantSshConfig.hostname}}" name="Vagrant ssh config"/>
+            </div>
+            <div class="grd-row">
+                <label class="grd-row-col-1-6 txt--right px2 muted">Port</label>
+                <input readonly class="grd-row-col-4-6 brdr--off-white" type="text" value="{{settings.vagrantSshConfig.port}}" name="Vagrant ssh config"/>
+            </div>
+            <div class="grd-row">
+                <label class="grd-row-col-1-6 txt--right px2 muted">User</label>
+                <input readonly class="grd-row-col-4-6 brdr--off-white" type="text" value="{{settings.vagrantSshConfig.user}}" name="Vagrant ssh config"/>
+            </div>
+        </div>
+    </div>
+
+</div>
