@@ -468,8 +468,17 @@ button{
     margin-right:0;
     background-color:rgba(228, 240, 232, 1.0);
 }
+.cssBox.cssClone .media-figure{
+    min-height:100%;
+    margin-right:0;
+    background-color:rgba(228, 240, 232, 1.0);
+}
 .cssBox .media{
     position:relative;
+}
+.cssBox.cssClone .media{
+    position:relative;
+    min-height:30rem;
 }
 .cssBox .media.disabled{
     background:url("../img/installed.png") no-repeat 100% 90%;
@@ -494,6 +503,8 @@ button{
 .cssBox .media-content-input{
     min-height:4rem;
     max-height:4rem;
+}
+.cssBox .media-content-textarea{
 
 }
 /* -------------- panel ----------------- */

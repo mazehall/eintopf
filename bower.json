@@ -14,6 +14,7 @@
     "angular-marked": "~0.0.21",
     "less": "^2.6.0",
     "ui-router-extras": "^0.1.0",
-    "angular-pageslide-directive": "^1.0.8"
+    "angular-pageslide-directive": "^1.0.8",
+    "angular-spectrum-colorpicker": "^1.4.4"
   }
 }

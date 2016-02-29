@@ -10,7 +10,8 @@ var eintopf = angular.module('eintopf', [
   'nsPopover',
   'ct.ui.router.extras.core',
   'ct.ui.router.extras.sticky',
-  'ct.ui.router.extras.previous'
+  'ct.ui.router.extras.previous',
+  'angularSpectrumColorpicker'
 ]);
 
 eintopf.factory('currentProject', [function () {
