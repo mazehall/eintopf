@@ -34,7 +34,7 @@
 
   <!-- endbuild -->
   <!-- build:libJs lib/js/min.js -->
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/jquery/dist/jquery.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="bower_components/kefir/dist/kefir.js"></script>
   <script src="bower_components/angular/angular.min.js"></script>
   <script src="bower_components/marked/lib/marked.js"></script>
