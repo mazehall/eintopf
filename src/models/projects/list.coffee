@@ -73,6 +73,12 @@ model.cloneProject = (project, callback) ->
     packageData.eintopf = {} if ! packageData.eintopf
     packageData.eintopf.name = project.name;
     packageData.eintopf.description = project.description;
+    packageData.eintopf.mediabg = project.mediabg;
+    packageData.eintopf.src = project.src;
+    packageData.pattern ={}
+    packageData.pattern.id = project.patternId;
+    packageData.pattern.name = project.patternName;
+    packageData.patternUrl = project.patternUrl;
 
     _r.fromNodeCallback (cb) ->
       utilModel.writeJsonAsync packagePath.path(), packageData, cb
