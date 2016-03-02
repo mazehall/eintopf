@@ -47,13 +47,13 @@
                             <span class="m0 py05 small">Please enter project-id. The id must be unique. This is also the folder name in your scripts.</span>
                         </label>
                         <div class=" m0 media-content-input">
-                            <input name="id" type="text" placeholder="your project-id"/>
+                            <input name="id" type="text" placeholder="your project-id" ng-model="project.id" />
                         </div>
                         <label class="grd-row p0">
                             <span class="m0 py05 small">Please enter the name of your project. This is displayed on the left side in "your projects"</span>
                         </label>
                         <div class=" m0 media-content-input">
-                            <input type="text" name="name" id="projectName" placeholder="your projectname">
+                            <input type="text" name="name" id="projectName" placeholder="your projectname" ng-model="project.name" />
                         </div>
                         <label class="grd-row p0">
                             <span class="m0 py05 small">Please enter the description of your project. </span>
