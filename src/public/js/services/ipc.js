@@ -52,10 +52,11 @@ angular.module('eintopf.services.ipc', [])
       var result = {};
 
       result = pattern;
-
       result.patternId = pattern.id;
       result.patternName = pattern.name;
       result.patternUrl = pattern.url;
+      result.id = '';
+      result.name = '';
 
       return result;
     });
