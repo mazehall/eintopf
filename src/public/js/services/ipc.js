@@ -51,11 +51,9 @@ angular.module('eintopf.services.ipc', [])
     .map(function(pattern) {
       var result = {};
 
+      result = pattern;
       result.patternId = pattern.id;
       result.patternUrl = pattern.url;
-      result.id = pattern.id;
-      result.name = pattern.name;
-      result.description = pattern.description;
 
       return result;
     });

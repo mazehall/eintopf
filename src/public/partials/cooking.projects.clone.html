@@ -16,7 +16,7 @@
     <div class="p0 m0 cssBox cssClone">
         <div class="bg--off-white ">
             <form class="media" id="formCloneProject">
-                <div class="media-figure color-picker-picker" style="background-color:{{value.mediabg}};">
+                <div class="media-figure color-picker-picker" style="background-color:{{project.mediabg}};">
                     <span class="cssRecipeImageWrapper cssIcon cssIconCamera small">
                         <span class="cssRecipeImageButton">
 
@@ -29,7 +29,7 @@
                         <span class="m0 py05 small">Background: </span>
                         <div class=" small">
                             <color-picker
-                                    ng-model="recipeColor"
+                                    ng-model="project.mediabg"
                                     color-picker-format="'hex'"
                                     color-picker-swatch-pos="'right'"
                             ></color-picker>
@@ -60,9 +60,9 @@
                         </div>
 
 
-                        <input type='hidden' ng-model='recipeImage' />
+                        <input type='hidden' ng-model='project.src' />
 
-                        <img ng-src="{{recipeImage}}" alt="Description" />
+                        <img ng-src="{{project.src}}" alt="Description" />
 
                         <div class="grd-row media-footer my1 txt--right">
                             <button class=" btn" ui-sref='cooking.projects.create'>Cancel</button>
