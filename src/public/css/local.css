@@ -57,7 +57,11 @@ button{
     background-color: rgba(2, 86, 95, 1.0);
     border-color: rgba(19, 103, 112, 1.0);
 }
-.cssIcon:before{
+.cssIconPlace img{
+    max-width:50px;
+
+}
+.cssIconPlace:before{
     display:inline-block;
 }
 .cssIconCamera:before{
@@ -88,12 +92,11 @@ button{
 }
 
 .cssRecipeImageButton{
-    background:url("../img/dummy_eintopf.png") no-repeat 100% 100%;
-    background-color: transparent;
     width:5rem;
     height:5rem;
     display:inline-block;
     position:relative;
+    padding:.9rem;
 }
 
 .cssRecipeImageWrapper:hover:after{
@@ -540,6 +543,9 @@ button{
 .cssBox.cssClone .media-figure .cssColorPicker{
     position:absolute;
     bottom:0;
+}
+.cssBox.cssClone .media-figure .cssColorPicker label{
+
 }
 .cssBox .media{
     position:relative;
