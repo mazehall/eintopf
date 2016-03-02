@@ -26,7 +26,7 @@
 <body>
   <div>
     <div class=" m0 media-content-input">
-      <spectrum-colorpicker ng-model="someModel"></spectrum-colorpicker>
+        <input type='file' ng-model='yourModel' base-sixty-four-input />
     </div>
   </div>
   <!-- build:remove -->
@@ -50,9 +50,10 @@
   <script src="js/controller.js"></script>
   <script src="bower_components/spectrum/spectrum.js"></script>
   <script src="bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.min.js"></script>
+  <script src="bower_components/angular-base64-upload/dist/angular-base64-upload.min.js"></script>
   <!-- endbuild -->
   <script>
-    angular.module('eintopf', ['angularSpectrumColorpicker'])
+    angular.module('eintopf', ['naif.base64'])
             .controller('ExampleController', ['$scope', function($scope) {
               $scope.url = {
                 text: 'http://google.com'

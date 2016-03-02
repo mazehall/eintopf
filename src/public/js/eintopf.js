@@ -11,7 +11,9 @@ var eintopf = angular.module('eintopf', [
   'ct.ui.router.extras.core',
   'ct.ui.router.extras.sticky',
   'ct.ui.router.extras.previous',
-  'angularSpectrumColorpicker'
+  'angularSpectrumColorpicker',
+  'color.picker',
+  'naif.base64'
 ]);
 
 eintopf.factory('currentProject', [function () {

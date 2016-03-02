@@ -15,6 +15,8 @@
     "less": "^2.6.0",
     "ui-router-extras": "^0.1.0",
     "angular-pageslide-directive": "^1.0.8",
-    "angular-spectrum-colorpicker": "^1.4.4"
+    "angular-spectrum-colorpicker": "^1.4.4",
+    "angular-color-picker": "angularjs-color-picker#^1.0.1",
+    "angular-base64-upload": "^0.1.17"
   }
 }
