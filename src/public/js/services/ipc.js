@@ -53,6 +53,7 @@ angular.module('eintopf.services.ipc', [])
 
       result = pattern;
       result.patternId = pattern.id;
+      result.patternName = pattern.name;
       result.patternUrl = pattern.url;
 
       return result;
