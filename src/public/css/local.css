@@ -9,6 +9,12 @@ body {
 button{
     outline: none;
 }
+.fa-stack-3x{
+    position:absolute;
+    top: 8px;
+    right: 0px;
+    font-size: .707em;
+}
 
 .cssHeightFull{
     height:100% !important;
@@ -20,6 +26,9 @@ button{
 }
 .cssBgGreen{
     background-color: rgba(228, 240, 232, 1.0);
+}
+.cssBgDarkGreen{
+    background-color: rgba(19, 103, 112, 1.0);
 }
 .cssBgGreenAlpha{
     background-color: rgba(228, 240, 232, 0.3);
@@ -47,6 +56,60 @@ button{
     color: #fff;
     background-color: rgba(2, 86, 95, 1.0);
     border-color: rgba(19, 103, 112, 1.0);
+}
+.cssIcon:before{
+    display:inline-block;
+}
+.cssIconCamera:before{
+    content:"\f030";
+    font-family:  FontAwesome;
+}
+.cssRecipeImageWrapper{
+    cursor:pointer;
+    display:inline-block;
+    width:5rem;
+    height:5rem;
+    position:relative;
+}
+.cssRecipeImageWrapper:before{
+    display:none;
+}
+.cssRecipeImageWrapper:hover:before{
+    display:inline-block;
+    z-index:2040;
+    position:absolute;
+    top:0rem;
+    left:35%;
+    box-sizing: border-box;
+    position:absolute;
+    color:#fff;
+    font-size: 1.5rem;
+    padding:0;
+}
+
+.cssRecipeImageButton{
+    background:url("../img/dummy_eintopf.png") no-repeat 100% 100%;
+    background-color: transparent;
+    width:5rem;
+    height:5rem;
+    display:inline-block;
+    position:relative;
+}
+
+.cssRecipeImageWrapper:hover:after{
+    content: "Change the photo";
+    border: 1px solid rgba(242, 105, 94, 1.0);
+    color:#fff;
+    background-color: rgba(2, 86, 95, .8);
+    text-decoration: none;
+    text-align: center;
+    width:5rem;
+    height:5rem;
+    position:absolute;
+    box-sizing: border-box;
+    top:0;
+    left:0;
+    padding:2rem 0 0 0;
 }
 
 .py05{
@@ -469,9 +532,14 @@ button{
     background-color:rgba(228, 240, 232, 1.0);
 }
 .cssBox.cssClone .media-figure{
-    min-height:100%;
+    min-height:30rem;
     margin-right:0;
     background-color:rgba(228, 240, 232, 1.0);
+    position:relative;
+}
+.cssBox.cssClone .media-figure .cssColorPicker{
+    position:absolute;
+    bottom:0;
 }
 .cssBox .media{
     position:relative;
