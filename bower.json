@@ -12,11 +12,11 @@
     "angular-kefir": "~1.0.0",
     "angular-scroll-glue": "2.0.6",
     "angular-marked": "~0.0.21",
-    "less": "^2.6.0",
     "ui-router-extras": "^0.1.0",
     "angular-pageslide-directive": "^1.0.8",
     "angular-spectrum-colorpicker": "^1.4.4",
     "angular-color-picker": "angularjs-color-picker#^1.0.1",
-    "angular-base64-upload": "^0.1.17"
+    "ng-electron": "develephant/ngElectron#^0.4.0",
+    "angular-images-resizer": "^1.0.2"
   }
 }

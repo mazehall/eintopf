@@ -1,6 +1,5 @@
-'use strict';
+(function() {
 
-function initElectronContextMenu() {
   var remote = require("remote");
   var Menu = remote.require("menu");
   var MenuItem = remote.require("menu-item");
@@ -58,6 +57,5 @@ function initElectronContextMenu() {
 
     return event.preventDefault();
   }, false);
-}
 
-initElectronContextMenu();
+})();

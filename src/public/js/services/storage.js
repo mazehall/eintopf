@@ -1,105 +1,108 @@
-'use strict';
+(function (ng) {
 
-angular.module("eintopf.services.storage", [])
-.factory("storage", [function () {
+  var storageModule = ng.module("eintopf.services.storage", []);
 
-  var ioEvent = Kefir.pool();
-  var streams = {};
-  var storage = {};
-  var factory = {
+  storageModule.factory("storage", [function () {
 
-    /**
-     * Returns the value of a specific key
-     *
-     * @param  {string} key
-     * @return {factory}
-     */
-    get: function (key) {
-      return storage[key] || null;
-    },
+    var ioEvent = Kefir.pool();
+    var streams = {};
+    var storage = {};
+    var factory = {
 
-    /**
-     * Sets a key/value pair
-     *
-     * @param  {string} key
-     * @param  {*} value
-     * @return {factory}
-     */
-    set: function (key, value) {
-      storage[key] = value;
-      ioEvent.plug(Kefir.constant({name: key, value: value, type: "set"}));
+      /**
+       * Returns the value of a specific key
+       *
+       * @param  {string} key
+       * @return {factory}
+       */
+      get: function (key) {
+        return storage[key] || null;
+      },
 
-      return this;
-    },
+      /**
+       * Sets a key/value pair
+       *
+       * @param  {string} key
+       * @param  {*} value
+       * @return {factory}
+       */
+      set: function (key, value) {
+        storage[key] = value;
+        ioEvent.plug(Kefir.constant({name: key, value: value, type: "set"}));
 
-    /**
-     * Unset a given key
-     *
-     * @param  {string} key
-     * @return {factory}
-     */
-    unset: function (key) {
-      if (key && storage[key]) {
-        delete(storage[key]);
-        ioEvent.plug(Kefir.constant({name: key, type: "unset"}));
-      }
+        return this;
+      },
 
-      return this;
-    },
+      /**
+       * Unset a given key
+       *
+       * @param  {string} key
+       * @return {factory}
+       */
+      unset: function (key) {
+        if (key && storage[key]) {
+          delete(storage[key]);
+          ioEvent.plug(Kefir.constant({name: key, type: "unset"}));
+        }
 
-    /**
-     * Appends a new value of a specific key
-     *
-     * @param  {string} key
-     * @param  {*} value
-     * @return {factory}
-     */
-    add: function (key, value) {
-      if (typeof storage[key] === "undefined") {
-        storage[key] = [];
-      }
+        return this;
+      },
 
-      storage[key].push(value);
-      ioEvent.plug(Kefir.constant({name: key, value: value, type: "add"}));
+      /**
+       * Appends a new value of a specific key
+       *
+       * @param  {string} key
+       * @param  {*} value
+       * @return {factory}
+       */
+      add: function (key, value) {
+        if (typeof storage[key] === "undefined") {
+          storage[key] = [];
+        }
 
-      return this;
-    },
+        storage[key].push(value);
+        ioEvent.plug(Kefir.constant({name: key, value: value, type: "add"}));
 
-    /**
-     * Notify subscribers of a given stream name
-     *
-     * @param  {string} name
-     * @return {factory}
-     */
-    notify: function (name) {
-      ioEvent.plug(Kefir.constant({name: name}));
+        return this;
+      },
 
-      return this;
-    },
+      /**
+       * Notify subscribers of a given stream name
+       *
+       * @param  {string} name
+       * @return {factory}
+       */
+      notify: function (name) {
+        ioEvent.plug(Kefir.constant({name: name}));
 
-    /**
-     * Returns a Kefir stream
-     *
-     * @param  {string} [name=null]
-     * @return {object}
-     */
-    stream: function (name) {
-      var filter = name || ".";
-      if (filter && streams[filter]) {
+        return this;
+      },
+
+      /**
+       * Returns a Kefir stream
+       *
+       * @param  {string} [name=null]
+       * @return {object}
+       */
+      stream: function (name) {
+        var filter = name || ".";
+        if (filter && streams[filter]) {
+          return streams[filter];
+        }
+
+        streams[filter] = ioEvent
+        .filter(function (store) {
+          if (name && name === store.name || typeof name === "undefined") return true;
+        })
+        .map(function (store) {
+          return factory.get(store.name);
+        });
+
         return streams[filter];
       }
+    };
 
-      streams[filter] = ioEvent
-      .filter(function (store) {
-        if (name && name === store.name || typeof name === "undefined") return true;
-      })
-      .map(function (store) {
-        return factory.get(store.name);
-      });
+    return factory;
+  }]);
 
-      return streams[filter];
-    }
-  };
-
-  return factory;
-}]);
+})(angular);
