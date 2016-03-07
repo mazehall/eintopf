@@ -11,6 +11,7 @@
       </div>
 
     </div>
+
     <div class="cssMenu p1 m0">
       <ul class="list--unstyled  p0 m0">
 
@@ -18,19 +19,27 @@
           <a class="grd-row-col-6 py2 btn--link txt--left"
              ui-sref="cooking.projects.recipe({id: '{{project.id}}'})" ui-sref-active='active'>
             <div class="media">
+
               <div class="media-body txt--left">
                 <p class="m0 p0">
                   {{project.name}}
                 </p>
               </div>
-              <div class="media-figure m0 cssProjectState">
-                <button class="small btn-round p0 running" title="Started | Click to stop" ng-click="stopProject(project);" ng-if="project.state == 'running'">
-                  <i class="fa fa-play"></i>
-                </button>
-                <button class="small btn-round p0 stopped" title="Stopped | Click to start" ng-click="startProject(project);" ng-if="project.state != 'running'">
-                  <i class="fa fa-pause"></i>
+
+              <div class="media-figure m0" ng-if="locks['projects:' + project.id]">
+                  <button class="btn-round running p0">
+                      <i class="fa fa-cog fa-spin"></i>
+                  </button>
+              </div>
+
+              <div class="media-figure m0 cssProjectState" ng-if="!locks['projects:' + project.id]">
+                <button class="small btn-round p0" ng-click="toggleStartStop(project)" ng-disabled="locked"
+                        ng-attr-title="{{ project.state? 'Started | Click to stop' : 'Stopped | Click to start'}}"
+                        ng-class="project.state? 'running' : 'stopped'">
+                    <i class="fa" ng-class="project.state? 'fa-play' : 'fa-pause'"></i>
                 </button>
               </div>
+
             </div>
           </a>
         </li>

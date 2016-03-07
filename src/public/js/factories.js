@@ -15,6 +15,40 @@
     };
   }]);
 
+  factoryModule.factory('locksFactory', ['ipc', 'locksService', function(ipc, locksService) {
+    var model = {};
+
+    model.stream = locksService.stream;
+    model.emit = locksService.emit;
+
+    model.fromProject = function(projectId) {
+      return model.stream.map(function(locks) {
+        for (var key in locks) {
+          if (locks.hasOwnProperty(key) && key == 'projects:' + projectId) return locks[key];
+        }
+        return null;
+      })
+      .filter();
+    };
+
+    // initial emit
+    model.emit();
+
+    return model;
+  }]);
+
+  factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
+    function(ipc, resProjectsList, reqProjectStart, reqProjectStop) {
+      var model = {};
+
+      model.stream = resProjectsList;
+      model.startProject = reqProjectStart.emit;
+      model.stopProject = reqProjectStop.emit;
+
+      return model;
+    }
+  ]);
+
   /**
    * original by:
    *

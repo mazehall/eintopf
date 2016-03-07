@@ -21,6 +21,17 @@
     return ipc;
   }]);
 
+  ipcModule.service('locksService', ['ipc', function (ipc) {
+    var model = {};
+
+    model.stream = ipc.toKefir('locks').toProperty();
+    model.emit = function () {
+      ipc.emit('req:locks');
+    };
+
+    return model;
+  }]);
+
   ipcModule.service('ipcGetPattern', ['ipc', function (ipc) {
     return function (id) {
       if (!id) return false;
@@ -71,7 +82,13 @@
     return ipc.toKefir('states').toProperty();
   }]);
 
-  ipcModule.service('resProjectsList', ['ipc', function (ipc) {
+  ipcModule.service('setupLiveResponse', ['ipc', function (ipc) {
+    ipc.emit('req:states');
+    return ipc.toKefir('states').toProperty();
+  }]);
+
+  ipcModule.service('resProjectsList', ['ipc', 'reqProjectList', function (ipc, reqProjectList) {
+    reqProjectList.emit();
     return ipc.toKefir('res:projects:list').toProperty();
   }]);
 
