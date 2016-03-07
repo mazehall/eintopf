@@ -92,9 +92,17 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send 'terminal:output', val
 
+  ks.fromProperty 'locks'
+  .onValue (val) ->
+    webContents.send 'locks', val.value
+
   ###############
   # listener
   ###############
+
+  ipcToKefir 'req:locks'
+  .onValue (val) ->
+    webContents.send 'locks', ks.get 'locks'
 
   ipcToKefir 'req:states'
   .onValue (val) ->

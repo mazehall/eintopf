@@ -51,25 +51,15 @@
   }]);
 
   controllerModule.controller('cookingProjectsCtrl',
-    ['$scope', '$state', 'storage', 'reqProjectList', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
-      function ($scope, $state, storage, reqProjectsList, resProjectsList, reqProjectStart, reqProjectStop) {
-        resProjectsList.$assignProperty($scope, 'projects');
-        reqProjectsList.emit();
+    ['$scope', '$state', 'storage', 'projectFactory', 'locksFactory',
+      function ($scope, $state, storage, projectFactory, locksFactory) {
+        projectFactory.stream.$assignProperty($scope, 'projects');
+        locksFactory.stream.$assignProperty($scope, 'locks');
 
-        $scope.startProject = function (project) {
-          emitStartStop(reqProjectStart, project);
-        };
-        $scope.stopProject = function (project) {
-          emitStartStop(reqProjectStop, project);
-        };
-
-        var emitStartStop = function (reqProject, project) {
-          if (!(reqProject.emit && project.id)) {
-            return false;
-          }
-
+        $scope.toggleStartStop = function (project) {
+          if (!project.id) return false;
+          project.state ? projectFactory.stopProject(project) : projectFactory.startProject(project);
           storage.set("frontend.tabs" + project.id + ".lastActive", "protocol");
-          reqProject.emit(project);
         };
       }
     ]

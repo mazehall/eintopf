@@ -16,7 +16,6 @@
     "angular-pageslide-directive": "^1.0.8",
     "angular-spectrum-colorpicker": "^1.4.4",
     "angular-color-picker": "angularjs-color-picker#^1.0.1",
-    "ng-electron": "develephant/ngElectron#^0.4.0",
     "angular-images-resizer": "^1.0.2"
   }
 }

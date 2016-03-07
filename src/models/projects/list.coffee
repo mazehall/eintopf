@@ -180,15 +180,23 @@ model.startProject = (project, callback) ->
   return callback? new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:start:#{project.id}"
 
+  ks.setChildProperty 'locks', 'projects:' + project.id, true
+
   return ks.log logName, "script start does not exist\n" unless project.scripts?["start"]
-  utilModel.runCmd project.scripts["start"], {cwd: project.path}, logName, callback
+  stream = utilModel.runCmd project.scripts["start"], {cwd: project.path}, logName, (err, stdOut) ->
+    ks.setChildProperty 'locks', 'projects:' + project.id, false
+    callback? err, stdOut
 
 model.stopProject = (project, callback) ->
   return callback? new Error 'invalid project given' if typeof project != "object" || ! project.path?
   logName = "res:project:stop:#{project.id}"
 
+  ks.setChildProperty 'locks', 'projects:' + project.id, true
+
   return ks.log logName, "script stop does not exist\n" unless project.scripts?["stop"]
-  utilModel.runCmd project.scripts["stop"], {cwd: project.path}, logName, callback
+  utilModel.runCmd project.scripts["stop"], {cwd: project.path}, logName, (err, stdOut) ->
+    ks.setChildProperty 'locks', 'projects:' + project.id, false
+    callback? err, stdOut
 
 model.updateProject = (project, callback) ->
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
