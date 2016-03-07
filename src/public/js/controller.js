@@ -152,13 +152,15 @@
   }]);
 
   controllerModule.controller('recipeCtrl',
-    ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'reqContainerActions', 'reqContainersList', 'resContainersLog',
-      function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, reqContainerActions, reqContainersList, resContainersLog) {
+    ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'reqContainerActions', 'reqContainersList', 'resContainersLog', 'locksFactory',
+      function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, reqContainerActions, reqContainersList, resContainersLog, locksFactory) {
         $scope.project = {
           id: $stateParams.id
         };
         $scope.loading = false;
         $scope.logs = [];
+
+        locksFactory.assignFromProject($stateParams.id, $scope, 'locked');
 
         resProjectStart.fromProject($stateParams.id);
         resProjectStop.fromProject($stateParams.id);
@@ -176,16 +178,6 @@
           $scope.logs.push(val);
         });
 
-        $scope.startProject = function (project) {
-          $scope.loading = true;
-          $scope.result = {};
-          reqProjectStart.emit(project);
-        };
-        $scope.stopProject = function (project) {
-          $scope.loading = true;
-          $scope.result = {};
-          reqProjectStop.emit(project);
-        };
         $scope.deleteProject = function (project) {
           reqProjectDelete.emit(project);
           resProjectDelete.fromProject($stateParams.id).onValue(function () {
@@ -199,30 +191,6 @@
           resProjectUpdate.fromProject($stateParams.id);
         };
         currentProject.setProjectId($stateParams.id);
-
-        /**
-         * Tab section
-         */
-
-        storage.stream("frontend.tabs" + $stateParams.id + ".lastActive").onValue(function (tab) {
-          $scope.currentTab = tab;
-        });
-
-        $scope.currentTab = storage.get("frontend.tabs" + $stateParams.id + ".lastActive") || "readme";
-        $scope.onClickTab = function (tab) {
-          storage.set("frontend.tabs" + $stateParams.id + ".lastActive", tab);
-        };
-
-        storage.stream("project.log.complete." + $stateParams.id).map(function (value) {
-          return value && value.join("").replace(/\n/ig, "<br>");
-        }).$assignProperty($scope, "protocol");
-        storage.notify("project.log.complete." + $stateParams.id);
-
-        $scope.$fromWatch("project.readme").skip(1).onValue(function (value) {
-          if (value.newValue.length === 0 || storage.get("project.log.complete." + $stateParams.id)) {
-            return $scope.currentTab = "protocol";
-          }
-        });
 
         $scope.doAction = function (project, action) {
           project.action = action;
@@ -245,6 +213,32 @@
           if (typeof container.id != "string") return false;
           reqContainerActions.remove(container.id);
         };
+
+        /**
+         * Tab section
+         */
+        $scope.currentTab = storage.get("frontend.tabs" + $stateParams.id + ".lastActive") || "readme";
+        storage.stream("frontend.tabs" + $stateParams.id + ".lastActive").onValue(function (tab) {
+          $scope.currentTab = tab;
+        });
+
+        $scope.onClickTab = function (tab) {
+          storage.set("frontend.tabs" + $stateParams.id + ".lastActive", tab);
+        };
+
+        /**
+         * Log post format
+         */
+        storage.stream("project.log.complete." + $stateParams.id).map(function (value) {
+          return value && value.join("").replace(/\n/ig, "<br>");
+        }).$assignProperty($scope, "protocol");
+        storage.notify("project.log.complete." + $stateParams.id);
+
+        $scope.$fromWatch("project.readme").skip(1).onValue(function (value) {
+          if (value.newValue.length === 0 || storage.get("project.log.complete." + $stateParams.id)) {
+            return $scope.currentTab = "protocol";
+          }
+        });
 
       }
     ]

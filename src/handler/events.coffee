@@ -181,12 +181,12 @@ handleEvents = (webContents) ->
   ipcToKefir 'project:start'
   .filter (x) -> x if x.value?.id?
   .onValue (x) ->
-    projectsModel.startProject x.value
+    projectsModel.startProject x.value.id
 
   ipcToKefir 'project:stop'
   .filter (x) -> x if x.value?.id?
   .onValue (x) ->
-    projectsModel.stopProject x.value
+    projectsModel.stopProject x.value.id
 
   ipcToKefir 'project:delete'
   .filter (x) -> x if x.value?.id?
@@ -199,9 +199,9 @@ handleEvents = (webContents) ->
     projectsModel.updateProject x.value, () ->
 
   ipcToKefir 'project:action:script'
-  .filter (x) -> x if x.value?.id? && x.value.action?
+  .filter (x) -> x if x.value?.id? && x.value.action?.script
   .onValue (x) ->
-    projectsModel.callAction x.value, x.value.action
+    projectsModel.callAction x.value.id, x.value.action.script
 
   ipcToKefir 'container:start'
   .filter (x) -> typeof x.value == "string"

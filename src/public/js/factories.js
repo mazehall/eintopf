@@ -26,9 +26,25 @@
         for (var key in locks) {
           if (locks.hasOwnProperty(key) && key == 'projects:' + projectId) return locks[key];
         }
-        return null;
+        return false;
+      });
+    };
+    model.assignFromProject = function(projectId, scope, property) {
+      var pool = Kefir.pool();
+      pool.map(function(locks) {
+        for (var key in locks) {
+          if (locks.hasOwnProperty(key) && key == 'projects:' + projectId) return locks[key];
+        }
+        return false;
       })
-      .filter();
+      .$assignProperty(scope, property);
+
+      scope.$on('$destroy', function() {
+        pool.unplug(model.stream);
+        delete pool; // cleanup pool?
+      });
+
+      pool.plug(model.stream);
     };
 
     // initial emit

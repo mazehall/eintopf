@@ -4,11 +4,17 @@
         <div class="grd-row-col-3-6 px2">
             <h4 class="m0 p0 bold fnt-eintopf-darkgreen">
                 {{project.name}}
-
             </h4>
-            <b class="small p0 m0 "  ng-if="apps.length"> Project is running</b>
-            <b class="small p0 m0 fnt-eintopf-red" ng-if="!apps.length"> Project is stopped</b>
+
+          <div class="p0 m0" ng-if="locked">
+              <i class="fa fa-cog fa-spin"></i>
+          </div>
+
+          <b class="small p0 m0" ng-if="!locked" ng-class="{ 'fnt-eintopf-red' : !apps.length}">
+            {{ apps.length? 'Project is running' : 'Project is stopped' }}
+          </b>
         </div>
+
         <div class="grd-row-col-3-6 px2">
             <h4 class="m0 p0">Description</h4>
             <small class="m0 p0">
@@ -56,8 +62,10 @@
                                 <small>Fetch new version</small>
                             </div>
                             <div class="mx1 txt--right grd-row-col-1-6">
-                                <a href="" class="btn small" ng-click="updateProject(project); currentTab = 'protocol';">
-                                <i class="fa fa-play-circle"></i><span> go!</span></a>
+                                <button href="" class="btn small" ng-click="updateProject(project); currentTab = 'protocol';"
+                                   ng-disabled="locked">
+                                  <i class="fa fa-play-circle"></i><span> go!</span>
+                                </button>
                             </div>
                         </li>
 
@@ -67,8 +75,10 @@
                                 <small>Removes project description from listing</small>
                             </div>
                             <div class="mx1 txt--right grd-row-col-1-6">
-                                <a href="" class="btn small" ng-click="deleteProject(project)">
-                                <i class="fa fa-play-circle"></i><span> go!</span></a>
+                                <button href="" class="btn small" ng-click="deleteProject(project)"
+                                   ng-disabled="locked">
+                                  <i class="fa fa-play-circle"></i><span> go!</span>
+                                </button>
                             </div>
                         </li>
 
@@ -78,7 +88,10 @@
                                 <small>{{action.warning}}</small>
                             </div>
                             <div class="mx1 txt--right grd-row-col-1-6">
-                                <a href="" class="btn small" ng-click="doAction(project, action)"><i class="fa fa-play-circle"></i><span> go!</span></a>
+                                <button href="" class="btn small" ng-click="doAction(project, action)"
+                                   ng-disabled="locked">
+                                  <i class="fa fa-play-circle"></i><span> go!</span>
+                                </button>
                             </div>
                         </li>
                     </ul>
