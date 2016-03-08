@@ -10,7 +10,7 @@
   },
   "proxy": {
     "name": "proxy",
-    "Image": "mazelab/nginx-proxy:1.0.1",
+    "Image": "mazelab/nginx-proxy:1.0.2",
     "HostConfig": {
       "RestartPolicy": { "Name": "always" },
       "PortBindings": {
