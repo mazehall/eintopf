@@ -1,4 +1,6 @@
 Dockerrode = require 'dockerode'
+_r = require 'kefir'
+ks = require 'kefir-storage'
 
 
 model = {}
@@ -18,13 +20,49 @@ model.inspect = (name, callback) ->
   model.getContainer(name).inspect callback
 
 model.startContainer = (name, callback) ->
-  model.getContainer(name).start callback
+  return callback new Error 'Container action already running' if ks.getChildProperty 'locks', 'containers:' + name
+
+  ks.setChildProperty 'locks', 'containers:' + name, true
+
+  _r.fromNodeCallback (cb) ->
+    model.getContainer(name).start cb
+  .flatMap -> # revert locks after next list update to sync view
+    ks.fromProperty('containers:list').take(1)
+  .onAny ->
+    ks.setChildProperty 'locks', 'containers:' + name, false
+  .onError callback
+  .onValue (val) ->
+    callback null, val
 
 model.stopContainer = (name, callback) ->
-  model.getContainer(name).stop callback
+  return callback new Error 'Container action already running' if ks.getChildProperty 'locks', 'containers:' + name
+
+  ks.setChildProperty 'locks', 'containers:' + name, true
+
+  _r.fromNodeCallback (cb) ->
+    model.getContainer(name).stop cb
+  .flatMap -> # revert locks after next list update to sync view
+    ks.fromProperty('containers:list').take(1)
+  .onAny ->
+    ks.setChildProperty 'locks', 'containers:' + name, false
+  .onError callback
+  .onValue (val) ->
+    callback null, val
 
 model.removeContainer = (name, callback) ->
-  model.getContainer(name).remove callback
+  return callback new Error 'Container action already running' if ks.getChildProperty 'locks', 'containers:' + name
+
+  ks.setChildProperty 'locks', 'containers:' + name, true
+
+  _r.fromNodeCallback (cb) ->
+    model.getContainer(name).remove cb
+  .flatMap -> # revert locks after next list update to sync view
+    ks.fromProperty('containers:list').take(1)
+  .onAny ->
+    ks.setChildProperty 'locks', 'containers:' + name, false
+  .onError callback
+  .onValue (val) ->
+    callback null, val
 
 model.pull = (image, config, callback) ->
   config = {} if ! config

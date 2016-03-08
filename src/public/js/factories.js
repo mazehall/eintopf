@@ -15,36 +15,21 @@
     };
   }]);
 
-  factoryModule.factory('locksFactory', ['ipc', 'locksService', function(ipc, locksService) {
+  factoryModule.factory('lockFactory', ['ipc', 'lockService', function(ipc, lockService) {
     var model = {};
 
-    model.stream = locksService.stream;
-    model.emit = locksService.emit;
+    model.stream = lockService.stream;
+    model.emit = lockService.emit;
 
-    model.fromProject = function(projectId) {
-      return model.stream.map(function(locks) {
-        for (var key in locks) {
-          if (locks.hasOwnProperty(key) && key == 'projects:' + projectId) return locks[key];
-        }
-        return false;
-      });
-    };
     model.assignFromProject = function(projectId, scope, property) {
-      var pool = Kefir.pool();
-      pool.map(function(locks) {
+      ipc.toKefirDestroyable(scope, model.stream)
+      .map(function(locks) {
         for (var key in locks) {
           if (locks.hasOwnProperty(key) && key == 'projects:' + projectId) return locks[key];
         }
         return false;
       })
       .$assignProperty(scope, property);
-
-      scope.$on('$destroy', function() {
-        pool.unplug(model.stream);
-        delete pool; // cleanup pool?
-      });
-
-      pool.plug(model.stream);
     };
 
     // initial emit
@@ -64,6 +49,36 @@
       return model;
     }
   ]);
+
+  factoryModule.factory('containerFactory',
+    ['ipc', 'resContainersList', 'reqContainersList', 'reqContainerStart', 'reqContainerStop', 'reqContainerRemove', 'resContainersLog',
+      function(ipc, resContainersList, reqContainersList,reqContainerStart, reqContainerStop, reqContainerRemove, resContainersLog) {
+        var model = {};
+
+        model.stream = resContainersList;
+        model.logStream = resContainersLog;
+        model.emit = reqContainersList.emit;
+        model.startContainer = reqContainerStart.emit;
+        model.stopContainer = reqContainerStop.emit;
+        model.removeContainer = reqContainerRemove.emit;
+
+        model.pushFromLogs = function(scope, property) {
+          scope[property] = [];
+
+          ipc.toKefirDestroyable(scope, resContainersLog)
+          .filter(function (x) {
+            if (x.message) return true;
+          })
+          .onValue(function (val) {
+            val.read = false;
+            scope[property].push(val);
+          });
+        };
+
+        return model;
+      }
+    ]
+  );
 
   /**
    * original by:

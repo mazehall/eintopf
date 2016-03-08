@@ -18,10 +18,24 @@
       ipcRenderer.send(eventName, value);
     };
 
+    // use scope.on 'destroy' to dismiss the stream
+    ipc.toKefirDestroyable = function(scope, stream) {
+      if (typeof stream == 'string') stream = ipc.toKefir(stream);
+      var pool = Kefir.pool();
+
+      scope.$on('$destroy', function() {
+        pool.unplug(stream);
+        delete pool; // cleanup pool?
+      });
+
+      pool.plug(stream);
+      return pool;
+    };
+
     return ipc;
   }]);
 
-  ipcModule.service('locksService', ['ipc', function (ipc) {
+  ipcModule.service('lockService', ['ipc', function (ipc) {
     var model = {};
 
     model.stream = ipc.toKefir('locks').toProperty();
@@ -190,6 +204,30 @@
     }
   }]);
 
+  ipcModule.service('reqContainerStart', ['ipc', function (ipc) {
+    return {
+      emit: function (containerId) {
+        ipc.emit('container:start', containerId);
+      }
+    }
+  }]);
+
+  ipcModule.service('reqContainerStop', ['ipc', function (ipc) {
+    return {
+      emit: function (containerId) {
+        ipc.emit('container:stop', containerId);
+      }
+    }
+  }]);
+
+  ipcModule.service('reqContainerRemove', ['ipc', function (ipc) {
+    return {
+      emit: function (containerId) {
+        ipc.emit('container:remove', containerId);
+      }
+    }
+  }]);
+
   ipcModule.service('reqContainersList', ['ipc', function (ipc) {
     return {
       emit: function (data) {
@@ -231,11 +269,8 @@
   }]);
 
   ipcModule.service('resContainersList', ['ipc', 'reqContainersList', function (ipc, reqContainersList) {
-    var containerList_ = ipc.toKefir('res:containers:list').toProperty();
     reqContainersList.emit();
-    containerList_.onValue(function () {
-    });
-    return containerList_;
+    return ipc.toKefir('res:containers:list').toProperty();
   }]);
 
   ipcModule.service('resContainersInspect', ['ipc', 'reqContainersInspect', function (ipc, reqContainersInspect) {

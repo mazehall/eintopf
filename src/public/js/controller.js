@@ -51,10 +51,10 @@
   }]);
 
   controllerModule.controller('cookingProjectsCtrl',
-    ['$scope', '$state', 'storage', 'projectFactory', 'locksFactory',
-      function ($scope, $state, storage, projectFactory, locksFactory) {
+    ['$scope', '$state', 'storage', 'projectFactory', 'lockFactory',
+      function ($scope, $state, storage, projectFactory, lockFactory) {
         projectFactory.stream.$assignProperty($scope, 'projects');
-        locksFactory.stream.$assignProperty($scope, 'locks');
+        lockFactory.stream.$assignProperty($scope, 'locks');
 
         $scope.toggleStartStop = function (project) {
           if (!project.id) return false;
@@ -117,31 +117,21 @@
   }]);
 
   controllerModule.controller('panelContainersCtrl',
-    ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
-      function ($scope, resContainersList, reqContainerActions, resContainersLog) {
-        resContainersList.$assignProperty($scope, 'containers');
-
+    ['$scope', 'resContainersList', 'resContainersLog', 'lockFactory', 'containerFactory',
+      function ($scope, resContainersList, resContainersLog, lockFactory, containerFactory) {
         $scope.logs = [];
-        resContainersLog
-        .filter(function (x) {
-          if (x.message) return x;
-        })
-        .onValue(function (val) {
-          val.read = false;
-          $scope.logs.push(val);
-        });
 
-        $scope.startContainer = function (container) {
+        containerFactory.stream.$assignProperty($scope, 'containers');
+        lockFactory.stream.$assignProperty($scope, 'locks');
+        containerFactory.pushFromLogs($scope, 'logs');
+
+        $scope.removeContainer = function(container) {
           if (typeof container.id != "string") return false;
-          reqContainerActions.start(container.id);
+          containerFactory.removeContainer(container.id);
         };
-        $scope.stopContainer = function (container) {
+        $scope.toggleStartStop = function (container) {
           if (typeof container.id != "string") return false;
-          reqContainerActions.stop(container.id);
-        };
-        $scope.removeContainer = function (container) {
-          if (typeof container.id != "string") return false;
-          reqContainerActions.remove(container.id);
+          container.running ? containerFactory.stopContainer(container.id) : containerFactory.startContainer(container.id);
         };
       }
     ]
@@ -152,15 +142,15 @@
   }]);
 
   controllerModule.controller('recipeCtrl',
-    ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'reqContainerActions', 'reqContainersList', 'resContainersLog', 'locksFactory',
-      function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, reqContainerActions, reqContainersList, resContainersLog, locksFactory) {
+    ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'containerFactory', 'reqContainersList', 'resContainersLog', 'lockFactory',
+      function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, containerFactory, reqContainersList, resContainersLog, lockFactory) {
         $scope.project = {
           id: $stateParams.id
         };
         $scope.loading = false;
         $scope.logs = [];
 
-        locksFactory.assignFromProject($stateParams.id, $scope, 'locked');
+        lockFactory.assignFromProject($stateParams.id, $scope, 'locked');
 
         resProjectStart.fromProject($stateParams.id);
         resProjectStop.fromProject($stateParams.id);
@@ -199,19 +189,16 @@
           $scope.currentTab = "protocol"
         };
 
-        $scope.startContainer = function (container) {
+        /**
+         * Container section
+         */
+        $scope.removeContainer = function(container) {
           if (typeof container.id != "string") return false;
-          reqContainerActions.start(container.id);
+          containerFactory.removeContainer(container.id);
         };
-
-        $scope.stopContainer = function (container) {
+        $scope.toggleStartStop = function (container) {
           if (typeof container.id != "string") return false;
-          reqContainerActions.stop(container.id);
-        };
-
-        $scope.removeContainer = function (container) {
-          if (typeof container.id != "string") return false;
-          reqContainerActions.remove(container.id);
+          container.running ? containerFactory.stopContainer(container.id) : containerFactory.startContainer(container.id);
         };
 
         /**
