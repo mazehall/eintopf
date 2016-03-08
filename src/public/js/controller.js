@@ -143,20 +143,16 @@
 
   //@todo seperate tabs into states
   controllerModule.controller('recipeCtrl',
-    ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'containerFactory', 'reqContainersList', 'resContainersLog', 'lockFactory',
-      function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, containerFactory, reqContainersList, resContainersLog, lockFactory) {
-        $scope.project = {
-          id: $stateParams.id
-        };
-        $scope.logs = [];
-
+    ['$scope', '$stateParams', '$state', 'storage', 'resProjectStart','resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'containerFactory', 'lockFactory', 'appFactory', 'projectFactory',
+      function ($scope, $stateParams, $state, storage, resProjectStart, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, containerFactory, lockFactory, appFactory, projectFactory) {
+        projectFactory.assignFromProject($stateParams.id, $scope, 'project');
         lockFactory.assignFromProject($stateParams.id, $scope, 'locked');
+        currentProject.setProjectId($stateParams.id);
 
         resProjectStart.fromProject($stateParams.id);
         resProjectStop.fromProject($stateParams.id);
-        resProjectDetail.fromProject($stateParams.id).$assignProperty($scope, 'project');
-        reqProjectDetail.emit($stateParams.id);
-        resProjectDetail.listApps($scope.project.id).$assignProperty($scope, "apps");
+
+        $scope.updateProject = projectFactory.updateProject;
 
         $scope.deleteProject = function (project) {
           reqProjectDelete.emit(project);
@@ -166,18 +162,17 @@
           });
         };
 
-        $scope.updateProject = function (project) {
-          reqProjectUpdate.emit(project);
-          resProjectUpdate.fromProject($stateParams.id);
-        };
-        currentProject.setProjectId($stateParams.id);
-
         $scope.doAction = function (project, action) {
           project.action = action;
           reqProjectAction.emit(project);
           resProjectAction.fromProject($stateParams.id);
           $scope.currentTab = "protocol"
         };
+
+        /**
+         * Apps section
+         */
+        appFactory.assignFromProject($stateParams.id, $scope, "apps");
 
         /**
          * Container section

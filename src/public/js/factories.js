@@ -38,13 +38,58 @@
     return model;
   }]);
 
-  factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
-    function(ipc, resProjectsList, reqProjectStart, reqProjectStop) {
+  // @todo simplify logging
+  factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectList', 'reqProjectStart', 'reqProjectStop', 'reqProjectDetail', 'reqProjectUpdate', 'resProjectUpdate',
+    function(ipc, resProjectsList, reqProjectList, reqProjectStart, reqProjectStop, reqProjectDetail, reqProjectUpdate, resProjectUpdate) {
       var model = {};
 
       model.stream = resProjectsList;
+      model.emit = reqProjectList.emit;
+      model.emitProject = reqProjectDetail.emit;
       model.startProject = reqProjectStart.emit;
       model.stopProject = reqProjectStop.emit;
+
+      model.updateProject = function (project) {
+        reqProjectUpdate.emit(project);
+        resProjectUpdate.fromProject(project.id); // logging
+      };
+
+      model.assignFromProject = function(projectId, scope, property) {
+        reqProjectDetail.emit(projectId);
+        return ipc.toKefirDestroyable(scope, ipc.toKefir('res:project:detail:' + projectId))
+        .$assignProperty(scope, property);
+      };
+
+      //initial emit
+      //model.emit();
+
+      return model;
+    }
+  ]);
+
+  factoryModule.factory('appFactory', ['ipc', 'resAppsList', 'reqAppsList',
+    function(ipc, resAppsList, reqAppsList) {
+      var model = {};
+
+      model.stream = resAppsList;
+      model.emit = reqAppsList.emit;
+
+      model.assignFromProject = function(projectId, scope, property) {
+        ipc.toKefirDestroyable(scope, model.stream)
+        .map(function (apps) {
+          var mappedApps = [];
+
+          for (var key in apps) {
+            if (apps[key]['running'] && apps[key]['project'] == projectId) mappedApps.push(apps[key]);
+          }
+
+          return mappedApps;
+        })
+        .$assignProperty(scope, property);
+      };
+
+       //initial emit
+      //model.emit();
 
       return model;
     }
