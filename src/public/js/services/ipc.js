@@ -406,50 +406,6 @@
     }
   }]);
 
-  ipcModule.factory('resProjectDetail', ['ipc', 'resContainersList', 'resContainersLog', 'resAppsList', 'resContainersInspect', function (ipc, resContainersList, resContainersLog, resAppsList, resContainersInspect) {
-    return {
-      fromProject: function (project) {
-        return ipc.toKefir('res:project:detail:' + project);
-      },
-      listContainers: function (project) {
-        return Kefir.combine([resContainersList, resContainersInspect])
-        .throttle(2000)
-        .map(function (value) {
-          var mappedContainers = {};
-          var containers = value[1];
 
-          for (var key in containers) {
-            if (containers[key] && containers[key].project && containers[key].project == project) {
-              mappedContainers[containers[key].Id] = containers[key];
-            }
-          }
-
-          value[1] = mappedContainers;
-          return value;
-        })
-        .map(function (value) {
-          var mappedContainers = {};
-          var containers = value[0];
-
-          for (var key in containers) {
-            if (value[1][containers[key].Id]) mappedContainers[containers[key].name] = containers[key];
-          }
-
-          return mappedContainers;
-        });
-      },
-      listApps: function (project) {
-        return resAppsList.map(function (apps) {
-          var mappedApps = [];
-
-          for (var key in apps) {
-            if (apps[key]['running'] && apps[key]['project'] == project) mappedApps.push(apps[key]);
-          }
-
-          return mappedApps
-        });
-      }
-    }
-  }]);
 
 })(angular);

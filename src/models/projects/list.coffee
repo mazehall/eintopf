@@ -26,8 +26,6 @@ dirEmitter = (path) ->
       emitter.end()
 
 model = {};
-model.getList = () ->
-  return ks.get 'projects:list'
 
 model.getProject = (id) ->
   for own d, i of ks.get 'projects:list'
@@ -125,7 +123,7 @@ model.loadProject = (projectPath, callback) ->
     project['readme'] = result[1] || ''
     project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
 
-    # keep existing running states
+    # keep existing checked states
     (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in ks.get 'projects:list'
 
     if result[2]

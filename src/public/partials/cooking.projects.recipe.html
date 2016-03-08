@@ -37,8 +37,8 @@
                     <p class="txt--center m0">Readme</p>
                 </li>
                 <li class="grd-row-col-1-6 tab_containers" ng-click="onClickTab('containers')"
-                    ng-class="{cssActive: currentTab =='containers'}" ng-if="containers && containerLength">
-                    <p class="txt--center m0">Containers ({{containerLength}})</p>
+                    ng-class="{cssActive: currentTab =='containers'}" ng-if="containers && containers.length">
+                    <p class="txt--center m0">Containers ({{containers.length}})</p>
                 </li>
                 <li class="grd-row-col-1-6 tab_running_apps" ng-click="onClickTab('apps')"
                     ng-class="{cssActive: currentTab =='apps'}" ng-if="apps && apps.length">
@@ -47,7 +47,7 @@
             </ul>
 
             <div class="grd-row p0 m0 cssBorderWhitoutTop">
-                <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-glue="!pageSlide" ng-show="currentTab == 'protocol'">
+                <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-glue="!pageSlide && currentTab == 'protocol'" ng-show="currentTab == 'protocol'">
                     <div class="fnt--off-white" marked="protocol"></div>
                 </div>
 

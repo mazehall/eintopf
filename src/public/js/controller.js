@@ -141,13 +141,13 @@
     resSettingsList.$assignProperty($scope, 'settings');
   }]);
 
+  //@todo seperate tabs into states
   controllerModule.controller('recipeCtrl',
     ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'containerFactory', 'reqContainersList', 'resContainersLog', 'lockFactory',
       function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, containerFactory, reqContainersList, resContainersLog, lockFactory) {
         $scope.project = {
           id: $stateParams.id
         };
-        $scope.loading = false;
         $scope.logs = [];
 
         lockFactory.assignFromProject($stateParams.id, $scope, 'locked');
@@ -157,16 +157,6 @@
         resProjectDetail.fromProject($stateParams.id).$assignProperty($scope, 'project');
         reqProjectDetail.emit($stateParams.id);
         resProjectDetail.listApps($scope.project.id).$assignProperty($scope, "apps");
-        resProjectDetail.listContainers($scope.project.id).onValue(function (containers) {
-          $scope.containerLength = Object.keys(containers).length;
-        }).$assignProperty($scope, "containers");
-        reqContainersList.emit();
-        resContainersLog.filter(function (x) {
-          if (x.message) return x;
-        }).onValue(function (val) {
-          val.read = false;
-          $scope.logs.push(val);
-        });
 
         $scope.deleteProject = function (project) {
           reqProjectDelete.emit(project);
@@ -192,6 +182,9 @@
         /**
          * Container section
          */
+        containerFactory.assignFromProject($stateParams.id, $scope, 'containers');
+        containerFactory.pushFromLogs($scope, 'logs');
+
         $scope.removeContainer = function(container) {
           if (typeof container.id != "string") return false;
           containerFactory.removeContainer(container.id);
