@@ -1,3 +1,9 @@
+## 1.2.2
+
+Changed:
+
+- upgraded eintopf proxy to version 1.0.2
+
 ## 1.2.1
 
 Fixed:
