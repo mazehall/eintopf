@@ -49,8 +49,8 @@ model.run = () ->
     ks.setChildProperty 'states:live', 'setupVagrantVM', true
     ks.setChildProperty 'states:live', 'state', 'cooking'
   .onError (err) ->
-    ks.setChildProperty 'states:live', 'setupVagrantFile', 'failed' if states.setupVagrantFile == false
-    ks.setChildProperty 'states:live', 'setupVagrantVM', 'failed' if states.setupVagrantVM == false
+    ks.setChildProperty 'states:live', 'setupVagrantFile', 'failed' if states.setupVagrantFile != true
+    ks.setChildProperty 'states:live', 'setupVagrantVM', 'failed'
     ks.setChildProperty 'states:live', 'setupError', err.message
   .onEnd () ->
     inSetup = false

@@ -51,10 +51,10 @@
   }]);
 
   controllerModule.controller('cookingProjectsCtrl',
-    ['$scope', '$state', 'storage', 'projectFactory', 'locksFactory',
-      function ($scope, $state, storage, projectFactory, locksFactory) {
+    ['$scope', '$state', 'storage', 'projectFactory', 'lockFactory',
+      function ($scope, $state, storage, projectFactory, lockFactory) {
         projectFactory.stream.$assignProperty($scope, 'projects');
-        locksFactory.stream.$assignProperty($scope, 'locks');
+        lockFactory.stream.$assignProperty($scope, 'locks');
 
         $scope.toggleStartStop = function (project) {
           if (!project.id) return false;
@@ -117,31 +117,21 @@
   }]);
 
   controllerModule.controller('panelContainersCtrl',
-    ['$scope', 'resContainersList', 'reqContainerActions', 'resContainersLog',
-      function ($scope, resContainersList, reqContainerActions, resContainersLog) {
-        resContainersList.$assignProperty($scope, 'containers');
-
+    ['$scope', 'resContainersList', 'resContainersLog', 'lockFactory', 'containerFactory',
+      function ($scope, resContainersList, resContainersLog, lockFactory, containerFactory) {
         $scope.logs = [];
-        resContainersLog
-        .filter(function (x) {
-          if (x.message) return x;
-        })
-        .onValue(function (val) {
-          val.read = false;
-          $scope.logs.push(val);
-        });
 
-        $scope.startContainer = function (container) {
+        containerFactory.stream.$assignProperty($scope, 'containers');
+        lockFactory.stream.$assignProperty($scope, 'locks');
+        containerFactory.pushFromLogs($scope, 'logs');
+
+        $scope.removeContainer = function(container) {
           if (typeof container.id != "string") return false;
-          reqContainerActions.start(container.id);
+          containerFactory.removeContainer(container.id);
         };
-        $scope.stopContainer = function (container) {
+        $scope.toggleStartStop = function (container) {
           if (typeof container.id != "string") return false;
-          reqContainerActions.stop(container.id);
-        };
-        $scope.removeContainer = function (container) {
-          if (typeof container.id != "string") return false;
-          reqContainerActions.remove(container.id);
+          container.running ? containerFactory.stopContainer(container.id) : containerFactory.startContainer(container.id);
         };
       }
     ]
@@ -151,41 +141,19 @@
     resSettingsList.$assignProperty($scope, 'settings');
   }]);
 
+  //@todo seperate tabs into states
   controllerModule.controller('recipeCtrl',
-    ['$scope', '$stateParams', '$state', 'storage', 'reqProjectDetail', 'resProjectDetail', 'reqProjectStart', 'resProjectStart', 'reqProjectStop', 'resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'reqContainerActions', 'reqContainersList', 'resContainersLog',
-      function ($scope, $stateParams, $state, storage, reqProjectDetail, resProjectDetail, reqProjectStart, resProjectStart, reqProjectStop, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, reqContainerActions, reqContainersList, resContainersLog) {
-        $scope.project = {
-          id: $stateParams.id
-        };
-        $scope.loading = false;
-        $scope.logs = [];
+    ['$scope', '$stateParams', '$state', 'storage', 'resProjectStart','resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'containerFactory', 'lockFactory', 'appFactory', 'projectFactory',
+      function ($scope, $stateParams, $state, storage, resProjectStart, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, containerFactory, lockFactory, appFactory, projectFactory) {
+        projectFactory.assignFromProject($stateParams.id, $scope, 'project');
+        lockFactory.assignFromProject($stateParams.id, $scope, 'locked');
+        currentProject.setProjectId($stateParams.id);
 
         resProjectStart.fromProject($stateParams.id);
         resProjectStop.fromProject($stateParams.id);
-        resProjectDetail.fromProject($stateParams.id).$assignProperty($scope, 'project');
-        reqProjectDetail.emit($stateParams.id);
-        resProjectDetail.listApps($scope.project.id).$assignProperty($scope, "apps");
-        resProjectDetail.listContainers($scope.project.id).onValue(function (containers) {
-          $scope.containerLength = Object.keys(containers).length;
-        }).$assignProperty($scope, "containers");
-        reqContainersList.emit();
-        resContainersLog.filter(function (x) {
-          if (x.message) return x;
-        }).onValue(function (val) {
-          val.read = false;
-          $scope.logs.push(val);
-        });
 
-        $scope.startProject = function (project) {
-          $scope.loading = true;
-          $scope.result = {};
-          reqProjectStart.emit(project);
-        };
-        $scope.stopProject = function (project) {
-          $scope.loading = true;
-          $scope.result = {};
-          reqProjectStop.emit(project);
-        };
+        $scope.updateProject = projectFactory.updateProject;
+
         $scope.deleteProject = function (project) {
           reqProjectDelete.emit(project);
           resProjectDelete.fromProject($stateParams.id).onValue(function () {
@@ -194,25 +162,48 @@
           });
         };
 
-        $scope.updateProject = function (project) {
-          reqProjectUpdate.emit(project);
-          resProjectUpdate.fromProject($stateParams.id);
+        $scope.doAction = function (project, action) {
+          project.action = action;
+          reqProjectAction.emit(project);
+          resProjectAction.fromProject($stateParams.id);
+          $scope.currentTab = "protocol"
         };
-        currentProject.setProjectId($stateParams.id);
+
+        /**
+         * Apps section
+         */
+        appFactory.assignFromProject($stateParams.id, $scope, "apps");
+
+        /**
+         * Container section
+         */
+        containerFactory.assignFromProject($stateParams.id, $scope, 'containers');
+        containerFactory.pushFromLogs($scope, 'logs');
+
+        $scope.removeContainer = function(container) {
+          if (typeof container.id != "string") return false;
+          containerFactory.removeContainer(container.id);
+        };
+        $scope.toggleStartStop = function (container) {
+          if (typeof container.id != "string") return false;
+          container.running ? containerFactory.stopContainer(container.id) : containerFactory.startContainer(container.id);
+        };
 
         /**
          * Tab section
          */
-
+        $scope.currentTab = storage.get("frontend.tabs" + $stateParams.id + ".lastActive") || "readme";
         storage.stream("frontend.tabs" + $stateParams.id + ".lastActive").onValue(function (tab) {
           $scope.currentTab = tab;
         });
 
-        $scope.currentTab = storage.get("frontend.tabs" + $stateParams.id + ".lastActive") || "readme";
         $scope.onClickTab = function (tab) {
           storage.set("frontend.tabs" + $stateParams.id + ".lastActive", tab);
         };
 
+        /**
+         * Log post format
+         */
         storage.stream("project.log.complete." + $stateParams.id).map(function (value) {
           return value && value.join("").replace(/\n/ig, "<br>");
         }).$assignProperty($scope, "protocol");
@@ -223,28 +214,6 @@
             return $scope.currentTab = "protocol";
           }
         });
-
-        $scope.doAction = function (project, action) {
-          project.action = action;
-          reqProjectAction.emit(project);
-          resProjectAction.fromProject($stateParams.id);
-          $scope.currentTab = "protocol"
-        };
-
-        $scope.startContainer = function (container) {
-          if (typeof container.id != "string") return false;
-          reqContainerActions.start(container.id);
-        };
-
-        $scope.stopContainer = function (container) {
-          if (typeof container.id != "string") return false;
-          reqContainerActions.stop(container.id);
-        };
-
-        $scope.removeContainer = function (container) {
-          if (typeof container.id != "string") return false;
-          reqContainerActions.remove(container.id);
-        };
 
       }
     ]

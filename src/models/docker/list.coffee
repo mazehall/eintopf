@@ -4,13 +4,17 @@ ks = require 'kefir-storage'
 DockerModel = require '.'
 utilModel = require '../util/index.coffee'
 
+# keep mapping for swift reuse with container list
+projectToContainerMapping = {}
 
 model = {}
 
 # maps container data
 model.mapInspectData = (container) ->
+  projectToContainerMapping[container.id] = null
+
   if (labels = container.inspect.Config.Labels) and labels["com.docker.compose.project"]
-    container.project = labels["com.docker.compose.project"]
+    projectToContainerMapping[container.id] = container.project = labels["com.docker.compose.project"]
 
   if (utilModel.typeIsArray container.inspect.Config.Env)
     for env in container.inspect.Config.Env
@@ -82,6 +86,7 @@ model.loadContainers = ->
       container.status = container.Status
       container.name = container.Names[0].replace(/\//g, '') if container.Names?[0]? # strip docker-compose slashes
       container.running = if container.status.match(/^Up/) then true else false
+      container.project = projectToContainerMapping[container.id] if projectToContainerMapping[container.id]?
     containers
   .map (containers) ->
     containers.sort (a, b) ->

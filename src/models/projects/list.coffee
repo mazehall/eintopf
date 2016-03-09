@@ -26,8 +26,6 @@ dirEmitter = (path) ->
       emitter.end()
 
 model = {};
-model.getList = () ->
-  return ks.get 'projects:list'
 
 model.getProject = (id) ->
   for own d, i of ks.get 'projects:list'
@@ -125,7 +123,7 @@ model.loadProject = (projectPath, callback) ->
     project['readme'] = result[1] || ''
     project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
 
-    # keep existing running states
+    # keep existing checked states
     (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in ks.get 'projects:list'
 
     if result[2]
@@ -166,54 +164,63 @@ model.loadProjects = (callback) ->
     return callback null, [foundProjects, projectCerts] if callback
 
 model.deleteProject = (project, callback) ->
+  error = null
+
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+  error = 'Project action already running' if ks.getChildProperty 'locks', 'projects:' + project.id
+  logName = "res:project:delete:#{project.id}"
+
+  if error? # log the error when project exists
+    ks.log logName, error
+    return callback? new Error error
 
   jetpack.removeAsync project.path
   .fail (error) ->
     callback error
   .then ->
-    ks.log 'res:project:delete:' + project.id
+    ks.log logName
     model.loadProjects()
     callback null, true
 
-model.startProject = (project, callback) ->
-  return callback? new Error 'invalid project given' if typeof project != "object" || ! project.path?
-  logName = "res:project:start:#{project.id}"
-
-  ks.setChildProperty 'locks', 'projects:' + project.id, true
-
-  return ks.log logName, "script start does not exist\n" unless project.scripts?["start"]
-  stream = utilModel.runCmd project.scripts["start"], {cwd: project.path}, logName, (err, stdOut) ->
-    ks.setChildProperty 'locks', 'projects:' + project.id, false
-    callback? err, stdOut
-
-model.stopProject = (project, callback) ->
-  return callback? new Error 'invalid project given' if typeof project != "object" || ! project.path?
-  logName = "res:project:stop:#{project.id}"
-
-  ks.setChildProperty 'locks', 'projects:' + project.id, true
-
-  return ks.log logName, "script stop does not exist\n" unless project.scripts?["stop"]
-  utilModel.runCmd project.scripts["stop"], {cwd: project.path}, logName, (err, stdOut) ->
-    ks.setChildProperty 'locks', 'projects:' + project.id, false
-    callback? err, stdOut
-
 model.updateProject = (project, callback) ->
+  error = null
+
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
+  error = 'Project action already running' if ks.getChildProperty 'locks', 'projects:' + project.id
   logName = "res:project:update:#{project.id}"
 
+  if error? # log the error when project exists
+    ks.log logName, error
+    return callback? new Error error
+
+  ks.setChildProperty 'locks', 'projects:' + project.id, true
   ks.log logName, ["Start pulling...\n"]
   utilModel.runCmd "git pull", {cwd: project.path}, logName, (err, result) ->
+    ks.setChildProperty 'locks', 'projects:' + project.id, false
     return callback err if err
     model.loadProjects callback
 
-model.callAction = (project, action, callback) ->
-  if callback?
-    return callback new Error 'invalid project given' if typeof project != "object" || ! project.path? || ! action?
-    return callback new Error 'invalid script name' if project.scripts? or action.script? or project.scripts[action.script]?
-  logName = "res:project:action:script:#{project.id}"
+model.startProject = (projectId, callback) ->
+  return model.callAction projectId, 'start', callback
 
-  return ks.log logName, "script '#{action.script}' does not exists\n" unless project.scripts?[action.script]
-  utilModel.runCmd project.scripts[action.script], {cwd: project.path}, logName
+model.stopProject = (projectId, callback) ->
+  return model.callAction projectId, 'stop', callback
+
+model.callAction = (projectId, action, callback) -> #@todo one log for one project
+  logName = if ['start', 'stop'].indexOf(action) >= 0 then "res:project:#{action}:#{projectId}" else "res:project:action:script:#{projectId}"
+  error = null
+
+  return callback? new Error 'Invalid project action' if !projectId || !action || !(project = model.getProject projectId)
+  error = 'Project action already running' if ks.getChildProperty 'locks', 'projects:' + projectId
+  error = 'Project action undefined' if ! project.scripts?[action]?
+
+  if error? # log the error when project exists
+    ks.log logName, error
+    return callback? new Error error
+
+  ks.setChildProperty 'locks', 'projects:' + projectId, true
+  utilModel.runCmd project.scripts[action], {cwd: project.path}, logName, (err, result) ->
+    ks.setChildProperty 'locks', 'projects:' + projectId, false
+    callback? err, result
 
 module.exports = model;

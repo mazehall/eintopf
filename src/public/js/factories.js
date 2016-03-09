@@ -15,20 +15,21 @@
     };
   }]);
 
-  factoryModule.factory('locksFactory', ['ipc', 'locksService', function(ipc, locksService) {
+  factoryModule.factory('lockFactory', ['ipc', 'lockService', function(ipc, lockService) {
     var model = {};
 
-    model.stream = locksService.stream;
-    model.emit = locksService.emit;
+    model.stream = lockService.stream;
+    model.emit = lockService.emit;
 
-    model.fromProject = function(projectId) {
-      return model.stream.map(function(locks) {
+    model.assignFromProject = function(projectId, scope, property) {
+      ipc.toKefirDestroyable(scope, model.stream)
+      .map(function(locks) {
         for (var key in locks) {
           if (locks.hasOwnProperty(key) && key == 'projects:' + projectId) return locks[key];
         }
-        return null;
+        return false;
       })
-      .filter();
+      .$assignProperty(scope, property);
     };
 
     // initial emit
@@ -37,17 +38,166 @@
     return model;
   }]);
 
-  factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectStart', 'reqProjectStop',
-    function(ipc, resProjectsList, reqProjectStart, reqProjectStop) {
+  // @todo simplify logging
+  factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectList', 'reqProjectStart', 'reqProjectStop', 'reqProjectDetail', 'reqProjectUpdate', 'resProjectUpdate',
+    function(ipc, resProjectsList, reqProjectList, reqProjectStart, reqProjectStop, reqProjectDetail, reqProjectUpdate, resProjectUpdate) {
       var model = {};
 
       model.stream = resProjectsList;
+      model.emit = reqProjectList.emit;
+      model.emitProject = reqProjectDetail.emit;
       model.startProject = reqProjectStart.emit;
       model.stopProject = reqProjectStop.emit;
+
+      model.updateProject = function (project) {
+        reqProjectUpdate.emit(project);
+        resProjectUpdate.fromProject(project.id); // logging
+      };
+
+      model.assignFromProject = function(projectId, scope, property) {
+        reqProjectDetail.emit(projectId);
+        return ipc.toKefirDestroyable(scope, ipc.toKefir('res:project:detail:' + projectId))
+        .$assignProperty(scope, property);
+      };
+
+      //initial emit
+      //model.emit();
 
       return model;
     }
   ]);
+
+  factoryModule.factory('appFactory', ['ipc', 'resAppsList', 'reqAppsList',
+    function(ipc, resAppsList, reqAppsList) {
+      var model = {};
+
+      model.stream = resAppsList;
+      model.emit = reqAppsList.emit;
+
+      model.assignFromProject = function(projectId, scope, property) {
+        ipc.toKefirDestroyable(scope, model.stream)
+        .map(function (apps) {
+          var mappedApps = [];
+
+          for (var key in apps) {
+            if (apps[key]['running'] && apps[key]['project'] == projectId) mappedApps.push(apps[key]);
+          }
+
+          return mappedApps;
+        })
+        .$assignProperty(scope, property);
+      };
+
+       //initial emit
+      //model.emit();
+
+      return model;
+    }
+  ]);
+
+  factoryModule.factory('containerFactory',
+    ['ipc', 'resContainersList', 'reqContainersList', 'reqContainerStart', 'reqContainerStop', 'reqContainerRemove', 'resContainersLog',
+      function(ipc, resContainersList, reqContainersList,reqContainerStart, reqContainerStop, reqContainerRemove, resContainersLog) {
+        var model = {};
+
+        model.stream = resContainersList;
+        model.logStream = resContainersLog;
+        model.emit = reqContainersList.emit;
+        model.startContainer = reqContainerStart.emit;
+        model.stopContainer = reqContainerStop.emit;
+        model.removeContainer = reqContainerRemove.emit;
+
+        model.assignFromProject = function(projectId, scope, property) {
+          ipc.toKefirDestroyable(scope, model.stream)
+          .map(function(containers) {
+            var result = [];
+
+            for (var key in containers) {
+              if (containers.hasOwnProperty(key) && (containers[key].project === projectId)) result.push(containers[key]);
+            }
+
+            return result;
+          })
+          .$assignProperty(scope, property);
+        };
+
+        model.pushFromLogs = function(scope, property) {
+          scope[property] = [];
+
+          ipc.toKefirDestroyable(scope, resContainersLog)
+          .filter(function (x) {
+            if (x.message) return true;
+          })
+          .onValue(function (val) {
+            val.read = false;
+            scope[property].push(val);
+          });
+        };
+
+        return model;
+      }
+    ]
+  );
+
+  // @todo reevaluate
+  factoryModule.factory('resProjectDetail',
+    ['ipc', 'resContainersList', 'resContainersLog', 'resAppsList', 'resContainersInspect',
+      function (ipc, resContainersList, resContainersLog, resAppsList, resContainersInspect) {
+        return {
+          fromProject: function (project) {
+            return ipc.toKefir('res:project:detail:' + project);
+          },
+          listContainers: function (project) {
+            return resContainersList
+            .filter(function(containers) {
+              for (var key in containers) {
+                if (containers.hasOwnProperty(key) && (containers[key].project != project)) delete containers[key];
+              }
+
+              return containers;
+            }).log();
+
+            return Kefir.combine([resContainersList, resContainersInspect])
+            .throttle(2000)
+            .map(function (value) {
+              var mappedContainers = {};
+              var containers = value[1];
+
+              for (var key in containers) {
+                if (containers[key] && containers[key].project && containers[key].project == project) {
+                  mappedContainers[containers[key].Id] = containers[key];
+                }
+              }
+
+              value[1] = mappedContainers;
+              return value;
+            })
+            .map(function (value) {
+              var mappedContainers = {};
+              var containers = value[0];
+
+              for (var key in containers) {
+                if (value[1][containers[key].Id]) mappedContainers[containers[key].name] = containers[key];
+              }
+
+              return mappedContainers;
+            }).log();
+          },
+          listApps: function (project) {
+            return resAppsList.map(function (apps) {
+              var mappedApps = [];
+
+              for (var key in apps) {
+                if (apps[key]['running'] && apps[key]['project'] == project) mappedApps.push(apps[key]);
+              }
+
+              return mappedApps
+            });
+          }
+        }
+      }
+    ]
+  );
 
   /**
    * original by:
