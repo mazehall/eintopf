@@ -138,7 +138,6 @@ model.runCmd = (cmd, config, logName, callback) ->
   proc.stderr.on 'data', (chunk) ->
     ks.log logName, chunk.toString() if logName
     stdErr += chunk.toString()
-  proc
 
 model.syncCerts = (path, files, callback) ->
   return callback new Error 'Invalid path given' if ! path

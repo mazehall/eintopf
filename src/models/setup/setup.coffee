@@ -4,7 +4,7 @@ ks = require 'kefir-storage'
 config = require '../stores/config'
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
-vagrantBackupModel = require '../vagrant/backup.coffee'
+virtualBoxModel = require '../vagrant/virtualbox.coffee'
 
 appConfig = config.get 'app'
 
@@ -35,20 +35,19 @@ model.run = () ->
     vagrantFsModel.copyVagrantFile cb
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      vagrantBackupModel.checkBackup (err, result) -> cb null, true
+      virtualBoxModel.checkMachineConsistency (err, result) -> cb null, true
   .flatMap () -> # start vagrant
     states.setupVagrantFile = true
     ks.set 'states:live', states
 
     _r.fromNodeCallback (cb) ->
       vagrantRunModel.run cb
-  .flatMap ->
-    _r.fromCallback (cb) ->
-      model.getVagrantSshConfigAndSetIt cb
+#  .flatMap -> #@todo fix when not authorized ssh it asks on console for password
+#    _r.fromCallback (cb) ->
+#      model.getVagrantSshConfigAndSetIt cb
   .onValue ->
     ks.setChildProperty 'states:live', 'setupVagrantVM', true
     ks.setChildProperty 'states:live', 'state', 'cooking'
-    vagrantBackupModel.checkBackup -> return if vagrantBackupModel.needBackup is true #@todo does not create new backups
   .onError (err) ->
     ks.setChildProperty 'states:live', 'setupVagrantFile', 'failed' if states.setupVagrantFile == false
     ks.setChildProperty 'states:live', 'setupVagrantVM', 'failed' if states.setupVagrantVM == false

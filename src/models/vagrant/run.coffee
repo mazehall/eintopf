@@ -37,7 +37,6 @@ model.getSshConfig = (callback) ->
       config.hostname = hostname if hostname and not error
       callback? error, config
 
-#@todo move to ssh model???
 model.reloadWithNewSsh = (callback) ->
   _r.fromNodeCallback (cb) ->
     sshModel.installNewKeys cb
@@ -52,10 +51,10 @@ model.reload = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
 
   machine.sshConfig (error, config) ->
-    return callback? error if error
+    return callback error if error
     return machine._run ["ssh", "-c", "hostname -I | cut -d' ' -f2"], (error, hostname) ->
       config.hostname = hostname if hostname and not error
-      callback? error, config
+      callback error, config
 
   terminalModel.createPTYStream 'vagrant reload', {cwd: machine.opts.cwd, env: machine.opts.env}, (err) ->
     return callback err if err
@@ -67,7 +66,7 @@ model.up = (callback) ->
 
   ks.log 'terminal:output', {text: 'starts vagrant from ' + machine.opts.cwd}
 
-  terminalModel.createPTYStream 'vagrant up', {cwd: machine.opts.cwd, env: machine.opts.env}, (err) ->
+  proc = terminalModel.createPTYStream 'vagrant up', {cwd: machine.opts.cwd, env: machine.opts.env}, (err) ->
     return callback new Error 'SSH connection failed' if failedSsh #@todo better implementation???
     return callback err if err
     return callback null, true
