@@ -45,16 +45,10 @@ model.reloadWithNewSsh = (callback) ->
       model.reload cb
   .onError callback
   .onValue (val) ->
-    callback null, value
+    callback null, val
 
 model.reload = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
-
-  machine.sshConfig (error, config) ->
-    return callback error if error
-    return machine._run ["ssh", "-c", "hostname -I | cut -d' ' -f2"], (error, hostname) ->
-      config.hostname = hostname if hostname and not error
-      callback error, config
 
   terminalModel.createPTYStream 'vagrant reload', {cwd: machine.opts.cwd, env: machine.opts.env}, (err) ->
     return callback err if err
