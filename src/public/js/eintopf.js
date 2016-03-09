@@ -37,12 +37,6 @@
       controller: "setupCtrl"
     })
 
-    .state('error', {
-      url: "/error?{code}{message}",
-      templateUrl: "partials/error.html",
-      controller: "errorCtrl"
-    })
-
     .state('cooking', {
       abstract: true,
       sticky: true,

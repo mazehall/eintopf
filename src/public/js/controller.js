@@ -2,10 +2,6 @@
 
   var controllerModule = angular.module('eintopf-controller', []);
 
-  controllerModule.controller('errorCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
-    $scope.error = $stateParams;
-  }]);
-
   controllerModule.controller('setupCtrl', ['$scope', 'setupLiveResponse', 'setupRestart', '$state',
     function ($scope, setupLiveResponse, setupRestart, $state) {
       setupLiveResponse.$assignProperty($scope, 'states');
