@@ -20,9 +20,10 @@
 
                         <h4 class="m0 p0">  {{project.name}}</h4>
 
-                        <div class="p0 m0" ng-if="locked">
-                            <i class="fa fa-cog fa-spin"></i>
-                        </div>
+                        <p class="p0 m0 media-contentBig" ng-if="locked">
+                            <span class="small"><i class="fa fa-spinner fa-spin fnt-eintopf-red fa-lg"> </i><span> Please wait ...</span></span>
+
+                        </p>
 
                         <p class="m0 p0  media-contentBig"  ng-if="!locked && apps.length">
                             <span class="small"><i class="fa fa-play-circle-o fnt--green fa-lg"> </i><span> is running</span></span>

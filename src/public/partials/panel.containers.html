@@ -1,14 +1,16 @@
 <div class="grd-row-col-6--lg my1 bg--red" ng-repeat="(key, value) in logs | filter:{read: false}">
+    <div class="grd-row-col-6 p1">
         <a href="" class="fnt--white flt--right " ng-click="value.read = true">
             <i class="fnt--white fa fa-times"></i>
         </a>
        <p class="fnt--white">{{value.message}}</p>
+    </div>
 </div>
 
 <div class="grd-row-col-6--lg">
     <div class="grd cssPanelBox my2 p0 brdr--light-gray">
         <ul class="grd-row-col-6--lg m0 p0 list--unstyled cssContainer">
-            <li class="grd-row py1 muted cssBgGreen">
+            <li class="grd-row py1 fnt--mid-gray cssBgGreen">
                 <span class="mx1 grd-row-col-4-6">
                     Name
                 </span>
@@ -28,14 +30,20 @@
                 </div>
                 <div class="mx1 txt--right grd-row-col-1-6">
 
-                    <div class="grd-row" ng-if="locks['containers:' + value.id]">
-                      <div class="cssSwitchBg grd-row-col-6 px1">
-                            <i class="fa fa-cog fa-spin"></i>
+                    <div class="grd-row">
+                      <div class="cssSwitchBg grd-row-col-6 px1" ng-if="locks['containers:' + value.id]">
+                          <span class="flt--right refresh">
+                        <div class="cssSwitchLabel small">
+                            <div>
+                                <i class="fa fa-spinner fa-spin fa-lg"></i>
+                            </div>
+                        </div>
+                    </span>
                         </div>
                     </div>
 
-                    <div class="grd-row" ng-if="!locks['containers:' + value.id]">
-                        <div class="cssSwitchBg grd-row-col-5-6 px1">
+                    <div class="grd-row">
+                        <div class="cssSwitchBg grd-row-col-5-6 px1" ng-if="!locks['containers:' + value.id]">
                             <span class="flt--right" ng-class="value.running? 'on' : 'off'">
                                 <div class="cssSwitchLabel small" ng-click="toggleStartStop(value)">
                                     {{ value.running? 'ON' : 'OFF' }}

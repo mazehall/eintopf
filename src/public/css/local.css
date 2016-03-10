@@ -479,6 +479,12 @@ button{
     border-color: #e1e1e1;
 
 }
+.cssSwitchBg span.refresh {
+    background-color: rgba(242, 105, 94, 0.3);
+    color:rgba(242, 105, 94, 1.0);
+    border-color:rgba(242, 105, 94, 0.5);
+
+}
 .cssSwitch {
     background: white;
     border-radius: 2em;
@@ -532,6 +538,16 @@ button{
     right:5px;
     color:#ccc;
     font-size: .6em;
+}
+.cssSwitchBg .refresh .cssSwitchLabel{
+    position:absolute;
+    top:5px;
+    right:18px;
+    color:rgba(242, 105, 94, 1.0);
+
+}
+.cssSwitchBg .refresh .cssSwitch{
+
 }
 /* -------------- pattern ----------------- */
 
