@@ -1,15 +1,15 @@
-<ul class="grd">
-    <li class="grd-row my1 bg--red" ng-repeat="(key, value) in logs | filter:{read: false}">
+
+    <div class="grd-row my1 bg--red" ng-repeat="(key, value) in logs | filter:{read: false}">
         <div class="grd-row-col-6 p1">
             <a href="" class="fnt--white flt--right " ng-click="value.read = true">
                 <i class="fnt--white fa fa-times"></i>
             </a>
            <p class="fnt--white">{{value.message}}</p>
         </div>
-    </li>
-</ul>
+    </div>
 
-<ul class="grd list--unstyled cssContainer">
+
+<ul class="grd list--unstyled m0 p0 cssContainer">
     <li class="grd-row muted">
         <span class="mx1 grd-row-col-4-6">
             Name

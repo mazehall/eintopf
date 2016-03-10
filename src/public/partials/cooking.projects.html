@@ -1,10 +1,8 @@
 <div id="container">
-  <div class="grd-row-col-1-6--lg  grd-row-col-2-6--sm cssSidebar">
+  <div class="grd-row-col-1-6--lg  grd-row-col-2-6--sm grd-row-col-2-6--md cssSidebar">
     <div class="p1 m0 cssNewProject">
-      <div class="grd-row m0 py1">
-        <h4 class="m0 p0 muted">Your Projects</h4>
-      </div>
-      <div class="grd-row my1 p0">
+
+      <div class="grd-row m0 p0">
         <a ui-sref="cooking.projects.create" class="grd-row-col-6 my1 p0 btn-green small">
           <i class="fa fa-plus-circle "><span> Create Project</span></i>
         </a>
@@ -12,8 +10,8 @@
 
     </div>
 
-    <div class="cssMenu p1 m0">
-      <ul class="list--unstyled  p0 m0">
+    <div class="cssMenu p1 my2">
+      <ul class="list--unstyled  p0 my2">
 
         <li ng-repeat="(key, project) in projects" class="m0 grd-row txt--left" id="{{project.id}}">
           <a class="grd-row-col-6 py2 btn--link txt--left"
@@ -21,14 +19,14 @@
             <div class="media">
 
               <div class="media-body txt--left">
-                <p class="m0 p0">
+                <p class="small m0 p0">
                   {{project.name}}
                 </p>
               </div>
 
-              <div class="media-figure m0" ng-if="locks['projects:' + project.id]">
-                  <button class="btn-round running p0">
-                      <i class="fa fa-cog fa-spin"></i>
+              <div class="media-figure m0 cssProjectState" ng-if="locks['projects:' + project.id]">
+                  <button class="small btn-round refresh p0">
+                      <i class="fa fa-spinner  fa-spin"></i>
                   </button>
               </div>
 
@@ -46,7 +44,7 @@
       </ul>
     </div>
   </div>
-  <div class="grd-row-col-5-6--lg grd-row-col-4-6--sm" ui-view>
+  <div class="grd-row-col-5-6--lg grd-row-col-4-6--sm grd-row-col-4-6--md" ui-view>
 
   </div>
 </div>

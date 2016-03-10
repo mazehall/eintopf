@@ -33,6 +33,9 @@ button{
 .cssBgGreenAlpha{
     background-color: rgba(228, 240, 232, 0.3);
 }
+.cssBgRedAlpha{
+    background-color: rgba(242, 105, 94, 0.3);
+}
 .fnt-eintopf-green{
     color:rgba(180,199,186,1.0);
 }
@@ -47,7 +50,7 @@ button{
     background-color: rgba(19, 103, 112, 1.0);
     color: #fff;
     border-radius: 3px;
-    padding: .5rem 1.5rem;
+    padding: 1.8rem 1.5rem;
     border: 1px solid #02565f;
     text-decoration: none;
     text-align: center;
@@ -199,11 +202,15 @@ button{
 }
 .cssSidebar ul li a.btn--link:hover{
     border-left:2px solid rgba(215, 228, 219, 1.0);
+    -webkit-transition: all 0.7s ease;
+    transition: all 0.7s ease;
 }
 .cssSidebar ul li a.btn--link.active{
     color:rgba(2,86,95,.99);
     background-color: rgba(228, 240, 232, 1.0);
     border-left:2px solid #f2695e;
+    -webkit-transition: all 0.7s ease;
+    transition: all 0.7s ease;
 }
 .cssSidebar ul li a.btn--link.active:after{
     content: '';
@@ -218,6 +225,8 @@ button{
     top: 0%;
     left: 100%;
     margin-left: -1px;
+    -webkit-transition: all 2s ease;
+    transition: all 2s ease;
 }
 .cssSidebar ul li a.btn--link.active i{
 
@@ -273,6 +282,11 @@ button{
 .cssSidebar ul li a.btn--link.active .cssProjectState button.running:hover {
     background:#fff;
 }
+.cssSidebar ul li a.btn--link .cssProjectState .btn-round.refresh{
+    background-color: rgba(242, 105, 94, 0.3);
+    color:rgba(242, 105, 94, 1.0);
+    border-color:rgba(242, 105, 94, 0.5);
+}
 .cssSidebar .cssProjectState button.stopped:hover .fa:before {
     content: "\f04b";
 }
@@ -320,47 +334,60 @@ button{
 }
 
 .cssBorderWhitoutTop{
-    border-left: 2px solid rgba(228, 240, 232, .3);
-    border-right: 2px solid rgba(228, 240, 232, .3);
-    border-bottom: 2px solid rgba(228, 240, 232, .3);
+    border-left: 0px solid rgba(228, 240, 232, .3);
+    border-right: 0px solid rgba(228, 240, 232, .3);
+    border-bottom: 0px solid rgba(228, 240, 232, .3);
 }
 .cssTab {
-    border-left:2px solid rgba(228, 240, 232, .3);
-    border-right:2px solid rgba(228, 240, 232, .3);
+    border-left:0px solid rgba(228, 240, 232, .3);
+    border-bottom:2px solid rgba(228, 240, 232, .3);
+    position:relative;
 }
 .cssTab  li {
-    border-top:2px solid rgba(228, 240, 232, .3);
+    border-bottom:2px solid rgba(215, 228, 219, 0.2);
     cursor: pointer;
     color:#02565f;
+    margin-bottom:-2px;
+    position:relative;
+}
+.cssTab  li span.small{
+    position:absolute;
+    right:0;
+    top:0;
 }
 .cssTab  li:hover {
-    border-top:2px solid rgba(228, 240, 232, 1);
+    border-bottom:2px solid rgba(215, 228, 219, 1.0);
+    -webkit-transition: all 0.7s ease;
+    transition: all 0.7s ease;
 }
 .cssTab .cssActive, .cssTab li.cssActive:hover  {
-    border-top:2px solid #f2695e;
+    border-bottom:2px solid #f2695e;
     cursor: default;
     background-color: rgba(228, 240, 232, 1.0);
+    -webkit-transition: all 0.7s ease;
+    transition: all 0.7s ease;
 }
 .cssReadme h1,.cssReadme h2,.cssReadme h3,.cssReadme h4,.cssReadme h5{
     margin-top: 1em;
     margin-bottom: 16px;
-    font-weight:bold;
-    border-bottom:1px solid #eee;
+    font-weight:400;
     padding-bottom:.3em;
 }
 .cssReadme h1{
-    font-size:2.25em;
+    font-size:1.8rem;
     line-height: 1.2;
+    border-bottom:1px solid #eee;
 }
 .cssReadme h2{
-    font-size:1.75em;
+    font-size:1.5rem;
     line-height: 1.225;
+    border-bottom:1px solid #eee;
 }
 .cssReadme h3{
-    font-size:1.5em;
+    font-size:1.25rem;
 }
 .cssReadme h4{
-    font-size:1.25em;
+    font-size:1rem;
 }
 .cssReadme pre{
     padding: 16px;
@@ -371,13 +398,16 @@ button{
     border-radius: 3px;
 }
 .cssReadme code{
-    padding: 0;
-    padding-top: 0.2em;
-    padding-bottom: 0.2em;
+    padding: 0.2em 0;
     margin: 0;
     font-size: 85%;
     background-color: #f7f7f7;
     border-radius: 3px;
+}
+.cssReadme blockquote{
+    padding: 0 15px;
+    color: #777;
+    border-left: 4px solid #ddd;
 }
 .cssReadme table{
     display: block;
@@ -506,7 +536,13 @@ button{
 /* -------------- pattern ----------------- */
 
 .cssPatterns{
-    margin-top:8rem;
+    margin-top:5rem;
+}
+.cssCreate .btn{
+    padding:.1rem 1rem;
+}
+.cssCreate .media-body form{
+   vertical-align:middle;
 }
 .cssBox .media-footer button.btn{
     padding:.25rem 1rem;
@@ -515,7 +551,8 @@ button{
 .cssBox .media-footer button.btn.disabled, .cssBox .media-footer button.btn.disabled:hover{
     display:none;
 }
-.cssBox .media-footer a:hover, .cssBox .media-footer a:focus, .cssBox .media-footer button.btn:hover, .cssBox .media-footer button.btn:focus{
+.cssBox .media-footer a:hover, .cssBox .media-footer a:focus, .cssBox .media-footer button.btn:hover,
+.cssBox .media-footer button.btn:focus, .cssCreate .btn:hover{
     border-color: rgba(19, 103, 112, 1.0);
     background-color: rgba(19, 103, 112, 1.0);
     color: #fff;
@@ -529,11 +566,27 @@ button{
     margin-right:0;
     background-color:rgba(228, 240, 232, 1.0);
 }
-.cssBox.cssCreate .media-figure{
-    min-height:10rem;
+.cssBox.cssPatternBig .media{
+    max-height:5rem;
+}
+.cssBox.cssPatternBig .media button{
+    border: none;
+    background: none;
+    margin: 0;
+}
+.cssBox.cssPatternBig .media-figure{
+    max-height:5rem;
+    min-height:5rem;
     margin-right:0;
     background-color:rgba(228, 240, 232, 1.0);
 }
+.cssBox.cssCreate .media-figure{
+    max-height:5.2rem;
+    min-height:5.2rem;
+    margin-right:0;
+    background-color:rgba(228, 240, 232, 1.0);
+}
+
 .cssBox.cssClone .media-figure{
     min-height:30rem;
     margin-right:0;
@@ -555,8 +608,7 @@ button{
     min-height:30rem;
 }
 .cssBox .media.disabled{
-    background:url("../img/installed.png") no-repeat 100% 90%;
-    max-width:85%;
+    background:url("../img/installed.png") no-repeat 70% 90%;
 
 }
 .cssBox .media-footer{
@@ -565,20 +617,18 @@ button{
     right:1rem;
 }
 .cssBox.cssCreate .media-footer{
-    position:absolute;
-    bottom:0;
-    right:1rem;
+
 }
 .cssBox .media-content{
     min-height:6rem;
     max-height:6rem;
     overflow:hidden;
 }
-.cssBox .media-content-input{
-    min-height:4rem;
-    max-height:4rem;
-}
+
 .cssBox .media-content-textarea{
+
+}
+.cssRecipeIcon{
 
 }
 /* -------------- panel ----------------- */
@@ -620,6 +670,10 @@ li.cssPanelBox:hover{
 }
 
 /* -------------- popover ----------------- */
+.ns-popover-list-theme.ns-popover-left-placement.ns-popover-top-align{
+    max-width:6rem;
+}
+
 
 .ns-popover-list-theme {
     z-index:1040;
@@ -665,6 +719,15 @@ li.cssPanelBox:hover{
     border-radius: 5px 5px 0px 0px / 5px 5px;
     background-color:#e1e1e1;
 }
+.cssPopoverHeaderTitle{
+   position:relative;
+    border-bottom:1px solid #ccc;
+}
+.cssPopoverHeaderCloseBtn{
+    position:absolute;
+    top:0;
+    right:0;
+}
 .cssPopoverFooter{
     border-top:1px solid #ccc;
     -moz-border-radius: 0px 0px 5px 5px / 5px 5px;
@@ -672,6 +735,28 @@ li.cssPanelBox:hover{
     background-color:#e1e1e1;
 
 }
+.cssPopoverFooterBorder{
+    border-top:1px solid #ccc;
+}
 .cssPopoverBody{
     min-height:6rem;
+}
+.cssPopoverBody ul li a:hover{
+    background-color: rgba(228, 240, 232, 1.0);
+    position:relative;
+    color:rgba(19, 103, 112, 1.0);
+}
+.cssPopoverBody ul li a:hover:after{
+    font-family:  FontAwesome;
+    position:absolute;
+    right:.8rem;
+}
+.cssPopoverBody ul li a#edit:hover:after{
+    content:"\f044";
+}
+.cssPopoverBody ul li a#share:hover:after{
+    content:"\f045";
+}
+.cssPopoverBody ul li a{
+    text-decoration: none;
 }
