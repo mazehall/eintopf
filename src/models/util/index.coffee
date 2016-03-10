@@ -165,7 +165,15 @@ model.removeFileAsync = (path, callback) ->
 
   _r.fromPromise jetpack.removeAsync path
   .onError callback
-  .onValue (val) ->
+  .onValue ->
+    return callback null, true
+
+model.writeFile = (path, content, callback) ->
+  return callback new Error 'Invalid path' if ! path
+
+  _r.fromPromise jetpack.writeAsync path, content, {atomic: true}
+  .onError callback
+  .onValue ->
     return callback null, true
 
 module.exports = model

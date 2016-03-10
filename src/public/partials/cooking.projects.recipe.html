@@ -20,10 +20,14 @@
 
                         <h4 class="m0 p0">  {{project.name}}</h4>
 
-                        <p class="m0 p0  media-contentBig"  ng-if="apps.length">
+                        <div class="p0 m0" ng-if="locked">
+                            <i class="fa fa-cog fa-spin"></i>
+                        </div>
+
+                        <p class="m0 p0  media-contentBig"  ng-if="!locked && apps.length">
                             <span class="small"><i class="fa fa-play-circle-o fnt--green fa-lg"> </i><span> is running</span></span>
                         </p>
-                        <p class="m0 p0  media-contentBig"  ng-if="!apps.length">
+                        <p class="m0 p0  media-contentBig"  ng-if="!locked && !apps.length">
                             <span class="small"><i class="fa fa-pause-circle-o fnt--mid-gray fa-lg"> </i><span> is stopped</span></span>
                         </p>
                     </div>
@@ -45,8 +49,8 @@
                     <p class="txt--center m0">Actions</p>
                 </li>
                 <li class="grd-row-col-1-6 tab_containers" ng-click="onClickTab('containers')"
-                    ng-class="{cssActive: currentTab =='containers'}" ng-if="containers && containerLength">
-                    <p class="txt--center m0">Containers ({{containerLength}})</p>
+                    ng-class="{cssActive: currentTab =='containers'}" ng-if="containers && containers.length">
+                    <p class="txt--center m0">Containers ({{containers.length}})</p>
                 </li>
                 <li class="grd-row-col-1-6 tab_running_apps" ng-click="onClickTab('apps')"
                     ng-class="{cssActive: currentTab =='apps'}" ng-if="apps && apps.length">
@@ -54,7 +58,7 @@
                 </li>
             </ul>
             <div class="grd-row p0 m0 cssBorderWhitoutTop">
-                <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-glue ng-show="currentTab == 'protocol'">
+                <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-glue="!pageSlide && currentTab == 'protocol'" ng-show="currentTab == 'protocol'">
                     <div class="fnt--off-white" marked="protocol"></div>
                 </div>
 
@@ -79,8 +83,10 @@
                                 <small>Fetch new version</small>
                             </div>
                             <div class="mx1 txt--right grd-row-col-1-6">
-                                <a href="" class="btn small" ng-click="updateProject(project); currentTab = 'protocol';">
-                                <i class="fa fa-play-circle"></i><span> go!</span></a>
+                                <button href="" class="btn small" ng-click="updateProject(project); currentTab = 'protocol';"
+                                        ng-disabled="locked">
+                                  <i class="fa fa-play-circle"></i><span> go!</span>
+                                </button>
                             </div>
                         </li>
 
@@ -90,8 +96,10 @@
                                 <small>Removes project recipe from listing</small>
                             </div>
                             <div class="mx1 txt--right grd-row-col-1-6">
-                                <a href="" class="btn small" ng-click="deleteProject(project)">
-                                <i class="fa fa-play-circle"></i><span> go!</span></a>
+                                <button href="" class="btn small" ng-click="deleteProject(project)"
+                                        ng-disabled="locked">
+                                  <i class="fa fa-play-circle"></i><span> go!</span>
+                                </button>
                             </div>
                         </li>
 
@@ -101,7 +109,10 @@
                                 <small>{{action.warning}}</small>
                             </div>
                             <div class="mx1 txt--right grd-row-col-1-6">
-                                <a href="" class="btn small" ng-click="doAction(project, action)"><i class="fa fa-play-circle"></i><span> go!</span></a>
+                                <button href="" class="btn small" ng-click="doAction(project, action)"
+                                        ng-disabled="locked">
+                                  <i class="fa fa-play-circle"></i><span> go!</span>
+                                </button>
                             </div>
                         </li>
                     </ul>

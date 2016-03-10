@@ -16,7 +16,6 @@
     'ct.ui.router.extras.core',
     'ct.ui.router.extras.sticky',
     'ct.ui.router.extras.previous',
-    'angularSpectrumColorpicker',
     'color.picker',
     'images-resizer'
   ]);
@@ -36,12 +35,6 @@
       url: "/setup",
       templateUrl: "partials/setup.html",
       controller: "setupCtrl"
-    })
-
-    .state('error', {
-      url: "/error?{code}{message}",
-      templateUrl: "partials/error.html",
-      controller: "errorCtrl"
     })
 
     .state('cooking', {

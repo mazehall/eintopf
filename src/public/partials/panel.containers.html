@@ -4,6 +4,7 @@
         </a>
        <p class="fnt--white">{{value.message}}</p>
 </div>
+
 <div class="grd-row-col-6--lg">
     <div class="grd cssPanelBox my2 p0 brdr--light-gray">
         <ul class="grd-row-col-6--lg m0 p0 list--unstyled cssContainer">
@@ -17,6 +18,7 @@
                 <span class="mx1 grd-row-col-1-6">
                 </span>
             </li>
+
             <li class="grd-row py1" ng-repeat="(key, value) in containers" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
                 <div class="mx1 grd-row-col-4-6">
                     <p class="m0 p0"> {{value.name}}</p>
@@ -25,17 +27,23 @@
                     <p class="m0 p0"> {{value.status}}</p>
                 </div>
                 <div class="mx1 txt--right grd-row-col-1-6">
-                    <div class="grd-row">
+
+                    <div class="grd-row" ng-if="locks['containers:' + value.id]">
+                      <div class="cssSwitchBg grd-row-col-6 px1">
+                            <i class="fa fa-cog fa-spin"></i>
+                        </div>
+                    </div>
+
+                    <div class="grd-row" ng-if="!locks['containers:' + value.id]">
                         <div class="cssSwitchBg grd-row-col-5-6 px1">
-                            <span class="on flt--right" ng-show="value.running == true">
-                                <div class="cssSwitchLabel small" ng-click="stopContainer(value)">ON</div>
-                                <div class="cssSwitch"></div>
-                            </span>
-                            <span class="off flt--right" ng-show="value.running == false">
-                                <div class="cssSwitchLabel small"  ng-click="startContainer(value)">OFF</div>
+                            <span class="flt--right" ng-class="value.running? 'on' : 'off'">
+                                <div class="cssSwitchLabel small" ng-click="toggleStartStop(value)">
+                                    {{ value.running? 'ON' : 'OFF' }}
+                                </div>
                                 <div class="cssSwitch"></div>
                             </span>
                         </div>
+
                         <a href="" class="small grd-row-col-1-6 cssRemoveButton" title="Remove" ng-click="removeContainer(value)">
                             <i class="fa fa-minus-circle fa-3x fnt--light-gray"></i>
                         </a>
