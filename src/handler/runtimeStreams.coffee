@@ -138,6 +138,6 @@ ks.fromProperty 'containers:inspect'
   projects = ks.get "projects:list"
 
   for project in projects
-    project.state = if runningProjects[project.id] then 'running' else null
+    project.state = if runningProjects[project.composeId] then 'running' else null
 
   ks.set "projects:list", projects

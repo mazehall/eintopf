@@ -216,56 +216,58 @@
   );
 
   controllerModule.controller('createProjectCtrl',
-    ['$scope', '$state', 'reqProjectsInstall', 'resProjectsInstall', 'resRecommendationsList',
-      function ($scope, $state, reqProjectsInstall, resProjectsInstall, resRecommendationsList) {
-        resRecommendationsList.$assignProperty($scope, 'recommendations');
-        resProjectsInstall.$assignProperty($scope, 'result');
+    ['$scope', '$state', 'registryFactory','projectFactory',
+      function ($scope, $state, registryFactory, projectFactory) {
+        registryFactory.assignRegistry($scope, 'recommendations');
 
-        $scope.$fromWatch('result')
-        .filter(function (val) {
-          if (val.newValue && typeof val.newValue == "object" && val.newValue.status) return true;
-        })
-        .onValue(function (val) {
-          $scope.loading = false;
-          if (val.newValue.status == "success" && typeof val.newValue.project == "object") {
-            $state.go("cooking.projects.recipe", {id: val.newValue.project.id});
-          }
-        });
+        $scope.registerProject = function (url) {
+          if (typeof url != 'string') return false;
 
-        $scope.install = function (val) {
-          val = val || $scope.newProject;
-          if (!val) return false;
-          $scope.result = {};
-          $scope.loading = true;
-          reqProjectsInstall.emit(val);
+          //val = val || $scope.newProject;
+          //if (!val) return false;
+          //$scope.result = {};
+          //$scope.loading = true;
+          projectFactory.registerProject(url);
         };
 
-        $scope.installRecommendation = function (project) {
-          if (!project || typeof project != "object" || !project.url) return false;
-          $scope.newProject = project.url;
-          $scope.install(project.url);
+        $scope.installProject = function(project) {
+          if (typeof project != 'object') return false;
+
+          $scope.errorMessage = null;
+          $scope.loading = true;
+
+          projectFactory.installProject(project, function(err, result) {
+            $scope.loading = false;
+            if (result && result.id) return $state.go("cooking.projects.recipe", {id: result.id});
+            if (err && err) $scope.errorMessage = err;
+
+            $scope.$apply();
+          });
         };
       }
     ]
   );
 
   controllerModule.controller('cookingProjectsCloneCtrl',
-    ['$scope', '$state', '$stateParams', 'clonePatternFactory',
-      function ($scope, $state, $stateParams, clonePatternFactory) {
-        $scope.cloning = false;
+    ['$scope', '$state', '$stateParams', 'registryFactory', 'projectFactory',
+      function ($scope, $state, $stateParams, registryFactory, projectFactory) {
+        registryFactory.fromPattern($stateParams.id).$assignProperty($scope, 'project');
 
-        clonePatternFactory.getPatternStream($stateParams.id).$assignProperty($scope, 'project');
-        clonePatternFactory.getCloneStream($stateParams.id)
-        .onValue(function (result) {
-          if (result.status == 'success') $state.go("cooking.projects.recipe", {id: result.project.id});
-          $scope.cloning = false;
-        })
-        .$assignProperty($scope, 'result');
+        $scope.resetError = function() {
+          $scope.errorMessage = null;
+        };
 
         $scope.clone = function () {
-          $scope.result = {};
-          $scope.cloning = true;
-          clonePatternFactory.emitClone($scope.project)
+          $scope.errorMessage = null;
+          $scope.loading = true;
+
+          projectFactory.installProject($scope.project, function(err, result) {
+            $scope.loading = false;
+            if (result && result.id) return $state.go("cooking.projects.recipe", {id: result.id});
+            if (err && err) $scope.errorMessage = err;
+
+            $scope.$apply();
+          });
         };
       }
     ]

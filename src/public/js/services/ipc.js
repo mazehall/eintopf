@@ -67,30 +67,6 @@
     }
   }]);
 
-  ipcModule.factory('clonePatternFactory', ['ipc', 'ipcGetPattern', 'ipcClonePattern', 'ipcCloneResult', function (ipc, ipcGetPattern, ipcClonePattern, ipcCloneResult) {
-    var model = {};
-
-    model.emitClone = ipcClonePattern;
-    model.getCloneStream = ipcCloneResult;
-    model.getPatternStream = function (id) {
-      return ipcGetPattern(id)
-      .map(function (pattern) {
-        var result = {};
-
-        result = pattern;
-        result.patternId = pattern.id;
-        result.patternName = pattern.name;
-        result.patternUrl = pattern.url;
-        result.id = '';
-        result.name = '';
-
-        return result;
-      });
-    };
-
-    return model;
-  }]);
-
   ipcModule.service('setupLiveResponse', ['ipc', function (ipc) {
     ipc.emit('req:states');
     return ipc.toKefir('states').toProperty();
@@ -107,7 +83,11 @@
   }]);
 
   ipcModule.service('resProjectsInstall', ['ipc', function (ipc) {
-    return ipc.toKefir('res:projects:install');
+    return {
+      fromProject: function(projectId) {
+        return ipc.toKefir('project:install:' + projectId);
+     }
+    };
   }]);
 
   ipcModule.service('resContainersLog', ['ipc', function (ipc) {
@@ -127,8 +107,7 @@
     return ipc.toKefir('res:settings:list').toProperty();
   }]);
 
-  ipcModule.service('resRecommendationsList', ['ipc', 'reqRecommendationsList', function (ipc, reqRecommendationsList) {
-    reqRecommendationsList.emit();
+  ipcModule.service('resRecommendationsList', ['ipc', function (ipc) {
     return ipc.toKefir('res:recommendations:list').toProperty();
   }]);
 

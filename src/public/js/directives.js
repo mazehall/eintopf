@@ -20,6 +20,17 @@
     };
   }]);
 
+  directiveModule.directive('eintopfRecipes',[function()  {
+    return {
+      restrict: 'E',
+      scope: {
+        recipes: '=',
+        installCb: '&'
+      },
+      templateUrl: './partials/directive.recipes.html'
+    };
+  }]);
+
   directiveModule.directive('fileDialog', ['electron', 'resizeService', function(electron, resizeService) {
     return {
       restrict: 'A',
