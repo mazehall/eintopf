@@ -68,7 +68,7 @@ model.loadJsonAsync = (path, callback) ->
 model.writeJsonAsync = (path, data , callback) ->
   return callback new Error 'Invalid path' if ! path
 
-  _r.fromPromise jetpack.writeAsync path, data, {atomic: true}
+  _r.fromPromise jetpack.writeAsync(path, data, {atomic: true})
   .onError callback
   .onValue ->
     callback null, data

@@ -7,6 +7,7 @@ crypto = require "crypto"
 ks = require 'kefir-storage'
 
 utilModel = require '../util/'
+registry = require '../registry/index.coffee'
 ks.set 'projects:list', []
 
 projectHashes = []
@@ -37,7 +38,6 @@ model.installProject = (project, callback) ->
 
   pattern = if project.pattern then true else false
   projectUrl = if pattern then project.patternUrl else project.url;
-  project.id = utilModel.getProjectNameFromGitUrl projectUrl if ! pattern
 
   return callback new Error 'Invalid description data' if ! project.id || ! projectUrl
   return callback new Error 'Could not resolve config path' if ! (projectsPath = utilModel.getProjectsPath())?
@@ -67,28 +67,32 @@ model.patternPostInstall = (project, callback) ->
 
   projectDir = jetpack.cwd project.path
   packagePath = projectDir.cwd 'package.json'
+  recipe = {}
 
   _r.fromNodeCallback (cb) ->
     utilModel.loadJsonAsync packagePath.path(), cb
-  .map (packageData) -> # set changed config
-    packageData.name = project.id;
-    packageData.eintopf = {} if ! packageData.eintopf
-    packageData.eintopf.name = project.name;
-    packageData.eintopf.description = project.description;
-    packageData.eintopf.mediabg = project.mediabg;
-    packageData.eintopf.src = project.src;
+  .map (content) -> # set changed config
+    content.name = project.id;
+    content.eintopf = {} if ! content.eintopf
+    content.eintopf.name = project.name;
+    content.eintopf.description = project.description;
+    content.eintopf.mediabg = project.mediabg;
+    content.eintopf.src = project.src;
 
-    packageData.eintopf.pattern =
+    content.eintopf.parent =
       id: project.patternId
       name: project.patternName
       url: project.patternUrl
-    packageData
-  .flatMap (packageData) ->
+    recipe = content
+  .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      utilModel.writeJsonAsync packagePath.path(), packageData, cb
+      utilModel.writeJsonAsync packagePath.path(), recipe, cb
   .flatMap -> # remove .git folder
     _r.fromNodeCallback (cb) ->
       utilModel.removeFileAsync projectDir.path('.git'), cb
+  .flatMap -> # update local registry
+    _r.fromNodeCallback (cb) ->
+      registry.add recipe, cb
   .onError callback
   .onValue ->
     callback null, true

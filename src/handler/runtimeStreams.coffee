@@ -2,13 +2,17 @@ _r = require 'kefir'
 ks = require 'kefir-storage'
 isOnline = require 'is-online'
 
+config = require '../models/stores/config'
 utilModel = require '../models/util'
 dockerProxyModel = require '../models/docker/proxy.coffee'
 dockerListModel = require '../models/docker/list.coffee'
 dockerEventStream = require '../models/docker/events.coffee'
 projectsModel = require '../models/projects/list.coffee'
-registryModel = require '../models/stores/registry.coffee'
+registryModel = require '../models/registry/index.coffee'
 vagrantRunModel = require '../models/vagrant/run.coffee'
+
+registryConfig = config.get 'registry'
+registryLoadingTimeout = process.env.REGISTRY_INTERVAL || registryConfig.refreshInterval || 3600000
 
 beat = _r.interval 2000, 'tick'
 
@@ -30,7 +34,13 @@ beat.throttle 60000
 # reevaluate recommendations -> projects mapping
 ks.fromProperty 'projects:list'
 .throttle(200)
-.onValue registryModel.updateRegistryInstallFlags
+.onValue registryModel.remapRegistries
+
+
+###########
+# reload registry data
+beat.throttle registryLoadingTimeout
+.onValue registryModel.init
 
 
 ###########

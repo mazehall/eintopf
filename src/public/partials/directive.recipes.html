@@ -16,8 +16,8 @@
                         <button class="btn" ng-click="installCb({project: project})" ng-disabled="project.installed"
                                 ng-class="{disabled: !project.pattern && project.installed}" ng-if="!project.pattern">Create</button>
 
-                        <button class="btn" ui-sref='cooking.projects.clone({id: project.id})'
-                                ng-if="project.pattern">Clone</button>
+                        <button class="btn" ui-sref='cooking.projects.clone({id: project.id, type: type})'
+                                ng-if="project.pattern && type">Clone</button>
                     </div>
                 </div>
             </div>

@@ -33,20 +33,28 @@
     </div>
 </div>
 
-<div class="grd-row-col-6 px1 cssPatterns" ng-if="recommendations.private && recommendations.private.length > 0">
+<div class="grd-row-col-6 px1 cssPatterns" ng-if="local && local.length > 0">
+    <h4 class="muted m0 p1">
+        Local Project Descriptions
+    </h4>
+
+    <eintopf-recipes recipes="local"></eintopf-recipes>
+</div>
+
+<div class="grd-row-col-6 px1 cssPatterns" ng-if="private && private.length > 0">
     <h4 class="muted m0 p1">
         Private Project Descriptions
     </h4>
 
-    <eintopf-recipes recipes="recommendations.private" install-cb="installProject(project)"></eintopf-recipes>
+    <eintopf-recipes recipes="private" type="private" install-cb="installProject(project)"></eintopf-recipes>
 </div>
 
-<div class="grd-row-col-6 px1 cssBox cssPatterns" ng-if="recommendations.public && recommendations.public.length > 0">
+<div class="grd-row-col-6 px1 cssBox cssPatterns" ng-if="public && public.length > 0">
     <h4 class="muted m0 p1">
         Community Pattern
     </h4>
 
-    <eintopf-recipes recipes="recommendations.public" install-cb="installProject(project)"></eintopf-recipes>
+    <eintopf-recipes recipes="public" type="public" install-cb="installProject(project)"></eintopf-recipes>
 </div>
 
 <div class="grd px2 m0" ng-show="errorMessage">

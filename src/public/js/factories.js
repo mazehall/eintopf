@@ -219,42 +219,47 @@
     ]
   );
 
-  factoryModule.factory('registryFactory', ['ipc', 'resRecommendationsList', 'reqRecommendationsList', 'ipcGetPattern',
-    function (ipc, resRecommendationsList, reqRecommendationsList, ipcGetPattern) {
-      var model = {};
+  factoryModule.factory('registryFactory',
+    ['ipc', 'ipcGetPattern', 'ipcRegistryPublic', 'ipcRegistryLocal', 'ipcRegistryPrivate',
+      function (ipc, ipcGetPattern, ipcRegistryPublic, ipcRegistryLocal, ipcRegistryPrivate) {
+        var model = {};
 
-      model.stream = resRecommendationsList;
-      model.emit = reqRecommendationsList.emit;
+        model.assignPublicRegistry = function(scope, property) {
+          ipc.toKefirDestroyable(scope, ipcRegistryPublic)
+          .$assignProperty(scope, property);
+        };
 
-      model.assignRegistry = function(scope, property) {
-        ipc.toKefirDestroyable(scope, model.stream)
-        .$assignProperty(scope, property);
-      };
+        model.assignLocalRegistry = function(scope, property) {
+          ipc.toKefirDestroyable(scope, ipcRegistryLocal)
+          .$assignProperty(scope, property);
+        };
 
-      model.fromPattern = function (projectId) {
-        return ipcGetPattern(projectId)
-        .take(1)
-        .map(function (pattern) {
-          var result = {};
+        model.assignPrivateRegistry = function(scope, property) {
+          ipc.toKefirDestroyable(scope, ipcRegistryPrivate)
+          .$assignProperty(scope, property);
+        };
 
-          result = pattern;
-          result.patternId = pattern.id;
-          result.patternName = pattern.name;
-          result.patternUrl = pattern.url;
-          result.id = '';
-          result.name = '';
+        model.fromPattern = function (projectId, type) {
+          return ipcGetPattern(projectId, type)
+          .take(1)
+          .map(function (pattern) {
+            var result = {};
 
-          return result;
-        });
-      };
+            result = pattern;
+            result.patternId = pattern.id;
+            result.patternName = pattern.name;
+            result.patternUrl = pattern.url;
+            result.id = '';
+            result.name = '';
 
-      // initial emit - event not triggered without listener
-      model.stream.take(1).onValue(function() {});
-      model.emit();
+            return result;
+          });
+        };
 
-      return model;
-    }
-  ]);
+        return model;
+      }
+    ]
+  );
 
   /**
    * original by:

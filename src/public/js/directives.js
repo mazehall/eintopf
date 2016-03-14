@@ -25,7 +25,8 @@
       restrict: 'E',
       scope: {
         recipes: '=',
-        installCb: '&'
+        installCb: '&',
+        type: '@'
       },
       templateUrl: './partials/directive.recipes.html'
     };

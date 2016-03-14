@@ -218,7 +218,9 @@
   controllerModule.controller('createProjectCtrl',
     ['$scope', '$state', 'registryFactory','projectFactory',
       function ($scope, $state, registryFactory, projectFactory) {
-        registryFactory.assignRegistry($scope, 'recommendations');
+        registryFactory.assignPublicRegistry($scope, 'public');
+        registryFactory.assignLocalRegistry($scope, 'local');
+        registryFactory.assignPrivateRegistry($scope, 'private');
 
         $scope.registerProject = function (url) {
           if (typeof url != 'string') return false;
@@ -227,6 +229,8 @@
           //if (!val) return false;
           //$scope.result = {};
           //$scope.loading = true;
+
+          return false;
           projectFactory.registerProject(url);
         };
 
@@ -251,7 +255,7 @@
   controllerModule.controller('cookingProjectsCloneCtrl',
     ['$scope', '$state', '$stateParams', 'registryFactory', 'projectFactory',
       function ($scope, $state, $stateParams, registryFactory, projectFactory) {
-        registryFactory.fromPattern($stateParams.id).$assignProperty($scope, 'project');
+        registryFactory.fromPattern($stateParams.id, $stateParams.type).$assignProperty($scope, 'project');
 
         $scope.resetError = function() {
           $scope.errorMessage = null;
