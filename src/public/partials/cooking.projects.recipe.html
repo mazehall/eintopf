@@ -46,7 +46,8 @@
                 <li class="grd-row-col-1-6 tab_readme" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.readme">
                     <p class="txt--center m0">Readme</p>
                 </li>
-                <li class="grd-row-col-1-6 tab_actions" ng-click="onClickTab('actions')" ng-class="{cssActive: currentTab =='actions'}">
+                <li class="grd-row-col-1-6 tab_actions" ng-click="onClickTab('actions')"
+                    ng-class="{cssActive: currentTab =='actions'}" ng-if="project.actions && project.actions.length">
                     <p class="txt--center m0">Actions</p>
                 </li>
                 <li class="grd-row-col-1-6 tab_containers" ng-click="onClickTab('containers')"
