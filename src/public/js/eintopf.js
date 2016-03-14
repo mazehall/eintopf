@@ -115,6 +115,11 @@
       url: "/clone/:id",
       controller: "cookingProjectsCloneCtrl",
       templateUrl: "partials/cooking.projects.clone.html"
+    })
+    .state('cooking.projects.edit', {
+      url: "/edit/:id",
+      controller: "cookingProjectsEditCtrl",
+      templateUrl: "partials/cooking.projects.edit.html"
     });
 
   });

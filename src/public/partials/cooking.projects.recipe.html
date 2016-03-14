@@ -15,7 +15,7 @@
 
                                 ns-popover-active-class="active"
                                 ns-popover-template="partials/cooking.projects.recipe_menu.html">
-                            <i class=" fa fa-chevron-circle-down fnt--light-gray"></i>
+                            <i class=" fa fa-chevron-circle-down fa-lg fnt--light-gray"></i>
                         </button>
 
                         <h4 class="m0 p0">  {{project.name}}</h4>
@@ -51,11 +51,11 @@
                 </li>
                 <li class="grd-row-col-1-6 tab_containers" ng-click="onClickTab('containers')"
                     ng-class="{cssActive: currentTab =='containers'}" ng-if="containers && containers.length">
-                    <p class="txt--center m0">Containers ({{containers.length}})</p>
+                    <p class="txt--center m0">Containers <sup class="small">({{containers.length}})</sup></p>
                 </li>
                 <li class="grd-row-col-1-6 tab_running_apps" ng-click="onClickTab('apps')"
                     ng-class="{cssActive: currentTab =='apps'}" ng-if="apps && apps.length">
-                    <p class="txt--center m0">Running Apps <span class="small">({{apps.length}})</span></p>
+                    <p class="txt--center m0">Running Apps <sup class="small">({{apps.length}})</sup></p>
                 </li>
             </ul>
             <div class="grd-row p0 m0 cssBorderWhitoutTop">
@@ -73,48 +73,15 @@
                           <span class="mx1 grd-row-col-5-6">
                               Actions
                           </span>
-
                           <span class="mx1 grd-row-col-1-6">
-
                           </span>
                         </li>
-                        <li class="grd-row py1 bg--off-white">
-                            <div class="mx1 grd-row-col-5-6">
-                                <p class="m0 p0">Update project recipe</p>
-                                <small>Fetch new version</small>
-                            </div>
-                            <div class="mx1 txt--right grd-row-col-1-6">
-                                <button href="" class="btn small" ng-click="updateProject(project); currentTab = 'protocol';"
-                                        ng-disabled="locked">
-                                  <i class="fa fa-play-circle"></i><span> go!</span>
-                                </button>
-                            </div>
-                        </li>
-
-                        <li class="grd-row py1 bg--white">
-                            <div class="mx1 grd-row-col-5-6">
-                                <p class="m0 p0">Hide project recipe</p>
-                                <small>Removes project recipe from listing</small>
-                            </div>
-                            <div class="mx1 txt--right grd-row-col-1-6">
-                                <button href="" class="btn small" ng-click="deleteProject(project)"
-                                        ng-disabled="locked">
-                                  <i class="fa fa-play-circle"></i><span> go!</span>
-                                </button>
-                            </div>
-                        </li>
-
-                        <li class="grd-row py1" ng-repeat="action in project.actions" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
-                            <div class="mx1 grd-row-col-5-6">
-                                <p class="m0 p0">{{action.name}}</p>
-                                <small>{{action.warning}}</small>
-                            </div>
-                            <div class="mx1 txt--right grd-row-col-1-6">
-                                <button href="" class="btn small" ng-click="doAction(project, action)"
-                                        ng-disabled="locked">
-                                  <i class="fa fa-play-circle"></i><span> go!</span>
-                                </button>
-                            </div>
+                        <li class="grd-row" ng-repeat="action in project.actions" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+                            <button  class="btn btn-without-design grd-row-col-6 px0 py2">
+                                <p class="m0 p0 grd-row" ng-if="action.name">{{action.name}}</p>
+                                <p class="m0 p0 grd-row" ng-if="!action.name">Action</p>
+                                <span class="small m0 p0 grd-row">{{action.warning}}n</span>
+                            </button>
                         </li>
                     </ul>
                 </div>

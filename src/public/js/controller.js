@@ -270,5 +270,10 @@
       }
     ]
   );
+  controllerModule.controller('cookingProjectsEditCtrl',
+    ['$scope', '$state', '$stateParams',
+
+    ]
+  );
 
 })(angular);

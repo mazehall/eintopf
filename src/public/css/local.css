@@ -45,6 +45,13 @@ button{
 .fnt-eintopf-darkgreen{
     color:rgba(19, 103, 112, 1.0);
 }
+.btn.btn-without-design{
+    background:none;
+    border:0;
+    border-radius:0;
+
+
+}
 .btn-green{
     border-color: rgba(19, 103, 112, 1.0);
     background-color: rgba(19, 103, 112, 1.0);
@@ -332,7 +339,22 @@ button{
 .cssContainer li p, .cssSidebar a p, pre{
     word-wrap: break-word;
 }
-
+ul.cssContainer li .btn-without-design:hover{
+    background-color: rgba(228, 240, 232, 1.0);
+}
+ul.cssContainer li{
+    position:relative;
+}
+ul.cssContainer li .btn-without-design:hover:after{
+    font:normal normal normal 2rem/1 FontAwesome;;
+    color:rgba(180,199,186,1.0);
+    position:absolute;
+    right:.8rem;
+    top:25%;
+    content:"\f144";
+    flex-direction: inherit;
+    text-align:left;
+}
 .cssBorderWhitoutTop{
     border-left: 0px solid rgba(228, 240, 232, .3);
     border-right: 0px solid rgba(228, 240, 232, .3);
@@ -549,6 +571,33 @@ button{
 .cssSwitchBg .refresh .cssSwitch{
 
 }
+.cssRemoveBtn{
+    border: none;
+    background: none;
+    margin: 0;
+    padding:0;
+}
+.cssRemoveBtn .fa-stack-2x{
+    color: rgba(216,216,216,.99);
+}
+.cssRemoveBtn.on .fa-stack-2x{
+    color: rgba(242, 105, 94, 0.3);
+}
+.cssRemoveBtn.on .fa-inverse{
+    color:rgba(242, 105, 94, 1.0);
+}
+.cssRemoveBtn:hover .fa-inverse{
+    color:rgba(255, 255,255, 1.0);
+}
+.cssRemoveBtn:hover .fa-stack-2x{
+    color:rgba(242, 105, 94, 1.0);
+}
+.cssRemoveBtn .fa-stack-2x{
+    font-size:2.3rem;
+}
+.cssRemoveBtn .fa-stack{
+    line-height:2.5rem;
+}
 /* -------------- pattern ----------------- */
 
 .cssPatterns{
@@ -560,7 +609,7 @@ button{
 .cssCreate .media-body form{
    vertical-align:middle;
 }
-.cssBox .media-footer button.btn{
+.cssBox .media-footer button.btn, .btn.cancel, .btn.remove, .btn.update{
     padding:.25rem 1rem;
     background:none;
 }
@@ -568,7 +617,8 @@ button{
     display:none;
 }
 .cssBox .media-footer a:hover, .cssBox .media-footer a:focus, .cssBox .media-footer button.btn:hover,
-.cssBox .media-footer button.btn:focus, .cssCreate .btn:hover{
+.cssBox .media-footer button.btn:focus, .cssCreate .btn:hover, .btn.cancel:hover, .btn.remove:hover, .btn.cancel:focus,
+.btn.remove:focus, .btn.update:hover, .btn.update:focus{
     border-color: rgba(19, 103, 112, 1.0);
     background-color: rgba(19, 103, 112, 1.0);
     color: #fff;
@@ -589,6 +639,9 @@ button{
     border: none;
     background: none;
     margin: 0;
+}
+.cssBox.cssPatternBig .media button:hover i{
+    color:rgba(2,86,95,.99);
 }
 .cssBox.cssPatternBig .media-figure{
     max-height:5rem;
@@ -705,6 +758,17 @@ li.cssPanelBox:hover{
     -moz-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
     box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
 }
+.cssPopover.recipe{
+    box-sizing: border-box;
+    border: solid 1px #d8d8d8;
+    border-radius: 5px;
+    background-color: #fff;
+    margin-top:0px;
+    margin-right:-30px;
+    -webkit-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
+}
 .triangle{
     margin-top:20px;
     display: block;
@@ -757,12 +821,12 @@ li.cssPanelBox:hover{
 .cssPopoverBody{
     min-height:6rem;
 }
-.cssPopoverBody ul li a:hover{
+.cssPopoverBody ul li a:hover, .cssPopoverBody ul li .btn#update:hover,  .cssPopoverBody ul li .btn#hide:hover{
     background-color: rgba(228, 240, 232, 1.0);
     position:relative;
     color:rgba(19, 103, 112, 1.0);
 }
-.cssPopoverBody ul li a:hover:after{
+.cssPopoverBody ul li a:hover:after, .cssPopoverBody ul li .btn:hover:after{
     font-family:  FontAwesome;
     position:absolute;
     right:.8rem;
@@ -773,6 +837,24 @@ li.cssPanelBox:hover{
 .cssPopoverBody ul li a#share:hover:after{
     content:"\f045";
 }
+.cssPopoverBody ul li .btn#update:hover:after{
+    content:"\f021";
+}
+.cssPopoverBody ul li .btn#hide:hover{
+    color:rgba(242, 105, 94, 1.0);
+}
+.cssPopoverBody ul li .btn#hide:hover:after{
+    content:"\f146";
+    color:rgba(242, 105, 94, 1.0);
+}
 .cssPopoverBody ul li a{
     text-decoration: none;
+    padding:.5rem 1rem;
+}
+.cssPopoverBody ul li .btn#update, .cssPopoverBody ul li .btn#hide{
+    border-radius:0;
+    border:0;
+    flex-direction:inherit;
+    background:none;
+    text-align:left;
 }

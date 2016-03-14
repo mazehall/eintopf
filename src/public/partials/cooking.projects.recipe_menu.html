@@ -1,10 +1,10 @@
 
 <div class="triangle"></div>
-<div class="grd m0 p0 cssPopover">
+<div class="grd m0 p0 cssPopover recipe">
     <div class="grd-row ">
         <div class="grd-row-col-6 p05 m0">
             <div class="p05 m0 txt--center cssPopoverHeaderTitle">
-                <span class="px1 fnt--mid-gray">Detail-Aktionen</span>
+                <span class="px1 fnt--mid-gray">Project actions</span>
                 <button class="cssPopoverHeaderCloseBtn close icon-x fnt--light-gray" ng-click="hidePopover()">
                     <i class="fa fa-close"></i>
                 </button>
@@ -16,10 +16,25 @@
             <div class="m0 p0">
                 <ul class="list--unstyled py5 px0">
                     <li class="grd-row">
-                        <a href="#" id="edit" class="grd-row-col-6 px1 fnt-eintopf-darkgreen">Edit Details</a>
+                        <a href="#" id="edit" class="grd-row-col-6 px1 fnt-eintopf-darkgreen"
+                           ui-sref="cooking.projects.edit({id: '{{project.id}}'})" ui-sref-active='active'>
+                            Edit project details ...
+                        </a>
                     </li>
                     <li class="grd-row">
-                        <a href="#" id="share" class="grd-row-col-6 px1 fnt-eintopf-darkgreen">Share recipe whith team ...</a>
+                        <button id="update" class="btn grd-row-col-6 py0 px1 txt--left fnt-eintopf-darkgreen" ng-click="updateProject(project); onClickTab('protocol')"
+                                ng-disabled="locked">
+                              Update project
+                        </button>
+                    </li>
+                    <li class="grd-row">
+                        <a href="#" id="share" class="grd-row-col-6 px1 fnt-eintopf-darkgreen">Share project recipe whith team ...</a>
+                    </li>
+                    <li class="grd-row">
+                        <button id="hide" class="btn grd-row-col-6 py0 px1 txt--left fnt-eintopf-darkgreen" ng-click="deleteProject(project)"
+                                ng-disabled="locked">
+                            Remove project recipe
+                        </button>
                     </li>
                 </ul>
 

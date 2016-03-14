@@ -52,14 +52,14 @@ model.stopContainer = (name, callback) ->
 model.removeContainer = (name, callback) ->
   return callback new Error 'Container action already running' if ks.getChildProperty 'locks', 'containers:' + name
 
-  ks.setChildProperty 'locks', 'containers:' + name, true
+  ks.setChildProperty 'locks', 'containers:remove:' + name, true
 
   _r.fromNodeCallback (cb) ->
     model.getContainer(name).remove cb
   .flatMap -> # revert locks after next list update to sync view
     ks.fromProperty('containers:list').take(1)
   .onAny ->
-    ks.setChildProperty 'locks', 'containers:' + name, false
+    ks.setChildProperty 'locks', 'containers:remove:' + name, false
   .onError callback
   .onValue (val) ->
     callback null, val
