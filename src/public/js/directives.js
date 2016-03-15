@@ -7,7 +7,7 @@
       restrict: 'A',
       link: function($scope, element) {
         element.on('click', function(e) {
-          if (! angular.element(e.target).hasClass('ng-pageslide-body-open')) return false;
+          if (! angular.element(e.target).hasClass('ng-pageslide-body-open')) return true;
           $scope.closePanel();
         });
       },
