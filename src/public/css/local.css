@@ -126,10 +126,13 @@ button{
 }
 
 .py05{
-    padding:0.5rem 0;
+
 }
 .p05{
     padding:0.5rem;
+}
+.mx05{
+    margin:0 0.5rem;
 }
 .cssHeader{
     max-height:60px;
