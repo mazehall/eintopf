@@ -219,7 +219,6 @@
     ['$scope', '$state', 'registryFactory','projectFactory',
       function ($scope, $state, registryFactory, projectFactory) {
         registryFactory.assignPublicRegistry($scope, 'public');
-        registryFactory.assignLocalRegistry($scope, 'local');
         registryFactory.assignPrivateRegistry($scope, 'private');
 
         $scope.registerProject = function (url) {

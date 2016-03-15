@@ -220,17 +220,12 @@
   );
 
   factoryModule.factory('registryFactory',
-    ['ipc', 'ipcGetPattern', 'ipcRegistryPublic', 'ipcRegistryLocal', 'ipcRegistryPrivate',
-      function (ipc, ipcGetPattern, ipcRegistryPublic, ipcRegistryLocal, ipcRegistryPrivate) {
+    ['ipc', 'ipcGetPattern', 'ipcRegistryPublic', 'ipcRegistryPrivate',
+      function (ipc, ipcGetPattern, ipcRegistryPublic, ipcRegistryPrivate) {
         var model = {};
 
         model.assignPublicRegistry = function(scope, property) {
           ipc.toKefirDestroyable(scope, ipcRegistryPublic)
-          .$assignProperty(scope, property);
-        };
-
-        model.assignLocalRegistry = function(scope, property) {
-          ipc.toKefirDestroyable(scope, ipcRegistryLocal)
           .$assignProperty(scope, property);
         };
 

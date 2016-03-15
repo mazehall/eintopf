@@ -88,15 +88,11 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send 'locks', val.value
 
-  ks.fromProperty 'registry:local'
-  .onValue (val) ->
-    webContents.send 'registry:local', val.value
-
   ks.fromProperty 'registry:public'
   .onValue (val) ->
     webContents.send 'registry:public', val.value
 
-  ks.fromProperty 'registry:private'
+  ks.fromProperty 'registry:privateCombined'
   .onValue (val) ->
     webContents.send 'registry:private', val.value
 
@@ -142,11 +138,7 @@ handleEvents = (webContents) ->
 
   ipcToKefir 'registry:private'
   .onValue (val) ->
-    val.event.sender.send 'registry:private', ks.get 'registry:private'
-
-  ipcToKefir 'registry:local'
-  .onValue (val) ->
-    val.event.sender.send 'registry:local', ks.get 'registry:local'
+    val.event.sender.send 'registry:private', ks.get 'registry:privateCombined'
 
   ipcToKefir 'terminal:input'
   .filter (x) -> x.value?

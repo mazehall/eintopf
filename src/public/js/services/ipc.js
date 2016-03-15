@@ -116,16 +116,6 @@
     return stream;
   }]);
 
-  ipcModule.service('ipcRegistryLocal', ['ipc', function (ipc) {
-    var stream = ipc.toKefir('registry:local').toProperty();
-
-    // initial emit
-    stream.onValue(function() {});
-    ipc.emit('registry:local');
-
-    return stream;
-  }]);
-
   ipcModule.service('ipcRegistryPrivate', ['ipc', function (ipc) {
     var stream = ipc.toKefir('registry:private').toProperty();
 

@@ -84,6 +84,22 @@ _r.merge [ks.fromProperty('projects:certs'), ks.fromProperty('proxy:certs')]
 
 
 ###########
+# create combined property from local and private registry
+_r.combine [ks.fromProperty('registry:local'), ks.fromProperty('registry:private')]
+.map (combined) ->
+  result = []
+
+  (localEntry.local = true && result.push localEntry) for localEntry in combined[0].value if combined[0].value
+  (result.push privateEntry) for privateEntry in combined[1].value if combined[1].value
+
+  result.sort (a, b) ->
+    return -1 if a.name < b.name
+    return 1 if a.name > b.name
+    return 0;
+.onValue (val) ->
+  ks.set 'registry:privateCombined', val
+
+###########
 # update inspect running state on die and start container
 dockerEventStream
 .filter (event) ->
