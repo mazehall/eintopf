@@ -134,6 +134,14 @@ button{
 .mx05{
     margin:0 0.5rem;
 }
+.my05{
+    margin:0.5rem 0;
+}
+.cssNowrap{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
 .cssHeader{
     max-height:60px;
     border-bottom:2px solid rgba(215, 228, 219, 1.0);
@@ -603,7 +611,9 @@ ul.cssContainer li .btn-without-design:hover:after{
     margin-left:1rem;
 }
 /* -------------- pattern ----------------- */
+.cssPrivateList{
 
+}
 .cssPatterns{
     margin-top:5rem;
 }
@@ -613,16 +623,16 @@ ul.cssContainer li .btn-without-design:hover:after{
 .cssCreate .media-body form{
    vertical-align:middle;
 }
-.cssBox .media-footer button.btn, .btn.cancel, .btn.remove, .btn.update{
+.cssBox .media-footer button.btn, .btn.cancel, .btn.remove, .btn.update, .cssListBtn .btn{
     padding:.25rem 1rem;
     background:none;
 }
-.cssBox .media-footer button.btn.disabled, .cssBox .media-footer button.btn.disabled:hover{
+.cssBox .media-footer button.btn.disabled, .cssBox .media-footer button.btn.disabled:hover, .cssBox .cssListBtn button.btn.disabled{
     display:none;
 }
 .cssBox .media-footer a:hover, .cssBox .media-footer a:focus, .cssBox .media-footer button.btn:hover,
 .cssBox .media-footer button.btn:focus, .cssCreate .btn:hover, .btn.cancel:hover, .btn.remove:hover, .btn.cancel:focus,
-.btn.remove:focus, .btn.update:hover, .btn.update:focus{
+.btn.remove:focus, .btn.update:hover, .btn.update:focus, .cssListBtn .btn:hover{
     border-color: rgba(19, 103, 112, 1.0);
     background-color: rgba(19, 103, 112, 1.0);
     color: #fff;
@@ -683,6 +693,13 @@ ul.cssContainer li .btn-without-design:hover:after{
 .cssBox .media.disabled{
     background:url("../img/installed.png") no-repeat 70% 90%;
 
+}
+.cssBox.cssPrivateList.disabled .cssListBtn{
+    background:url("../img/installed.png") no-repeat 90% 50%;
+    background-size:80%;
+}
+.cssBox.cssPrivateList.disabled{
+    opacity:.4;
 }
 .cssBox .media-footer{
     position:absolute;
