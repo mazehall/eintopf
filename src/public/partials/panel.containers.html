@@ -29,35 +29,44 @@
                     <p class="m0 p0"> {{value.status}}</p>
                 </div>
                 <div class="mx1 txt--right grd-row-col-1-6">
-
-                    <div class="grd-row">
-                      <div class="cssSwitchBg grd-row-col-6 px1" ng-if="locks['containers:' + value.id]">
-                          <span class="flt--right refresh">
+                    <div class="grd">
+                        <div class="grd-row">
+                    <div class="cssSwitchBg grd-row-col-3-6 " ng-if="!locks['containers:' + value.id]">
+                    <span class="flt--right" ng-class="value.running? 'on' : 'off'">
+                        <div class="cssSwitchLabel small" ng-click="toggleStartStop(value)">
+                            {{ value.running? 'ON' : 'OFF' }}
+                        </div>
+                        <div class="cssSwitch"></div>
+                    </span>
+                    </div>
+                    <div class="cssSwitchBg grd-row-col-6 " ng-if="locks['containers:' + value.id]">
+                    <span class="flt--right refresh">
                         <div class="cssSwitchLabel small">
-                            <div>
+                            <div class="">
                                 <i class="fa fa-spinner fa-spin fa-lg"></i>
                             </div>
                         </div>
                     </span>
-                        </div>
+                    </div>
+                    <div class="grd-row-col-3-6 cssRemoveButton" ng-if="!locks['containers:remove:' + value.id]" ng-click="removeContainer(value)">
+                        <button  class="cssRemoveBtn">
+                        <span class="fa-stack fa-lg">
+                          <i class="fa fa-circle fa-stack-2x"></i>
+                          <i class="fa fa-minus fa-stack-1x fa-inverse"></i>
+                        </span>
+                        </button>
                     </div>
 
-                    <div class="grd-row">
-                        <div class="cssSwitchBg grd-row-col-5-6 px1" ng-if="!locks['containers:' + value.id]">
-                            <span class="flt--right" ng-class="value.running? 'on' : 'off'">
-                                <div class="cssSwitchLabel small" ng-click="toggleStartStop(value)">
-                                    {{ value.running? 'ON' : 'OFF' }}
-                                </div>
-                                <div class="cssSwitch"></div>
-                            </span>
-                        </div>
-
-                        <a href="" class="small grd-row-col-1-6 cssRemoveButton" title="Remove" ng-click="removeContainer(value)">
-                            <i class="fa fa-minus-circle fa-3x fnt--light-gray"></i>
-                        </a>
+                    <div class="remove grd-row-col-3-6 cssRemoveButton" ng-if="locks['containers:remove:' + value.id]" ng-click="removeContainer(value)">
+                        <button  class="cssRemoveBtn on">
+                        <span class="fa-stack fa-lg">
+                          <i class="fa fa-circle fa-stack-2x"></i>
+                          <small><i class="fa fa-spinner fa-spin fa-stack-1x fa-inverse"></i></small>
+                        </span>
+                        </button>
                     </div>
 
-                </div>
+                </div></div></div>
             </li>
         </ul>
     </div>

@@ -563,10 +563,9 @@ ul.cssContainer li .btn-without-design:hover:after{
 }
 .cssSwitchBg .refresh .cssSwitchLabel{
     position:absolute;
-    top:5px;
+    top:4px;
     right:18px;
     color:rgba(242, 105, 94, 1.0);
-
 }
 .cssSwitchBg .refresh .cssSwitch{
 
@@ -594,9 +593,11 @@ ul.cssContainer li .btn-without-design:hover:after{
 }
 .cssRemoveBtn .fa-stack-2x{
     font-size:2.3rem;
+    line-height:2rem;
 }
 .cssRemoveBtn .fa-stack{
-    line-height:2.5rem;
+    line-height: 2.3rem;
+    margin-left:1rem;
 }
 /* -------------- pattern ----------------- */
 
