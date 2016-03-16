@@ -234,8 +234,8 @@
           .$assignProperty(scope, property);
         };
 
-        model.fromPattern = function (projectId, type) {
-          return ipcGetPattern(projectId, type)
+        model.fromPattern = function (projectId) {
+          return ipcGetPattern(projectId)
           .take(1)
           .map(function (pattern) {
             var result = {};

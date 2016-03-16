@@ -112,7 +112,7 @@
       templateUrl: "partials/cooking.projects.create.html"
     })
     .state('cooking.projects.clone', {
-      url: "/clone/{type}/{id}",
+      url: "/clone/{id}",
       controller: "cookingProjectsCloneCtrl",
       templateUrl: "partials/cooking.projects.clone.html"
     })

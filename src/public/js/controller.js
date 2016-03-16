@@ -254,7 +254,7 @@
   controllerModule.controller('cookingProjectsCloneCtrl',
     ['$scope', '$state', '$stateParams', 'registryFactory', 'projectFactory',
       function ($scope, $state, $stateParams, registryFactory, projectFactory) {
-        registryFactory.fromPattern($stateParams.id, $stateParams.type).$assignProperty($scope, 'project');
+        registryFactory.fromPattern($stateParams.id).$assignProperty($scope, 'project');
 
         $scope.resetError = function() {
           $scope.errorMessage = null;
@@ -275,6 +275,7 @@
       }
     ]
   );
+
   controllerModule.controller('cookingProjectsEditCtrl', ['$scope', function($scope) {
   }]);
 

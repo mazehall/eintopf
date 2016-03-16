@@ -47,8 +47,8 @@
   }]);
 
   ipcModule.service('ipcGetPattern', ['ipc', function (ipc) {
-    return function (id, type) {
-      ipc.emit('req:pattern', {id: id, type: type});
+    return function (id) {
+      ipc.emit('req:pattern', id);
       return ipc.toKefir('pattern:' + id).toProperty();
     }
   }]);

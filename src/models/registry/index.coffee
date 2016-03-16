@@ -1,5 +1,6 @@
 _r = require 'kefir'
 ks = require 'kefir-storage'
+crypto = require "crypto"
 
 config = require '../stores/config.coffee'
 utils = require '../util/index.coffee'
@@ -23,11 +24,10 @@ model.add = (project, callback) ->
     model.initLocal()
     callback null, true
 
-model.getRecipe = (id, type) ->
-  return null if ! id || ! type || ['public', 'private'].indexOf(type) < 0
-
-  for i in ks.get 'registry:' + type
-    return i if i.id == id
+model.getRecipe = (id) ->
+  for type in ['public', 'private']
+    for i in ks.get 'registry:' + type
+      return i if i.id == id
   return null
 
 model.init = () ->
@@ -39,7 +39,7 @@ model.initLocal = () ->
   _r.fromNodeCallback (cb) ->
     local.loadFile cb
   .map (data) ->
-    model.map data
+    model.map data, true
   .onValue (entry) ->
     ks.set propertyLocal, entry
 
@@ -79,12 +79,17 @@ model.remapRegistries = ->
   .onValue (registry) ->
     ks.set registry.name, registry.data
 
-model.map = (registryData) ->
+model.map = (registryData, local) ->
   return registryData if ! utils.typeIsArray registryData
 
   for entry in registryData
-    entry.id = utils.getProjectNameFromGitUrl entry.url if entry?.url && ! entry.id
-    entry.installed = utils.isProjectInstalled entry.id if entry?.id && ! entry.pattern
+    if local
+      entry.installed = true if local
+      entry.local = true
+    else
+      entry.id = crypto.createHash("md5").update(entry.url + entry.registryUrl).digest "hex" if entry?.url && entry.registryUrl
+      entry.dirName = utils.getProjectNameFromGitUrl entry.url if entry?.url
+      entry.installed = utils.isProjectInstalled entry.dirName if entry?.dirName && ! entry.pattern
   registryData
 
 module.exports = model

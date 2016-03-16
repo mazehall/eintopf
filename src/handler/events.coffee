@@ -146,10 +146,10 @@ handleEvents = (webContents) ->
     terminalModel.writeIntoPTY x.value
 
   ipcToKefir 'req:pattern'
-  .filter (val) -> val.value.id? && val.value.type?
+  .filter (val) -> val.value?
   .onValue (val) ->
-    recipe = registry.getRecipe val.value.id, val.value.type
-    val.event.sender.send 'pattern:' + val.value.id, recipe if recipe
+    recipe = registry.getRecipe val.value
+    val.event.sender.send 'pattern:' + val.value, recipe || {}
 
   ipcToKefir 'projects:install'
   .filter (val) -> val.value?

@@ -35,10 +35,14 @@ model.loadFromUrls = (urls, callback) ->
 
   _r.later 0, urls
   .flatten()
+  .skipDuplicates()
   .flatMap (url) ->
     _r.fromNodeCallback (cb) ->
       model.loadUrl url, cb
-  .flatten()
+    .flatten()
+    .map (entry) ->
+      entry.registryUrl = url
+      entry
   .onValue (entry) ->
     entries.push entry
   .onEnd ->
