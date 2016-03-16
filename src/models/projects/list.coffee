@@ -7,6 +7,7 @@ crypto = require "crypto"
 ks = require 'kefir-storage'
 
 utilModel = require '../util/'
+registry = require '../registry/index.coffee'
 ks.set 'projects:list', []
 
 projectHashes = []
@@ -32,67 +33,69 @@ model.getProject = (id) ->
     return i if i.id == id
   return null
 
-model.installProject = (gitUrl, callback) ->
-  return callback new Error 'could not resolve config path' if ! (projectsPath = utilModel.getProjectsPath())?
-  return callback new Error 'invalid or unsupported git url' if !(projectId = utilModel.getProjectNameFromGitUrl(gitUrl))?
-  return callback new Error 'Project already exists' if utilModel.isProjectInstalled projectId
+model.installProject = (project, callback) ->
+  return callback new Error 'Invalid description data' if ! project?.id
 
-  projectDir = jetpack.cwd projectsPath, projectId
-  _r.fromPromise jetpack.dirAsync projectsPath
-  .flatMap (cb) ->
-    _r.fromNodeCallback (cb) ->
-      git.clone gitUrl, projectDir.path(), cb
-  .flatMap () ->
-    _r.fromNodeCallback (cb) ->
-      return model.loadProject projectDir.path(), cb
-  .onValue (project) ->
-    model.loadProjects () ->
-      callback null, project
-  .onError (err) ->
-    model.deleteProject {id: projectId, path: projectDir.path()}, () ->
-      return callback new Error err?.message || 'Error: failed to clone git repository'
+  pattern = if project.pattern then true else false
+  projectUrl = if pattern then project.patternUrl else project.url;
 
-model.cloneProject = (project, callback) ->
-  return callback new Error 'Invalid description data' if ! project?.patternId || ! project.patternUrl || ! project.id
+  return callback new Error 'Invalid description data' if ! project.id || ! projectUrl
   return callback new Error 'Could not resolve config path' if ! (projectsPath = utilModel.getProjectsPath())?
   return callback new Error 'Project description with this id already exists' if utilModel.isProjectInstalled project.id
 
-  projectDir = jetpack.cwd projectsPath, project.id
-  packagePath = projectDir.cwd('package.json')
-  mappedId = project.id.replace(/[^a-zA-Z0-9]/ig, "")
+  project.path = jetpack.cwd(projectsPath).path(project.id)
+
+  _r.fromPromise jetpack.dirAsync projectsPath
+  .flatMap (cb) ->
+    _r.fromNodeCallback (cb) ->
+      git.clone projectUrl, project.path, cb
+  .flatMap -> # do additional pattern stuff if pattern
+    return _r.constant true if ! pattern
+    _r.fromNodeCallback (cb) ->
+      model.patternPostInstall project, cb
+  .flatMap -> # reload projects to enforce view update
+    _r.fromNodeCallback (cb) ->
+      model.loadProjects cb
+  .onValue ->
+    callback null, project
+  .onError (err) ->
+    model.deleteProject project, () ->
+      return callback new Error err?.message || 'Error: failed to clone git repository'
+
+model.patternPostInstall = (project, callback) ->
+  return callback new Error 'Invalid description data' if ! project?.path
+
+  projectDir = jetpack.cwd project.path
+  packagePath = projectDir.cwd 'package.json'
+  recipe = {}
 
   _r.fromNodeCallback (cb) ->
-    git.clone project.patternUrl, projectDir.path(), cb
-  .flatMap -> # load project definition
-    _r.fromNodeCallback (cb) ->
-      utilModel.loadJsonAsync packagePath.path(), cb
-  .flatMap (packageData) -> # set changed config
-    packageData.name = project.id;
-    packageData.eintopf = {} if ! packageData.eintopf
-    packageData.eintopf.name = project.name;
-    packageData.eintopf.description = project.description;
-    packageData.eintopf.mediabg = project.mediabg;
-    packageData.eintopf.src = project.src;
-    packageData.pattern ={}
-    packageData.pattern.id = project.patternId;
-    packageData.pattern.name = project.patternName;
-    packageData.patternUrl = project.patternUrl;
+    utilModel.loadJsonAsync packagePath.path(), cb
+  .map (content) -> # set changed config
+    content.name = project.id;
+    content.eintopf = {} if ! content.eintopf
+    content.eintopf.name = project.name;
+    content.eintopf.description = project.description;
+    content.eintopf.mediabg = project.mediabg;
+    content.eintopf.src = project.src;
 
+    content.eintopf.parent =
+      id: project.patternId
+      name: project.patternName
+      url: project.patternUrl
+    recipe = content
+  .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      utilModel.writeJsonAsync packagePath.path(), packageData, cb
+      utilModel.writeJsonAsync packagePath.path(), recipe, cb
   .flatMap -> # remove .git folder
     _r.fromNodeCallback (cb) ->
       utilModel.removeFileAsync projectDir.path('.git'), cb
-  .flatMap -> # reload projects
+  .flatMap -> # update local registry
     _r.fromNodeCallback (cb) ->
-      model.loadProjects cb
-  .onError (err) -> # remove files on error
-    model.deleteProject {id: mappedId, path: projectDir.path()}, () ->
-      return callback new Error err?.message || 'failed to clone project pattern'
-  .onValue (val) ->
-    project.id = mappedId
-    callback null, project
-
+      registry.add recipe, cb
+  .onError callback
+  .onValue ->
+    callback null, true
 
 model.loadProject = (projectPath, callback) ->
   return callback new Error 'invalid project dir given' if ! projectPath?
@@ -119,7 +122,8 @@ model.loadProject = (projectPath, callback) ->
     project = config.eintopf
     project['path'] = projectPath
     project['scripts'] = config.scripts if config.scripts
-    project['id'] = path.basename(projectPath).replace(/[^a-zA-Z0-9]/ig, "")
+    project['id'] = path.basename(projectPath)
+    project['composeId'] = project.id.replace(/[^a-zA-Z0-9]/ig, "")
     project['readme'] = result[1] || ''
     project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
 

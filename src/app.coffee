@@ -1,14 +1,14 @@
 eventHandler = require './handler/events.coffee'
 setupModel = require './models/setup/setup.coffee'
 projectsModel = require './models/projects/list.coffee'
-registryModel = require './models/stores/registry.coffee'
+registryModel = require './models/registry/index.coffee'
 runTimeStreams = require './handler/runtimeStreams.coffee'
 
 model = (webContents) ->
 
   setupModel.run()
   projectsModel.loadProjects()
-  registryModel.loadRegistryWithInterval()
+  registryModel.init()
 
   #  init events
   eventHandler(webContents)

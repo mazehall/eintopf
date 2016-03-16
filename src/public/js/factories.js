@@ -39,8 +39,8 @@
   }]);
 
   // @todo simplify logging
-  factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectList', 'reqProjectStart', 'reqProjectStop', 'reqProjectDetail', 'reqProjectUpdate', 'resProjectUpdate',
-    function(ipc, resProjectsList, reqProjectList, reqProjectStart, reqProjectStop, reqProjectDetail, reqProjectUpdate, resProjectUpdate) {
+  factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectList', 'reqProjectStart', 'reqProjectStop', 'reqProjectDetail', 'reqProjectUpdate', 'resProjectUpdate', 'resProjectsInstall','reqProjectsInstall',
+    function(ipc, resProjectsList, reqProjectList, reqProjectStart, reqProjectStop, reqProjectDetail, reqProjectUpdate, resProjectUpdate, resProjectsInstall, reqProjectsInstall) {
       var model = {};
 
       model.stream = resProjectsList;
@@ -48,6 +48,7 @@
       model.emitProject = reqProjectDetail.emit;
       model.startProject = reqProjectStart.emit;
       model.stopProject = reqProjectStop.emit;
+
 
       model.updateProject = function (project) {
         reqProjectUpdate.emit(project);
@@ -60,8 +61,26 @@
         .$assignProperty(scope, property);
       };
 
-      //initial emit
-      //model.emit();
+      model.streamInstall =
+      model.installProject = function (project, callback) {
+        if (typeof project != 'object' || ! project.id) return false;
+
+        resProjectsInstall.fromProject(project.id)
+        .take(1)
+        .onError(callback)
+        .onValue(function (result) {
+          callback.call(null, result.err, result.result);
+        });
+
+        reqProjectsInstall.emit(project);
+      };
+
+      model.registerProject = function (url) {
+        console.log('@todo should add a local registry entry ');
+        return false;
+        //if (typeof url != 'string') return false;
+        //reqProjectsInstall.emit(url);
+      };
 
       return model;
     }
@@ -75,21 +94,20 @@
       model.emit = reqAppsList.emit;
 
       model.assignFromProject = function(projectId, scope, property) {
+        var composeId = projectId.replace(/[^a-zA-Z0-9]/ig, "");
+
         ipc.toKefirDestroyable(scope, model.stream)
         .map(function (apps) {
           var mappedApps = [];
 
           for (var key in apps) {
-            if (apps[key]['running'] && apps[key]['project'] == projectId) mappedApps.push(apps[key]);
+            if (apps[key]['running'] && apps[key]['project'] == composeId) mappedApps.push(apps[key]);
           }
 
           return mappedApps;
         })
         .$assignProperty(scope, property);
       };
-
-       //initial emit
-      //model.emit();
 
       return model;
     }
@@ -108,12 +126,14 @@
         model.removeContainer = reqContainerRemove.emit;
 
         model.assignFromProject = function(projectId, scope, property) {
+          var composeId = projectId.replace(/[^a-zA-Z0-9]/ig, "");
+
           ipc.toKefirDestroyable(scope, model.stream)
           .map(function(containers) {
             var result = [];
 
             for (var key in containers) {
-              if (containers.hasOwnProperty(key) && (containers[key].project === projectId)) result.push(containers[key]);
+              if (containers.hasOwnProperty(key) && (containers[key].project === composeId)) result.push(containers[key]);
             }
 
             return result;
@@ -195,6 +215,43 @@
             });
           }
         }
+      }
+    ]
+  );
+
+  factoryModule.factory('registryFactory',
+    ['ipc', 'ipcGetPattern', 'ipcRegistryPublic', 'ipcRegistryPrivate',
+      function (ipc, ipcGetPattern, ipcRegistryPublic, ipcRegistryPrivate) {
+        var model = {};
+
+        model.assignPublicRegistry = function(scope, property) {
+          ipc.toKefirDestroyable(scope, ipcRegistryPublic)
+          .$assignProperty(scope, property);
+        };
+
+        model.assignPrivateRegistry = function(scope, property) {
+          ipc.toKefirDestroyable(scope, ipcRegistryPrivate)
+          .$assignProperty(scope, property);
+        };
+
+        model.fromPattern = function (projectId, type) {
+          return ipcGetPattern(projectId, type)
+          .take(1)
+          .map(function (pattern) {
+            var result = {};
+
+            result = pattern;
+            result.patternId = pattern.id;
+            result.patternName = pattern.name;
+            result.patternUrl = pattern.url;
+            result.id = '';
+            result.name = '';
+
+            return result;
+          });
+        };
+
+        return model;
       }
     ]
   );

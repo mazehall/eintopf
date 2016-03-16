@@ -6,6 +6,7 @@ setupModel = require '../models/setup/setup.coffee'
 projectsModel = require '../models/projects/list.coffee'
 dockerModel = require '../models/docker'
 terminalModel = require '../models/util/terminal.coffee'
+registry = require '../models/registry'
 
 ipcToKefir = (eventName) ->
   _r.fromEvents ipcMain, eventName, (event, value) ->
@@ -44,10 +45,6 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send 'res:containers:inspect', val.value
 
-  ks.fromProperty 'res:projects:install'
-  .onValue (val) ->
-    webContents.send 'res:projects:install', val.value
-
   ks.fromRegex /^res:project:start:/
   .onValue (val) ->
     webContents.send val.name, val.value[val.value.length-1]
@@ -78,11 +75,6 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send 'res:settings:list', val.value
 
-  # emit recommendations changes
-  ks.fromProperty 'recommendations:list'
-  .onValue (val) ->
-    webContents.send 'res:recommendations:list', val.value
-
   # emit terminal output
   ks.fromProperty 'terminal:output'
   .filter (val) ->
@@ -95,6 +87,14 @@ handleEvents = (webContents) ->
   ks.fromProperty 'locks'
   .onValue (val) ->
     webContents.send 'locks', val.value
+
+  ks.fromProperty 'registry:public'
+  .onValue (val) ->
+    webContents.send 'registry:public', val.value
+
+  ks.fromProperty 'registry:privateCombined'
+  .onValue (val) ->
+    webContents.send 'registry:private', val.value
 
   ###############
   # listener
@@ -132,46 +132,30 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     val.event.sender.send 'res:settings:list', ks.get 'settings:list'
 
-  ipcToKefir 'recommendations:list'
+  ipcToKefir 'registry:public'
   .onValue (val) ->
-    val.event.sender.send 'res:recommendations:list', ks.get 'recommendations:list'
+    val.event.sender.send 'registry:public', ks.get 'registry:public'
+
+  ipcToKefir 'registry:private'
+  .onValue (val) ->
+    val.event.sender.send 'registry:private', ks.get 'registry:privateCombined'
 
   ipcToKefir 'terminal:input'
   .filter (x) -> x.value?
   .onValue (x) ->
     terminalModel.writeIntoPTY x.value
 
-  # request pattern data
   ipcToKefir 'req:pattern'
-  .filter (val) -> val.value?
+  .filter (val) -> val.value.id? && val.value.type?
   .onValue (val) ->
-    id = val.value
-    patterns = ks.getChildProperty 'recommendations:list', 'public'
-
-    for i in patterns
-      return val.event.sender.send 'pattern:' + id, i if i.id == id
-
-  ipcToKefir 'project:clone'
-  .filter (val) -> val.value?
-  .onValue (val) ->
-    projectsModel.cloneProject val.value, (err, project) ->
-      response = {}
-      response.errorMessage = err.message if err?.message
-      response.status = if err then 'error' else 'success'
-      response.project = project if project?
-
-      val.event.sender.send 'project:clone:' + val.value.patternId, response
+    recipe = registry.getRecipe val.value.id, val.value.type
+    val.event.sender.send 'pattern:' + val.value.id, recipe if recipe
 
   ipcToKefir 'projects:install'
-  .filter (x) -> x.value?
-  .onValue (x) ->
-    ks.set 'res:projects:install', null
-    projectsModel.installProject x.value, (err, result) ->
-      res = {}
-      res.errorMessage = err.message if err? && typeof err == 'object'
-      res.status = if err then 'error' else 'success'
-      res.project = result if result?
-      ks.set 'res:projects:install', res
+  .filter (val) -> val.value?
+  .onValue (val) ->
+    projectsModel.installProject val.value, (err, result) ->
+      val.event.sender.send 'project:install:' + val.value.id, {err: err?.message || null, result: result}
 
   ipcToKefir 'project:detail'
   .filter (x) -> x.value?

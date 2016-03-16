@@ -6,10 +6,10 @@
     <div class="grd p0 my1" ng-if="errorMessage">
         <div class="p0 m0">
             <div class="grd-row-col-6--lg p1 m0 bg--red">
-                <a href="" class="fnt--white flt--right " ng-click="result.errorMessage = null">
+                <a href="" class="fnt--white flt--right " ng-click="resetError()">
                     <i class="fnt--white fa fa-times"></i>
                 </a>
-                <p class="fnt--white">{{result.errorMessage}}</p>
+                <p class="fnt--white">{{errorMessage}}</p>
             </div>
         </div>
     </div>

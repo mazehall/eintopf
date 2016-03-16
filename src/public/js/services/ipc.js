@@ -47,9 +47,8 @@
   }]);
 
   ipcModule.service('ipcGetPattern', ['ipc', function (ipc) {
-    return function (id) {
-      if (!id) return false;
-      ipc.emit('req:pattern', id);
+    return function (id, type) {
+      ipc.emit('req:pattern', {id: id, type: type});
       return ipc.toKefir('pattern:' + id).toProperty();
     }
   }]);
@@ -65,30 +64,6 @@
     return function (id) {
       return ipc.toKefir('project:clone:' + id).toProperty();
     }
-  }]);
-
-  ipcModule.factory('clonePatternFactory', ['ipc', 'ipcGetPattern', 'ipcClonePattern', 'ipcCloneResult', function (ipc, ipcGetPattern, ipcClonePattern, ipcCloneResult) {
-    var model = {};
-
-    model.emitClone = ipcClonePattern;
-    model.getCloneStream = ipcCloneResult;
-    model.getPatternStream = function (id) {
-      return ipcGetPattern(id)
-      .map(function (pattern) {
-        var result = {};
-
-        result = pattern;
-        result.patternId = pattern.id;
-        result.patternName = pattern.name;
-        result.patternUrl = pattern.url;
-        result.id = '';
-        result.name = '';
-
-        return result;
-      });
-    };
-
-    return model;
   }]);
 
   ipcModule.service('setupLiveResponse', ['ipc', function (ipc) {
@@ -107,7 +82,11 @@
   }]);
 
   ipcModule.service('resProjectsInstall', ['ipc', function (ipc) {
-    return ipc.toKefir('res:projects:install');
+    return {
+      fromProject: function(projectId) {
+        return ipc.toKefir('project:install:' + projectId);
+     }
+    };
   }]);
 
   ipcModule.service('resContainersLog', ['ipc', function (ipc) {
@@ -127,10 +106,26 @@
     return ipc.toKefir('res:settings:list').toProperty();
   }]);
 
-  ipcModule.service('resRecommendationsList', ['ipc', 'reqRecommendationsList', function (ipc, reqRecommendationsList) {
-    reqRecommendationsList.emit();
-    return ipc.toKefir('res:recommendations:list').toProperty();
+  ipcModule.service('ipcRegistryPublic', ['ipc', function (ipc) {
+    var stream = ipc.toKefir('registry:public').toProperty();
+
+    // initial emit
+    stream.onValue(function() {});
+    ipc.emit('registry:public');
+
+    return stream;
   }]);
+
+  ipcModule.service('ipcRegistryPrivate', ['ipc', function (ipc) {
+    var stream = ipc.toKefir('registry:private').toProperty();
+
+    // initial emit
+    stream.onValue(function() {});
+    ipc.emit('registry:private');
+
+    return stream;
+  }]);
+
 
   ipcModule.service('setupRestart', ['ipc', function (ipc) {
     return {
@@ -240,14 +235,6 @@
     return {
       emit: function () {
         ipc.emit('containers:inspect');
-      }
-    }
-  }]);
-
-  ipcModule.service('reqRecommendationsList', ['ipc', function (ipc) {
-    return {
-      emit: function (data) {
-        ipc.emit('recommendations:list', data);
       }
     }
   }]);

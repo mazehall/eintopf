@@ -2,13 +2,17 @@ _r = require 'kefir'
 ks = require 'kefir-storage'
 isOnline = require 'is-online'
 
+config = require '../models/stores/config'
 utilModel = require '../models/util'
 dockerProxyModel = require '../models/docker/proxy.coffee'
 dockerListModel = require '../models/docker/list.coffee'
 dockerEventStream = require '../models/docker/events.coffee'
 projectsModel = require '../models/projects/list.coffee'
-registryModel = require '../models/stores/registry.coffee'
+registryModel = require '../models/registry/index.coffee'
 vagrantRunModel = require '../models/vagrant/run.coffee'
+
+registryConfig = config.get 'registry'
+registryLoadingTimeout = process.env.REGISTRY_INTERVAL || registryConfig.refreshInterval || 3600000
 
 beat = _r.interval 2000, 'tick'
 
@@ -30,7 +34,13 @@ beat.throttle 60000
 # reevaluate recommendations -> projects mapping
 ks.fromProperty 'projects:list'
 .throttle(200)
-.onValue registryModel.updateRegistryInstallFlags
+.onValue registryModel.remapRegistries
+
+
+###########
+# reload registry data
+beat.throttle registryLoadingTimeout
+.onValue registryModel.init
 
 
 ###########
@@ -72,6 +82,22 @@ _r.merge [ks.fromProperty('projects:certs'), ks.fromProperty('proxy:certs')]
 
   utilModel.syncCerts proxyCertsPath, projectCerts, ->
 
+
+###########
+# create combined property from local and private registry
+_r.combine [ks.fromProperty('registry:local'), ks.fromProperty('registry:private')]
+.map (combined) ->
+  result = []
+
+  (localEntry.local = true && result.push localEntry) for localEntry in combined[0].value if combined[0].value
+  (result.push privateEntry) for privateEntry in combined[1].value if combined[1].value
+
+  result.sort (a, b) ->
+    return -1 if a.name < b.name
+    return 1 if a.name > b.name
+    return 0;
+.onValue (val) ->
+  ks.set 'registry:privateCombined', val
 
 ###########
 # update inspect running state on die and start container
@@ -138,6 +164,6 @@ ks.fromProperty 'containers:inspect'
   projects = ks.get "projects:list"
 
   for project in projects
-    project.state = if runningProjects[project.id] then 'running' else null
+    project.state = if runningProjects[project.composeId] then 'running' else null
 
   ks.set "projects:list", projects
