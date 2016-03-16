@@ -89,7 +89,7 @@ _r.combine [ks.fromProperty('registry:local'), ks.fromProperty('registry:private
 .map (combined) ->
   result = []
 
-  (localEntry.local = true && result.push localEntry) for localEntry in combined[0].value if combined[0].value
+  (result.push localEntry) for localEntry in combined[0].value if combined[0].value
   (result.push privateEntry) for privateEntry in combined[1].value if combined[1].value
 
   result.sort (a, b) ->

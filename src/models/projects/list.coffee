@@ -37,7 +37,8 @@ model.installProject = (project, callback) ->
   return callback new Error 'Invalid description data' if ! project?.id
 
   pattern = if project.pattern then true else false
-  projectUrl = if pattern then project.patternUrl else project.url;
+  projectUrl = if pattern then project.patternUrl else project.url
+  project.id = project.dirName if ! pattern
 
   return callback new Error 'Invalid description data' if ! project.id || ! projectUrl
   return callback new Error 'Could not resolve config path' if ! (projectsPath = utilModel.getProjectsPath())?

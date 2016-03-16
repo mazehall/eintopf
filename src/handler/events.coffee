@@ -154,8 +154,9 @@ handleEvents = (webContents) ->
   ipcToKefir 'projects:install'
   .filter (val) -> val.value?
   .onValue (val) ->
+    resultEvent = 'project:install:' + val.value.id
     projectsModel.installProject val.value, (err, result) ->
-      val.event.sender.send 'project:install:' + val.value.id, {err: err?.message || null, result: result}
+      val.event.sender.send resultEvent, {err: err?.message || null, result: result}
 
   ipcToKefir 'project:detail'
   .filter (x) -> x.value?

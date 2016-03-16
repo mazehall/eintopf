@@ -75,7 +75,7 @@ model.remapRegistries = ->
   .flatten()
   .map (type) ->
     property = 'registry:' + type
-    {name: property, data: model.map ks.get property}
+    {name: property, data: model.map ks.get property, type == 'local'}
   .onValue (registry) ->
     ks.set registry.name, registry.data
 
