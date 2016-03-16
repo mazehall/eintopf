@@ -48,7 +48,7 @@
                 <button class="btn" ng-click="installProject(value)" ng-disabled="value.installed"
                         ng-class="{disabled: !value.pattern && value.installed}" ng-if="!value.pattern">Create</button>
 
-                <button class="btn" ui-sref='cooking.projects.clone({id: value.hash})' ng-if="value.pattern">Clone</button>
+                <button class="btn" ui-sref='cooking.projects.clone({id: value.id, type: "private"})' ng-if="value.pattern">Clone</button>
             </div>
         </div>
     </div>
@@ -77,7 +77,7 @@
                             <button class="btn" ng-click="installProject(value)" ng-disabled="value.installed"
                                     ng-class="{disabled: !value.pattern && value.installed}" ng-if="!value.pattern">Create</button>
 
-                            <button class="btn" ui-sref='cooking.projects.clone({id: value.hash})'
+                            <button class="btn" ui-sref='cooking.projects.clone({id: value.id, type: "public"})'
                                     ng-if="value.pattern">Clone</button>
                         </div>
                     </div>
