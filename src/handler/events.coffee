@@ -154,9 +154,12 @@ handleEvents = (webContents) ->
   ipcToKefir 'projects:install'
   .filter (val) -> val.value?
   .onValue (val) ->
-    resultEvent = 'project:install:' + val.value.id
+    id = val.value.id
+
+    ks.setChildProperty 'locks', 'project:install:' + id, true
     projectsModel.installProject val.value, (err, result) ->
-      val.event.sender.send resultEvent, {err: err?.message || null, result: result}
+      ks.setChildProperty 'locks', 'project:install:' + id, false
+      val.event.sender.send 'project:install:' + id, {err: err?.message || null, result: result}
 
   ipcToKefir 'project:detail'
   .filter (x) -> x.value?

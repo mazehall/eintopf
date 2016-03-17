@@ -216,8 +216,9 @@
   );
 
   controllerModule.controller('createProjectCtrl',
-    ['$scope', '$state', 'registryFactory','projectFactory',
-      function ($scope, $state, registryFactory, projectFactory) {
+    ['$scope', '$state', 'registryFactory','projectFactory', 'lockFactory',
+      function ($scope, $state, registryFactory, projectFactory, lockFactory) {
+        lockFactory.stream.$assignProperty($scope, 'locks');
         registryFactory.assignPublicRegistry($scope, 'public');
         registryFactory.assignPrivateRegistry($scope, 'private');
 
@@ -235,12 +236,9 @@
 
         $scope.installProject = function(project) {
           if (typeof project != 'object') return false;
-
           $scope.errorMessage = null;
-          $scope.loading = true;
 
           projectFactory.installProject(project, function(err, result) {
-            $scope.loading = false;
             if (result && result.id) return $state.go("cooking.projects.recipe", {id: result.id});
             if (err && err) $scope.errorMessage = err;
 

@@ -59,8 +59,11 @@
             </div>
 
             <div class="cssListBtn mx1 p05 grd-row-col-1-6 txt--right">
-                <button class="btn" ng-click="installProject(value)" ng-disabled="value.installed"
-                        ng-class="{disabled: !value.pattern && value.installed}" ng-if="!value.pattern">Create</button>
+                <button class="btn" ng-click="installProject(value)" ng-disabled="value.installed || locks['project:install:' + value.id]"
+                        ng-class="{disabled: !value.pattern && value.installed}" ng-if="!value.pattern">
+                    <i ng-show="locks['project:install:' + value.id]" class="fa fa-spinner fa-pulse"></i>
+                    <span>Create</span>
+                </button>
 
                 <button class="btn" ui-sref='cooking.projects.clone({id: value.id})' ng-if="value.pattern">Clone</button>
             </div>
