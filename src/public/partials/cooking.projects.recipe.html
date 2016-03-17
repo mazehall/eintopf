@@ -78,7 +78,7 @@
                           </span>
                         </li>
                         <li class="grd-row" ng-repeat="action in project.actions" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
-                            <button  class="btn btn-without-design grd-row-col-6 px0 py2">
+                            <button  class="btn btn-without-design grd-row-col-6 px0 py2" ng-click="doAction(project, action)">
                                 <p class="m0 p0 grd-row" ng-if="action.name">{{action.name}}</p>
                                 <p class="m0 p0 grd-row" ng-if="!action.name">Action</p>
                                 <span class="small m0 p0 grd-row">{{action.warning}}</span>
