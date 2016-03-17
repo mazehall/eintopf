@@ -7,7 +7,6 @@ crypto = require "crypto"
 ks = require 'kefir-storage'
 
 utilModel = require '../util/'
-ks.set 'projects:list', []
 
 projectHashes = []
 
