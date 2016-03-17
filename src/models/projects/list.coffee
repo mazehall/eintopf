@@ -7,7 +7,6 @@ crypto = require "crypto"
 ks = require 'kefir-storage'
 
 utilModel = require '../util/'
-registry = require '../registry/index.coffee'
 ks.set 'projects:list', []
 
 projectHashes = []
@@ -91,9 +90,6 @@ model.patternPostInstall = (project, callback) ->
   .flatMap -> # remove .git folder
     _r.fromNodeCallback (cb) ->
       utilModel.removeFileAsync projectDir.path('.git'), cb
-  .flatMap -> # update local registry
-    _r.fromNodeCallback (cb) ->
-      registry.add recipe, cb
   .onError callback
   .onValue ->
     callback null, true
@@ -127,6 +123,10 @@ model.loadProject = (projectPath, callback) ->
     project['composeId'] = project.id.replace(/[^a-zA-Z0-9]/ig, "")
     project['readme'] = result[1] || ''
     project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
+
+    # reuse projects for installed recipes list
+    project['local'] = true
+    project['installed'] = true
 
     # keep existing checked states
     (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in ks.get 'projects:list'

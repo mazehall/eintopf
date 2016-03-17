@@ -92,7 +92,7 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send 'registry:public', val.value
 
-  ks.fromProperty 'registry:privateCombined'
+  ks.fromProperty 'registry:private'
   .onValue (val) ->
     webContents.send 'registry:private', val.value
 
@@ -138,7 +138,7 @@ handleEvents = (webContents) ->
 
   ipcToKefir 'registry:private'
   .onValue (val) ->
-    val.event.sender.send 'registry:private', ks.get 'registry:privateCombined'
+    val.event.sender.send 'registry:private', ks.get 'registry:private'
 
   ipcToKefir 'terminal:input'
   .filter (x) -> x.value?

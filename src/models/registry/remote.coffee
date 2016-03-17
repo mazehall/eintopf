@@ -40,6 +40,8 @@ model.loadFromUrls = (urls, callback) ->
     _r.fromNodeCallback (cb) ->
       model.loadUrl url, cb
     .flatten()
+    .skipDuplicates (a, b) -> # keep urls unique to avoid id issues (see id format in index -> map)
+      a.url == b.url
     .map (entry) ->
       entry.registryUrl = url
       entry

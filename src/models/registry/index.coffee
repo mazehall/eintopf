@@ -4,25 +4,15 @@ crypto = require "crypto"
 
 config = require '../stores/config.coffee'
 utils = require '../util/index.coffee'
-local = require './local.coffee'
 remote = require './remote.coffee'
 
 defaultRegistry = require '../../../config/default.registry.json'
 registryConfig = config.get 'registry'
-propertyLocal = 'registry:local'
 propertyPublic = 'registry:public'
-propertyPrivate = 'registry:private'
+propertyPrivate = 'registry:private:remote'
 
 
 model = {}
-
-model.add = (project, callback) ->
-  _r.fromNodeCallback (cb) ->
-    local.addFromProject project, cb
-  .onError callback
-  .onValue ->
-    model.initLocal()
-    callback null, true
 
 model.getRecipe = (id) ->
   for type in ['public', 'private']
@@ -31,17 +21,8 @@ model.getRecipe = (id) ->
   return null
 
 model.init = () ->
-  model.initLocal()
   model.initPublic()
   model.initPrivates()
-
-model.initLocal = () ->
-  _r.fromNodeCallback (cb) ->
-    local.loadFile cb
-  .map (data) ->
-    model.map data, true
-  .onValue (entry) ->
-    ks.set propertyLocal, entry
 
 model.initPublic = () ->
   if ! (publicUrl = process.env.REGISTRY_URL || registryConfig.public) || typeof publicUrl != "string"
@@ -71,25 +52,21 @@ model.initPrivates = () ->
 
 # update and set registry install flags
 model.remapRegistries = ->
-  _r.later 0, ['public', 'private', 'local']
+  _r.later 0, ['public', 'private']
   .flatten()
   .map (type) ->
     property = 'registry:' + type
-    {name: property, data: model.map ks.get property, type == 'local'}
+    {name: property, data: model.map ks.get property}
   .onValue (registry) ->
     ks.set registry.name, registry.data
 
-model.map = (registryData, local) ->
+model.map = (registryData) ->
   return registryData if ! utils.typeIsArray registryData
 
   for entry in registryData
-    if local
-      entry.installed = true if local
-      entry.local = true
-    else
-      entry.id = crypto.createHash("md5").update(entry.url + entry.registryUrl).digest "hex" if entry?.url && entry.registryUrl
-      entry.dirName = utils.getProjectNameFromGitUrl entry.url if entry?.url
-      entry.installed = utils.isProjectInstalled entry.dirName if entry?.dirName && ! entry.pattern
+    entry.id = crypto.createHash("md5").update(entry.url + entry.registryUrl).digest "hex" if entry?.url && entry.registryUrl
+    entry.dirName = utils.getProjectNameFromGitUrl entry.url if entry?.url
+    entry.installed = utils.isProjectInstalled entry.dirName if entry?.dirName && ! entry.pattern
   registryData
 
 module.exports = model

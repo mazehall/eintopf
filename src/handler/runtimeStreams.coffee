@@ -84,20 +84,27 @@ _r.merge [ks.fromProperty('projects:certs'), ks.fromProperty('proxy:certs')]
 
 
 ###########
-# create combined property from local and private registry
-_r.combine [ks.fromProperty('registry:local'), ks.fromProperty('registry:private')]
+# set registry:private which is combined from registry:private:remote and projects:list
+_r.combine [ks.fromProperty('registry:private:remote'), ks.fromProperty('projects:list')]
 .map (combined) ->
   result = []
+  ids = {}
+  combined[0] = [] if ! combined[0]
+  combined[1] = [] if ! combined[1]
 
-  (result.push localEntry) for localEntry in combined[0].value if combined[0].value
-  (result.push privateEntry) for privateEntry in combined[1].value if combined[1].value
+  for privateEntry in combined[0].value
+    ids[privateEntry.dirName] = true
+    result.push privateEntry
+
+  for installedEntry in combined[1].value
+    result.push installedEntry if ! ids[installedEntry.id]
 
   result.sort (a, b) ->
     return -1 if a.name < b.name
     return 1 if a.name > b.name
     return 0;
 .onValue (val) ->
-  ks.set 'registry:privateCombined', val
+  ks.set 'registry:private', val
 
 ###########
 # update inspect running state on die and start container
