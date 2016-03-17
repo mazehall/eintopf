@@ -52,7 +52,7 @@ model.initPrivates = () ->
 
 # update and set registry install flags
 model.remapRegistries = ->
-  _r.later 0, ['public', 'private']
+  _r.later 0, ['public', 'private:remote']
   .flatten()
   .map (type) ->
     property = 'registry:' + type

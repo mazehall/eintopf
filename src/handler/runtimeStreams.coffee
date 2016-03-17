@@ -87,22 +87,34 @@ _r.merge [ks.fromProperty('projects:certs'), ks.fromProperty('proxy:certs')]
 # set registry:private which is combined from registry:private:remote and projects:list
 _r.combine [ks.fromProperty('registry:private:remote'), ks.fromProperty('projects:list')]
 .map (combined) ->
-  result = []
-  ids = {}
   combined[0] = [] if ! combined[0]
   combined[1] = [] if ! combined[1]
 
+  result = []
+  creatable = []
+  pattern = []
+  installed = []
+  ids = {}
+
   for privateEntry in combined[0].value
     ids[privateEntry.dirName] = true
-    result.push privateEntry
+    installed.push privateEntry if privateEntry.installed
+    pattern.push privateEntry if privateEntry.pattern
+    creatable.push privateEntry if ! privateEntry.installed && ! privateEntry.pattern
 
   for installedEntry in combined[1].value
-    result.push installedEntry if ! ids[installedEntry.id]
+    installed.push installedEntry if ! ids[installedEntry.id] # add entry if it does not already exist
 
-  result.sort (a, b) ->
-    return -1 if a.name < b.name
-    return 1 if a.name > b.name
-    return 0;
+  for registry in [creatable, pattern, installed]
+    registry.sort (a, b) ->
+      nameA = a.name.toLowerCase()
+      nameB = b.name.toLowerCase()
+
+      return -1 if nameA < nameB
+      return 1 if nameA > nameB
+      return 0
+    result = result.concat registry
+  result
 .onValue (val) ->
   ks.set 'registry:private', val
 
