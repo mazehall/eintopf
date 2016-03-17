@@ -128,7 +128,8 @@ model.loadProject = (projectPath, callback) ->
     project['installed'] = true
 
     # keep existing checked states
-    (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in ks.get 'projects:list'
+    if (projectCache = ks.get 'projects:list')
+      (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in projectCache
 
     if result[2]
       for file in result[2]
