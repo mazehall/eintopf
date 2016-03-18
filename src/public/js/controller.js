@@ -202,7 +202,11 @@
          */
         storage.stream("project.log.complete." + $stateParams.id).map(function (value) {
           return value && value.join("").replace(/\n/ig, "<br>");
-        }).$assignProperty($scope, "protocol");
+        })
+        .$assignProperty($scope, "protocol")
+        .onValue(function() {
+          $scope.$broadcast('scrollLog');
+        });
         storage.notify("project.log.complete." + $stateParams.id);
 
         $scope.$fromWatch("project.readme").skip(1).onValue(function (value) {

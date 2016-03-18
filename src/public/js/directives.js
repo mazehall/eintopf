@@ -20,6 +20,42 @@
     };
   }]);
 
+  // inspired by angularjs-scroll-glue: https://github.com/Luegg/angularjs-scroll-glue
+  directiveModule.directive('scrollOnEvent', ['$window', '$timeout', function($window, $timeout) {
+    return {
+      restrict: 'A',
+      scope: {
+        scrollOnEvent: '@'
+      },
+      link: function(scope, $el, attrs) {
+        var eventName = scope.scrollOnEvent || 'scroll';
+        var activated = true;
+        var el = $el[0];
+
+        var scrollIfGlued = function () {
+          if (activated && !isAttached(el)) scroll(el);
+        };
+
+        var isAttached = function(el){
+          // + 1 catches off by one errors in chrome
+          return el.scrollTop + el.clientHeight + 1 >= el.scrollHeight;
+        };
+        var scroll = function(el){
+          el.scrollTop = el.scrollHeight;
+        };
+
+        scope.$on(eventName, scrollIfGlued);
+
+        $timeout(scrollIfGlued, 0, false);
+        $window.addEventListener('resize', scrollIfGlued, false);
+
+        $el.bind('scroll', function(){
+          activated = isAttached(el);
+        });
+      }
+    }
+  }]);
+
   directiveModule.directive('fileDialog', ['electron', 'resizeService', function(electron, resizeService) {
     return {
       restrict: 'A',
