@@ -7,6 +7,7 @@ utilModel = require '../util/'
 terminalModel = require '../util/terminal.coffee'
 virtualboxModel = require './virtualbox.coffee'
 sshModel = require './ssh.coffee'
+fsModel = require './fs.coffee'
 
 isVagrantInstalled = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
@@ -32,7 +33,7 @@ model.getStatus = (callback) ->
 model.getSshConfig = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
 
-  machine.sshConfig (error, config) ->
+  fsModel.getSSHConfig (error, config) ->
     return callback? error if error
 
     virtualboxModel.getGuestIps (err, ips) -> # only take the second ip
