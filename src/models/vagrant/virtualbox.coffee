@@ -112,10 +112,10 @@ model.getGuestIps = (callback) ->
       model.enumerateGuestProperties dir.name, cb
   .map (config) ->
     ips = []
-    return ips if !(matched = config.match (/IP, value: (.*?),/g))
+    return ips if !(matched = config.match (/\/([0-9]*?)\/V4\/IP, value: (.*?),/g))
 
     for match in matched
-      ips.push ip[1] if (ip = match.match (/IP, value: (.*?),/)) && ip[1]
+      ips[1] = ip[2] if (ip = match.match (/\/([0-9]*?)\/V4\/IP, value: (.*?),/)) && ip[1] && ip[2]
     ips
   .onError callback
   .onValue (val) ->
