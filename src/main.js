@@ -31,6 +31,8 @@ app.on('ready', function () {
   windowMenu.init();
 
   mainWindow = new BrowserWindow({
+    minWidth: 768,
+    minHeight: 500,
     x: mainWindowState.x,
     y: mainWindowState.y,
     width: mainWindowState.width,

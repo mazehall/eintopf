@@ -119,10 +119,15 @@ button{
     padding:2rem 0 0 0;
 }
 .py05{
-    padding:0.5rem 0;
+    padding-top:0.5rem;
+    padding-bottom:0.5rem;
 }
 .p05{
     padding:0.5rem;
+}
+.px05{
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 .mx05{
     margin:0 0.5rem;
@@ -210,7 +215,8 @@ button{
     padding: .5rem .1rem .5rem 1rem;
 }
 .cssSidebar ul li a.btn--link:hover{
-    border-left:2px solid rgba(215, 228, 219, 1.0);
+    border-left:2px solid  rgba(180, 199, 186, 1.0);
+    color:rgba(2,86,95,.99);
     -webkit-transition: all 0.7s ease;
     transition: all 0.7s ease;
 }
@@ -364,6 +370,9 @@ ul.cssContainer li .btn-without-design:hover:after{
     border-bottom:2px solid rgba(228, 240, 232, .3);
     position:relative;
 }
+.cssTab i{
+    display:none;
+}
 .cssTab  li {
     border-bottom:2px solid rgba(215, 228, 219, 0.2);
     cursor: pointer;
@@ -451,27 +460,7 @@ ul.cssContainer li .btn-without-design:hover:after{
 .cssRemoveButton i:hover{
     color:#e74c3c;
 }
-@media screen and (max-width: 32rem){
-    .cssLogo{
-        background:url(../img/icon_topf.png) center left no-repeat;
-        min-height:30px;
-        max-width:10%;
-    }
-    .cssLogoImg{
-        display:none;
-    }
-    .cssNav{
-        max-width:90%;
-        text-align:center;
 
-    }
-    .cssToolbar li a span{
-        display:none;
-    }
-    .cssToolbar li a {
-        font-size:100%;
-    }
-}
 /* -------------- switch ----------------- */
 .cssSwitchBg span {
     background: white;
@@ -590,25 +579,29 @@ ul.cssContainer li .btn-without-design:hover:after{
     margin-left:1rem;
 }
 /* -------------- pattern ----------------- */
-.cssPrivateList .media{
+.cssPrivateList .media, .cssCreate .media{
     width:10rem;
 }
 .cssPrivateList .media .media-figure{
     max-height:4rem;
     max-width:4rem;
 }
+.cssCreate .media .media-figure{
+    max-height:5rem;
+    min-height:5rem;
+    max-width:4.5rem;
+}
 .cssPatterns{
     margin-top:5rem;
 }
-.cssCreate .btn{
-    padding:.1rem 1rem;
-}
+
 .cssCreate .media-body form{
    vertical-align:middle;
 }
 .cssBox .media-footer button.btn, .btn.cancel, .btn.remove, .btn.update, .cssListBtn .btn{
     padding:.25rem 1rem;
     background:none;
+    min-width: 5.3125rem;
 }
 .cssBox .media-footer button.btn.disabled, .cssBox .media-footer button.btn.disabled:hover, .cssListBtn button.btn.disabled{
     display:none;
@@ -646,8 +639,8 @@ ul.cssContainer li .btn-without-design:hover:after{
     background-color:rgba(228, 240, 232, 1.0);
 }
 .cssBox.cssCreate .media-figure{
-    max-height:5.2rem;
-    min-height:5.2rem;
+    max-height:4rem;
+    min-height:4rem;
     margin-right:0;
     background-color:rgba(228, 240, 232, 1.0);
 }
@@ -708,8 +701,8 @@ ul.cssContainer li .btn-without-design:hover:after{
 }
 .cssTooltip div.cssTooltipBody {
     z-index:30;
-    top:30px;
-    left:-300%;
+    top:40px;
+    left:-83%;
     width: 200px;
     position:absolute;
     background-color: rgba(19, 103, 112, 1.0);
@@ -880,4 +873,134 @@ li.cssPanelBox:hover{
     flex-direction:inherit;
     background:none;
     text-align:left;
+}
+
+/* -------------- screen mobile min 768px max 1152px----------------- */
+@media screen and (min-width: 48rem) and (max-width: 72rem){
+    .cssSidebar.grd-row-col-1-6--lg {
+        max-width: 33.33333%;
+        -webkit-flex-basis: 33.33333%;
+        -ms-flex-preferred-size: 33.33333%;
+        flex-basis: 33.33333%; }
+    .cssSidebar.grd-row-col-2-6--lg {
+        max-width: 33.33333%;
+        -webkit-flex-basis: 33.33333%;
+        -ms-flex-preferred-size: 33.33333%;
+        flex-basis: 33.33333%; }
+    .cssSidebar.grd-row-col-3-6--lg {
+        max-width: 50%;
+        -webkit-flex-basis: 50%;
+        -ms-flex-preferred-size: 50%;
+        flex-basis: 50%; }
+    .cssSidebar.grd-row-col-4-6--lg {
+        max-width: 66.66667%;
+        -webkit-flex-basis: 66.66667%;
+        -ms-flex-preferred-size: 66.66667%;
+        flex-basis: 66.66667%; }
+    .cssSidebar.grd-row-col-5-6--lg {
+        max-width: 66.66667%;
+        -webkit-flex-basis: 66.66667%;
+        -ms-flex-preferred-size: 66.66667%;
+        flex-basis: 66.66667%; }
+    .cssSidebar.grd-row-col-6--lg {
+        max-width: 100%;
+        -webkit-flex-basis: 100%;
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%; }
+    .cssTab li p{
+        font-size: .707em;
+    }
+    .cssBox.cssCreate form input.grd-row-col-5-6{
+        max-width:80%;
+    }
+    .cssCreate .media .media-figure.p1{
+        width: 0.5rem;
+
+        padding:0;
+    }
+    .cssCreate .media{
+        width: 2rem;
+
+    }
+    .cssCreate .media img{
+        display:none;
+    }
+    .cssCreate .btn, .cssListBtn .btn{
+        padding: .25rem 1rem;
+        min-width:0;
+    }
+    .cssListBtn.mx2{
+        margin-left:0;
+    }
+    .cssTooltip div.cssTooltipBody {
+        z-index:30;
+        top:40px;
+        left:-1200%;
+        width: 200px;
+        position:absolute;
+        background-color: rgba(19, 103, 112, 1.0);
+        border-radius:2px;
+        color:#fff;
+        line-height:1rem;
+        display:none;
+    }
+
+    .cssTooltip .fa-2x{
+
+    }
+    .cssPrivateList .media-body.mx1{
+        margin:0;
+    }
+    .cssPrivateList .media{
+        width:2rem;
+    }
+    .cssPrivateList .media .media-figure.p1{
+        width:.5rem;
+        height:4rem;
+        padding-left:0;
+        padding-right:0;
+    }
+    .cssPrivateList .media .media-figure img{
+        display:none;
+    }
+}
+/* -------------- screen mobile min 512px max 867px----------------- */
+@media screen and (min-width: 32rem) and (max-width: 54.1875rem){
+    .cssTab i{
+        display:inherit;
+    }
+    .cssTab p{
+        display:none;
+    }
+}
+/* -------------- screen mobile min 512px max 767px----------------- */
+@media screen and (min-width: 32rem) and (max-width: 47.9rem){
+    html {
+    font-size:.8rem;
+    }
+    .cssLogo{
+        background:url(../img/icon_topf.png) center left no-repeat;
+        min-height:30px;
+        max-width:30%;
+    }
+    .cssLogoImg{
+        display:none;
+    }
+    .cssNav{
+        max-width:70%;
+        text-align:right;
+
+    }
+    .cssToolbar li a span{
+        display:none;
+    }
+    .cssToolbar li a {
+        font-size:100%;
+    }
+    .cssHeader ul li:last-child{
+        margin-left:0;
+    }
+    .cssHeader ul li a{
+        line-height:50px;
+    }
 }
