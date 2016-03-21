@@ -213,6 +213,7 @@ model.stopProject = (projectId, callback) ->
 
 model.callAction = (projectId, action, callback) -> #@todo one log for one project
   logName = if ['start', 'stop'].indexOf(action) >= 0 then "res:project:#{action}:#{projectId}" else "res:project:action:script:#{projectId}"
+  lock = ['start', 'stop'].indexOf(action) >= 0
   error = null
 
   return callback? new Error 'Invalid project action' if !projectId || !action || !(project = model.getProject projectId)
@@ -223,9 +224,9 @@ model.callAction = (projectId, action, callback) -> #@todo one log for one proje
     ks.log logName, error
     return callback? new Error error
 
-  ks.setChildProperty 'locks', 'projects:' + projectId, true
+  ks.setChildProperty 'locks', 'projects:' + projectId, true if lock
   utilModel.runCmd project.scripts[action], {cwd: project.path}, logName, (err, result) ->
-    ks.setChildProperty 'locks', 'projects:' + projectId, false
+    ks.setChildProperty 'locks', 'projects:' + projectId, false if lock
     callback? err, result
 
 module.exports = model;
