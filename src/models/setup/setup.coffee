@@ -42,9 +42,9 @@ model.run = () ->
 
     _r.fromNodeCallback (cb) ->
       vagrantRunModel.run cb
-#  .flatMap -> #@todo fix when not authorized ssh it asks on console for password
-#    _r.fromCallback (cb) ->
-#      model.getVagrantSshConfigAndSetIt cb
+  .flatMap ->
+    _r.fromCallback (cb) ->
+      model.getVagrantSshConfigAndSetIt cb
   .onValue ->
     ks.setChildProperty 'states:live', 'setupVagrantVM', true
     ks.setChildProperty 'states:live', 'state', 'cooking'

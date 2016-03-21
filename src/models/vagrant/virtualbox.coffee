@@ -92,4 +92,33 @@ model.checkMachineConsistency = (callback) ->
   .onValue ->
     return callback null, true
 
+model.enumerateGuestProperties = (machineId, callback) ->
+  cmdParams = "guestproperty enumerate " + machineId
+
+  return _r.fromNodeCallback (cb) ->
+    utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, cb
+  .flatMapErrors (err) ->
+    return _r.constantError err if process.platform != "win32"
+    _r.fromNodeCallback (cb) ->
+      return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, cb
+  .onError callback
+  .onValue (val) ->
+    callback null, val
+
+model.getGuestIps = (callback) ->
+  _r.fromNodeCallback model.getOnlyVirtualBoxDir
+  .flatMap (dir) ->
+    _r.fromNodeCallback (cb) ->
+      model.enumerateGuestProperties dir.name, cb
+  .map (config) ->
+    ips = []
+    return ips if !(matched = config.match (/IP, value: (.*?),/g))
+
+    for match in matched
+      ips.push ip[1] if (ip = match.match (/IP, value: (.*?),/)) && ip[1]
+    ips
+  .onError callback
+  .onValue (val) ->
+    callback null, val
+
 module.exports = model;

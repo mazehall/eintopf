@@ -5,6 +5,7 @@ jetpack = require "fs-jetpack"
 
 utilModel = require '../util/'
 terminalModel = require '../util/terminal.coffee'
+virtualboxModel = require './virtualbox.coffee'
 sshModel = require './ssh.coffee'
 
 isVagrantInstalled = (callback) ->
@@ -33,9 +34,10 @@ model.getSshConfig = (callback) ->
 
   machine.sshConfig (error, config) ->
     return callback? error if error
-    return machine._run ["ssh", "-c", "hostname -I | cut -d' ' -f2"], (error, hostname) ->
-      config.hostname = hostname if hostname and not error
-      callback? error, config
+
+    virtualboxModel.getGuestIps (err, ips) -> # only take the second ip
+      config.hostname = if ips.length >= 2 then ips[1] else ''
+      return callback? error, config
 
 model.reloadWithNewSsh = (callback) ->
   _r.fromNodeCallback (cb) ->
