@@ -48,7 +48,7 @@
 
             <div class="grd-row p0 m0 cssBorderWhitoutTop">
                 <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-glue="!pageSlide && currentTab == 'protocol'" ng-show="currentTab == 'protocol'">
-                    <div class="fnt--off-white" marked="protocol"></div>
+                    <div class="fnt--off-white" ng-bind-html="protocol | trustAsHtml"></div>
                 </div>
 
                 <div class="grd-row-col-6  p1 " ng-if="project.readme" ng-show="currentTab == 'readme'">

@@ -4,6 +4,9 @@ spawn = require('child_process').spawn
 _r = require('kefir');
 ks = require 'kefir-storage'
 
+Convert = require 'ansi-to-html'
+convert = new Convert();
+
 model = {}
 
 # use original config first and let it overwrite later with the custom config
@@ -114,7 +117,7 @@ model.isProjectInstalled = (projectId) ->
   return null if ! projectId || ! (projectsPath = @getProjectsPath())
   return @folderExists jetpack.cwd(projectsPath).path(projectId)
 
-model.runCmd = (cmd, config, logName, callback) ->
+model.runCmd = (cmd, config, logName, logAction, callback) ->
   config = {} if ! config
   stdOut = ""
   stdErr = ""
@@ -133,11 +136,16 @@ model.runCmd = (cmd, config, logName, callback) ->
     return callback? new Error(stdErr || "Command failed"), stdOut if code != 0
     callback? null, stdOut
   proc.stdout.on 'data', (chunk) ->
-    ks.log logName, chunk.toString() if logName
+    ks.log logName, model.shellToHtml chunk.toString(), logAction if logName
     stdOut += chunk.toString()
   proc.stderr.on 'data', (chunk) ->
-    ks.log logName, chunk.toString() if logName
+    ks.log logName, model.shellToHtml chunk.toString(), logAction if logName
     stdErr += chunk.toString()
+
+model.shellToHtml = (value, action) ->
+  prefix = new Date().toLocaleTimeString() + " - [#{action}] > "
+
+  return convert.toHtml(prefix + value.replace(/\n/ig, "<br>"));
 
 model.syncCerts = (path, files, callback) ->
   return callback new Error 'Invalid path given' if ! path

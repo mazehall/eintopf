@@ -141,6 +141,7 @@
   controllerModule.controller('recipeCtrl',
     ['$scope', '$stateParams', '$state', 'storage', 'resProjectStart','resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'containerFactory', 'lockFactory', 'appFactory', 'projectFactory',
       function ($scope, $stateParams, $state, storage, resProjectStart, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, containerFactory, lockFactory, appFactory, projectFactory) {
+        projectFactory.streamLog($stateParams.id).$assignProperty($scope, 'protocol');
         projectFactory.assignFromProject($stateParams.id, $scope, 'project');
         lockFactory.assignFromProject($stateParams.id, $scope, 'locked');
         currentProject.setProjectId($stateParams.id);
@@ -197,14 +198,7 @@
           storage.set("frontend.tabs" + $stateParams.id + ".lastActive", tab);
         };
 
-        /**
-         * Log post format
-         */
-        storage.stream("project.log.complete." + $stateParams.id).map(function (value) {
-          return value && value.join("").replace(/\n/ig, "<br>");
-        }).$assignProperty($scope, "protocol");
         storage.notify("project.log.complete." + $stateParams.id);
-
         $scope.$fromWatch("project.readme").skip(1).onValue(function (value) {
           if (value.newValue.length === 0 || storage.get("project.log.complete." + $stateParams.id)) {
             return $scope.currentTab = "protocol";
