@@ -20,7 +20,7 @@ samples =
 describe "updateRegistryInstallFlags", ->
 
   beforeEach ->
-    model = rewire "../../../../src/models/stores/registry.coffee"
+    model = rewire "../../../../src/models/registry/index.coffee"
     model.__set__ 'ks',
       get: jasmine.createSpy('ks.get').andCallFake -> samples.recommendationsList
       set: jasmine.createSpy('ks.set').andCallFake ->
@@ -55,7 +55,7 @@ describe "updateRegistryInstallFlags", ->
 #  model = null
 #  noop = -> @
 #  beforeEach ->
-#    model = rewire "../../../../models/stores/registry.coffee"
+#    model = rewire "../../../../src/models/stores/registry.coffee"
 #    model.__set__ "https", {request: (option, callback) -> callback? end: noop, on: noop}
 #    model.__set__ "http",  {request: (option, callback) -> callback? end: noop, on: noop}
 #    model.__set__ "model.loadRegistryContent", (url, callback) -> callback?(null, [])
@@ -154,18 +154,18 @@ describe "updateRegistryInstallFlags", ->
 #
 #  it "should overwrite property 'model.loadingTimeout' via process.env", ->
 #    process.env.REGISTRY_INTERVAL = 1234321
-#    model = rewire "../../../../models/stores/registry.coffee"
+#    model = rewire "../../../../src/models/stores/registry.coffee"
 #    expect(process.env.REGISTRY_INTERVAL).toEqual model.__get__ "loadingTimeout"
 #
 #  it "should overwrite property 'model.publicRegistry' via process.env", ->
 #    process.env.REGISTRY_URL = "http://foo.public"
-#    model = rewire "../../../../models/stores/registry.coffee"
+#    model = rewire "../../../../src/models/stores/registry.coffee"
 #    expect(process.env.REGISTRY_URL).toEqual model.__get__ "publicRegistry"
 #
 #  it "should throw an error when invalid json received", ->
 #    spyOn(model, "loadRegistryContent").andCallThrough()
 #
-#    model = rewire "../../../../models/stores/registry.coffee"
+#    model = rewire "../../../../src/models/stores/registry.coffee"
 #    model.__set__ "http",
 #      request: (option, callback) ->
 #        res = {statusCode: 200}
@@ -183,7 +183,7 @@ describe "updateRegistryInstallFlags", ->
 #  it "should return the error when 'model.loadRegistryContent' fails", (done) ->
 #    spyOn(model, "loadRegistryContent").andCallThrough()
 #
-#    model = rewire "../../../../models/stores/registry.coffee"
+#    model = rewire "../../../../src/models/stores/registry.coffee"
 #    model.__set__ "http",
 #      request: (option, callback) ->
 #        res = {statusCode: 200}

@@ -16,7 +16,7 @@ samples =
 describe "deployPublicKeyStdInCallback", ->
 
   beforeEach ->
-    model = rewire "../../../../models/vagrant/ssh.coffee"
+    model = rewire "../../../../src/models/vagrant/ssh.coffee"
     model.__set__ 'terminalModel',
       writeIntoPTY: jasmine.createSpy('writeIntoPTY').andCallFake ->
 
@@ -36,7 +36,7 @@ describe "deployPublicKeyStdInCallback", ->
 describe "deployKeys", ->
 
   beforeEach ->
-    model = rewire "../../../../models/vagrant/ssh.coffee"
+    model = rewire "../../../../src/models/vagrant/ssh.coffee"
     spyOn(model, 'deployPrivateKey').andCallFake (privateKey, callback) ->
       process.nextTick -> callback null, true # be async
     spyOn(model, 'deployPublicKey').andCallFake (publicKey, callback) ->
@@ -88,7 +88,7 @@ describe "deployKeys", ->
 describe "deployPrivateKey", ->
 
   beforeEach ->
-    model = rewire "../../../../models/vagrant/ssh.coffee"
+    model = rewire "../../../../src/models/vagrant/ssh.coffee"
     model.__set__ 'vbModel',
       getOnlyVirtualBoxDir: jasmine.createSpy('getOnlyVirtualBoxDir').andCallFake (callback) ->
         process.nextTick -> callback null, absolutePath: samples.absolutePath
@@ -147,7 +147,7 @@ describe "deployPrivateKey", ->
 describe "installNewKeys", ->
 
   beforeEach ->
-    model = rewire "../../../../models/vagrant/ssh.coffee"
+    model = rewire "../../../../src/models/vagrant/ssh.coffee"
     model.__set__ 'vbModel',
       getOnlyVirtualBoxDir: jasmine.createSpy('getOnlyVirtualBoxDir').andCallFake (callback) ->
         process.nextTick -> callback null, absolutePath: samples.absolutePath
@@ -218,7 +218,7 @@ describe "deployPublicKey", ->
       on: jasmine.createSpy('stdin.on').andCallFake ->
 
   beforeEach ->
-    model = rewire "../../../../models/vagrant/ssh.coffee"
+    model = rewire "../../../../src/models/vagrant/ssh.coffee"
     model.__set__ 'utilModel',
       getConfigModulePath: jasmine.createSpy('getConfigModulePath').andCallFake -> samples.configPath
     model.__set__ 'terminalModel',

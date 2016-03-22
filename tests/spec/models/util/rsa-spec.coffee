@@ -13,7 +13,7 @@ samples =
 describe "createKeyPair", ->
 
   beforeEach ->
-    model = rewire "../../../../models/util/rsa.coffee"
+    model = rewire "../../../../src/models/util/rsa.coffee"
     model.__set__ 'NodeRSA', jasmine.createSpy('NodeRSA').andCallFake ->
       return {
         exportKey: (format) ->
@@ -39,7 +39,7 @@ describe "createKeyPair", ->
 describe "publicKeyPemToPublicSSH" , ->
 
   beforeEach ->
-    model = rewire "../../../../models/util/rsa.coffee"
+    model = rewire "../../../../src/models/util/rsa.coffee"
     model.__set__ 'forge',
       pki:
         publicKeyFromPem: jasmine.createSpy('forge.pki.publicKeyFromPem').andCallFake ->
@@ -66,7 +66,7 @@ describe "publicKeyPemToPublicSSH" , ->
 describe "createKeyPairForSSH" , ->
 
   beforeEach ->
-    model = rewire "../../../../models/util/rsa.coffee"
+    model = rewire "../../../../src/models/util/rsa.coffee"
     spyOn(model, 'createKeyPair').andCallFake (callback) ->
       callback null,
         privateKey: samples.privateKey,

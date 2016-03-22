@@ -31,7 +31,7 @@ failFromPromise = (error) ->
 describe "checkAndRestoreMachineId", ->
 
   beforeEach ->
-    model = rewire "../../../../models/vagrant/virtualbox.coffee"
+    model = rewire "../../../../src/models/vagrant/virtualbox.coffee"
     spyOn(model, 'restoreIdFromMachineFolder').andCallFake (callback) ->
       process.nextTick -> callback null, true
     spyOn(model, 'getMachine').andCallFake (machineId, callback) ->
@@ -78,7 +78,7 @@ describe "getMachine", ->
     Object.defineProperty process, 'platform',
       value: 'MockOS'
 
-    model = rewire "../../../../models/vagrant/virtualbox.coffee"
+    model = rewire "../../../../src/models/vagrant/virtualbox.coffee"
     model.__set__ 'utilModel',
       runCmd: jasmine.createSpy('runCmd').andCallFake (cmd, config, logName, logAction, callback) ->
         process.nextTick -> callback null, samples.vmInfoRaw
@@ -166,7 +166,7 @@ describe "getMachine", ->
 describe "getMachineFromMachineFolder", ->
 
   beforeEach ->
-    model = rewire "../../../../models/vagrant/virtualbox.coffee"
+    model = rewire "../../../../src/models/vagrant/virtualbox.coffee"
     spyOn(model, 'getMachine').andCallFake (machineId, callback) ->
       process.nextTick -> callback null, samples.vmInfoMapped
     spyOn(model, 'getOnlyVirtualBoxDir').andCallFake (callback) ->
@@ -220,7 +220,7 @@ describe "getOnlyVirtualBoxDir", ->
       path: jasmine.createSpy('cwd').andCallFake -> samples.path
       findAsync: jasmine.createSpy('findAsync').andCallFake -> fromPromise [{absolutePath: samples.path}]
 
-    model = rewire "../../../../models/vagrant/virtualbox.coffee"
+    model = rewire "../../../../src/models/vagrant/virtualbox.coffee"
     model.__set__ 'utilModel',
       getConfigModulePath: jasmine.createSpy('getConfigModulePath').andCallFake () -> samples.path
     model.__set__ 'jetpack', jetpackMock
@@ -266,7 +266,7 @@ describe "getOnlyVirtualBoxDir", ->
 describe "restoreIdFromMachineFolder", ->
 
   beforeEach ->
-    model = rewire "../../../../models/vagrant/virtualbox.coffee"
+    model = rewire "../../../../src/models/vagrant/virtualbox.coffee"
     model.__set__ 'utilModel',
       writeFile: jasmine.createSpy('writeFile').andCallFake (path, content, callback) ->
         process.nextTick -> callback null, true
@@ -322,7 +322,7 @@ describe "checkMachineConsistency", ->
       path: jasmine.createSpy('cwd').andCallFake -> samples.vmInfoMappedExt.idFilePath
       readAsync: jasmine.createSpy('readAsync').andCallFake -> fromPromise samples.vmInfoMappedExt.UUID
 
-    model = rewire "../../../../models/vagrant/virtualbox.coffee"
+    model = rewire "../../../../src/models/vagrant/virtualbox.coffee"
     spyOn(model, 'getOnlyVirtualBoxDir').andCallFake (callback) ->
       process.nextTick -> callback null, {absolutePath: samples.path, name: samples.vmInfoMapped.name }
     spyOn(model, 'checkAndRestoreMachineId').andCallFake (id, callback) ->
