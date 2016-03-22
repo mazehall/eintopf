@@ -22,7 +22,7 @@ model.getMachine = (machineId, callback) ->
   _r.fromNodeCallback (cb) -> # cmd response only positive when machine exists
     utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, null, (err, result) ->
       if process.platform == "win32" && err
-        return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, null. cb
+        return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, null, cb
       cb err, result
   .map (resultString) ->
     result = {}
