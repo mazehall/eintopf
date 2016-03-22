@@ -20,6 +20,8 @@
     'images-resizer'
   ]);
 
+  eintopf.filter('trustAsHtml', function($sce) { return $sce.trustAsHtml; });
+
   eintopf.config(['terminalConfigurationProvider', function (terminalConfigurationProvider) {
     terminalConfigurationProvider.inputOnlyMode = true;
     terminalConfigurationProvider.promptConfiguration = {end: '', user: '', separator: '', path: ''};

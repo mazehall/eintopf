@@ -80,7 +80,7 @@ describe "getMachine", ->
 
     model = rewire "../../../../models/vagrant/virtualbox.coffee"
     model.__set__ 'utilModel',
-      runCmd: jasmine.createSpy('runCmd').andCallFake (cmd, config, logName, callback) ->
+      runCmd: jasmine.createSpy('runCmd').andCallFake (cmd, config, logName, logAction, callback) ->
         process.nextTick -> callback null, samples.vmInfoRaw
 
   afterEach ->
@@ -100,7 +100,7 @@ describe "getMachine", ->
   it 'should fail when runCmd fails', (done) ->
     expected = new Error 'something went wrong'
 
-    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
+    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, logAction, callback) ->
       process.nextTick -> callback expected
 
     model.getMachine samples.id, (err) ->
@@ -108,7 +108,7 @@ describe "getMachine", ->
       done()
 
   it 'should call runCmd only once when it fails on linux', (done) ->
-    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
+    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, logAction, callback) ->
       if cmd.match(/^"C:/)
         return process.nextTick -> callback new Error 'something went wrong'
       process.nextTick -> callback new Error 'sh: 1: VBoxManage: not found'
@@ -121,7 +121,7 @@ describe "getMachine", ->
     Object.defineProperty process, 'platform',
       value: 'win32'
 
-    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
+    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, logAction, callback) ->
       if cmd.match(/^"C:/)
         return process.nextTick -> callback null, samples.vmInfoRaw
       process.nextTick -> callback new Error 'sh: 1: VBoxManage: not found'
@@ -134,7 +134,7 @@ describe "getMachine", ->
     Object.defineProperty process, 'platform',
       value: 'win32'
 
-    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
+    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, logAction, callback) ->
       process.nextTick -> callback new Error 'sh: 1: VBoxManage: not found'
 
     model.getMachine samples.id, ->
@@ -142,7 +142,7 @@ describe "getMachine", ->
       done()
 
   it 'should return empty object when runCmd returns nothing', (done) ->
-    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
+    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, logAction, callback) ->
       process.nextTick -> callback null, null
 
     model.getMachine samples.id, (err, result) ->
@@ -155,7 +155,7 @@ describe "getMachine", ->
       done()
 
   it 'should map windows cmd result into correct properties', (done) ->
-    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, callback) ->
+    model.__get__('utilModel').runCmd.andCallFake (cmd, config, logName, logAction, callback) ->
       process.nextTick -> callback null, samples.vmInfoRawWin
 
     model.getMachine samples.id, (err, result) ->

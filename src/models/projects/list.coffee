@@ -192,15 +192,15 @@ model.updateProject = (project, callback) ->
 
   return callback new Error 'invalid project given' if typeof project != "object" || ! project.path?
   error = 'Project action already running' if ks.getChildProperty 'locks', 'projects:' + project.id
-  logName = "res:project:update:#{project.id}"
+  logName = 'project:log:' + project.id
 
   if error? # log the error when project exists
     ks.log logName, error
     return callback? new Error error
 
   ks.setChildProperty 'locks', 'projects:' + project.id, true
-  ks.log logName, ["Start pulling...\n"]
-  utilModel.runCmd "git pull", {cwd: project.path}, logName, (err, result) ->
+  ks.log logName, utilModel.shellToHtml "Start pulling...\n", 'git pull'
+  utilModel.runCmd "git pull", {cwd: project.path}, logName, 'git pull', (err, result) ->
     ks.setChildProperty 'locks', 'projects:' + project.id, false
     return callback err if err
     model.loadProjects callback
@@ -212,7 +212,7 @@ model.stopProject = (projectId, callback) ->
   return model.callAction projectId, 'stop', callback
 
 model.callAction = (projectId, action, callback) -> #@todo one log for one project
-  logName = if ['start', 'stop'].indexOf(action) >= 0 then "res:project:#{action}:#{projectId}" else "res:project:action:script:#{projectId}"
+  logName = 'project:log:' + projectId
   lock = ['start', 'stop'].indexOf(action) >= 0
   error = null
 
@@ -225,7 +225,7 @@ model.callAction = (projectId, action, callback) -> #@todo one log for one proje
     return callback? new Error error
 
   ks.setChildProperty 'locks', 'projects:' + projectId, true if lock
-  utilModel.runCmd project.scripts[action], {cwd: project.path}, logName, (err, result) ->
+  utilModel.runCmd project.scripts[action], {cwd: project.path}, logName, action, (err, result) ->
     ks.setChildProperty 'locks', 'projects:' + projectId, false if lock
     callback? err, result
 

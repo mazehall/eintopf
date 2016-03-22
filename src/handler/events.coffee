@@ -45,25 +45,13 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send 'res:containers:inspect', val.value
 
-  ks.fromRegex /^res:project:start:/
+  ks.fromRegex /^project:log:/
+  .filter (val) ->
+    return true if val.value?.length > 0
+  .map (val) ->
+    return { name: val.name, last: val.value.pop() }
   .onValue (val) ->
-    webContents.send val.name, val.value[val.value.length-1]
-
-  ks.fromRegex /^res:project:stop:/
-  .onValue (val) ->
-    webContents.send val.name, val.value[val.value.length-1]
-
-  ks.fromRegex /^res:project:delete:/
-  .onValue (val) ->
-    webContents.send val.name, val.value
-
-  ks.fromRegex /^res:project:update:/
-  .onValue (val) ->
-    webContents.send val.name, val.value[val.value.length-1]
-
-  ks.fromRegex /^res:project:action:script:/
-  .onValue (val) ->
-    webContents.send val.name, val.value[val.value.length-1]
+    webContents.send val.name, val.last
 
   # emit apps changes
   ks.fromProperty 'apps:list'
@@ -190,6 +178,14 @@ handleEvents = (webContents) ->
   .filter (x) -> x if x.value?.id? && x.value.action?.script
   .onValue (x) ->
     projectsModel.callAction x.value.id, x.value.action.script
+
+  ipcToKefir 'project:completeLog'
+  .filter (val) -> val if val.value
+  .onValue (val) ->
+    enumeratedLog = ''
+    enumeratedLog = enumeratedLog + entry for entry in ks.get('project:log:' + val.value) || []
+
+    val.event.sender.send 'project:completeLog:' + val.value, enumeratedLog
 
   ipcToKefir 'container:start'
   .filter (x) -> typeof x.value == "string"

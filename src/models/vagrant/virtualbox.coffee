@@ -20,9 +20,9 @@ model.getMachine = (machineId, callback) ->
   cmdParams = "showvminfo --machinereadable " + machineId
 
   _r.fromNodeCallback (cb) -> # cmd response only positive when machine exists
-    utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, (err, result) ->
+    utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, null, (err, result) ->
       if process.platform == "win32" && err
-        return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, cb
+        return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, null. cb
       cb err, result
   .map (resultString) ->
     result = {}
@@ -96,11 +96,11 @@ model.enumerateGuestProperties = (machineId, callback) ->
   cmdParams = "guestproperty enumerate " + machineId
 
   return _r.fromNodeCallback (cb) ->
-    utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, cb
+    utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, null, cb
   .flatMapErrors (err) ->
     return _r.constantError err if process.platform != "win32"
     _r.fromNodeCallback (cb) ->
-      return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, cb
+      return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, null, cb
   .onError callback
   .onValue (val) ->
     callback null, val

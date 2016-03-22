@@ -49,7 +49,6 @@
       model.startProject = reqProjectStart.emit;
       model.stopProject = reqProjectStop.emit;
 
-
       model.updateProject = function (project) {
         reqProjectUpdate.emit(project);
         resProjectUpdate.fromProject(project.id); // logging
@@ -61,7 +60,6 @@
         .$assignProperty(scope, property);
       };
 
-      model.streamInstall =
       model.installProject = function (project, callback) {
         if (typeof project != 'object' || ! project.id) return false;
 
@@ -73,6 +71,18 @@
         });
 
         reqProjectsInstall.emit(project);
+      };
+
+      model.streamLog = function (projectId) {
+        var completeLog = ipc.toKefir('project:completeLog:' + projectId).take(1);
+        var incrementalLog = ipc.toKefir('project:log:' + projectId);
+
+        ipc.emit('project:completeLog', projectId);
+
+        return Kefir.concat([completeLog, incrementalLog])
+        .scan(function(prev, next) {
+          return prev + next;
+        })
       };
 
       model.registerProject = function (url) {
