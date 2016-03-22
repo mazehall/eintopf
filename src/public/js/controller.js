@@ -263,6 +263,8 @@
         };
 
         $scope.clone = function () {
+          if (! $scope.project.id || ! $scope.project.name) return false;
+
           $scope.errorMessage = null;
           $scope.loading = true;
 
