@@ -17,7 +17,7 @@
     "target": "development"
   },
   "dependencies": {
-    "ansi-to-html": "^0.4.1",
+    "ansi-to-html-umd": "^0.4.2",
     "asar": "^0.8.0",
     "coffee-script": "1.9.3",
     "config": "^1.15.0",

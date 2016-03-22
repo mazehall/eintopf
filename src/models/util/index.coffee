@@ -4,7 +4,7 @@ spawn = require('child_process').spawn
 _r = require('kefir');
 ks = require 'kefir-storage'
 
-Convert = require 'ansi-to-html'
+Convert = require 'ansi-to-html-umd'
 convert = new Convert();
 
 model = {}
