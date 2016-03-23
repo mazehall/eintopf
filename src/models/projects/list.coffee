@@ -199,7 +199,6 @@ model.updateProject = (project, callback) ->
     return callback? new Error error
 
   ks.setChildProperty 'locks', 'projects:' + project.id, true
-  ks.log logName, utilModel.shellToHtml "Start pulling...\n", 'git pull'
   utilModel.runCmd "git pull", {cwd: project.path}, logName, 'git pull', (err, result) ->
     ks.setChildProperty 'locks', 'projects:' + project.id, false
     return callback err if err

@@ -130,9 +130,12 @@ model.runCmd = (cmd, config, logName, logAction, callback) ->
     shFlag = '/d /s /c'
     config.windowsVerbatimArguments = true
 
+  ks.log logName, model.shellToHtml '\x1B[1m' + new Date().toLocaleTimeString() +  " - [#{logAction}] > start\n" if logName
+
   proc = spawn sh, [shFlag, cmd], config
   proc.on 'error', (err) -> callback? err
   proc.on 'close', (code) ->
+    ks.log logName, model.shellToHtml '\x1B[1m' + new Date().toLocaleTimeString() +  " - [#{logAction}] > done\n" if logName
     return callback? new Error(stdErr || "Command failed"), stdOut if code != 0
     callback? null, stdOut
   proc.stdout.on 'data', (chunk) ->
@@ -143,9 +146,7 @@ model.runCmd = (cmd, config, logName, logAction, callback) ->
     stdErr += chunk.toString()
 
 model.shellToHtml = (value, action) ->
-  prefix = new Date().toLocaleTimeString() + " - [#{action}] > "
-
-  return convert.toHtml(prefix + value.replace(/\n/ig, "<br>"));
+  return convert.toHtml(value.replace(/\n/ig, "<br>"));
 
 model.syncCerts = (path, files, callback) ->
   return callback new Error 'Invalid path given' if ! path
