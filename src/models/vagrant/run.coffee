@@ -12,7 +12,9 @@ fsModel = require './fs.coffee'
 model = {}
 
 model.isVagrantInstalled = (callback) ->
-  utilModel.runCmd 'which vagrant', null, null, null, (err, result) ->
+  cmd = if process.platform == 'win32' then 'where vagrant.exe' else 'which vagrant'
+
+  utilModel.runCmd cmd, null, null, null, (err, result) ->
     return callback new Error 'vagrant is apparently not installed' if err
     callback null, true
 
