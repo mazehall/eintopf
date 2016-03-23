@@ -7,6 +7,18 @@ winVBoxManagePath = 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' # ke
 
 model = {}
 
+# wrapper for VBoxManage execution.
+model.runVBoxCmd = (cmd, callback) ->
+  return _r.fromNodeCallback (cb) ->
+    utilModel.runCmd 'VBoxManage ' + cmd, null, null, null, cb
+  .flatMapErrors (err) ->
+    return _r.constantError err if process.platform != "win32"
+    _r.fromNodeCallback (cb) ->
+      return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmd + '"', null, null, null, cb
+  .onError callback
+  .onValue (val) ->
+    callback null, val
+
 # checks that machine actually exists in virtual box if not try to restore it
 model.checkAndRestoreMachineId = (machineId, callback) ->
   _r.fromNodeCallback (cb) -> model.getMachine machineId, cb
@@ -17,13 +29,8 @@ model.checkAndRestoreMachineId = (machineId, callback) ->
     return callback null, true
 
 model.getMachine = (machineId, callback) ->
-  cmdParams = "showvminfo --machinereadable " + machineId
-
   _r.fromNodeCallback (cb) -> # cmd response only positive when machine exists
-    utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, null, (err, result) ->
-      if process.platform == "win32" && err
-        return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, null, cb
-      cb err, result
+    model.runVBoxCmd "showvminfo --machinereadable " + machineId, cb
   .map (resultString) ->
     result = {}
     return result if ! resultString
@@ -93,17 +100,7 @@ model.checkMachineConsistency = (callback) ->
     return callback null, true
 
 model.enumerateGuestProperties = (machineId, callback) ->
-  cmdParams = "guestproperty enumerate " + machineId
-
-  return _r.fromNodeCallback (cb) ->
-    utilModel.runCmd 'VBoxManage ' + cmdParams, null, null, null, cb
-  .flatMapErrors (err) ->
-    return _r.constantError err if process.platform != "win32"
-    _r.fromNodeCallback (cb) ->
-      return utilModel.runCmd '""' + winVBoxManagePath + '" ' + cmdParams + '"', null, null, null, cb
-  .onError callback
-  .onValue (val) ->
-    callback null, val
+  model.runVBoxCmd "guestproperty enumerate " + machineId, callback
 
 model.getGuestIps = (callback) ->
   _r.fromNodeCallback model.getOnlyVirtualBoxDir
@@ -117,6 +114,18 @@ model.getGuestIps = (callback) ->
     for match in matched
       ips[1] = ip[2] if (ip = match.match (/\/([0-9]*?)\/V4\/IP, value: (.*?),/)) && ip[1] && ip[2]
     ips
+  .onError callback
+  .onValue (val) ->
+    callback null, val
+
+model.getGuestStatus = (callback) ->
+  _r.fromNodeCallback (cb) ->
+    model.runVBoxCmd 'list runningvms', cb
+  .flatMap (runningVms) ->
+    _r.fromNodeCallback model.getOnlyVirtualBoxDir
+    .map (dir) ->
+      regEx = new RegExp('"' + dir.name + '"')
+      return regEx.test runningVms
   .onError callback
   .onValue (val) ->
     callback null, val

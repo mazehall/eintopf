@@ -75,6 +75,7 @@ app.on('ready', function () {
 });
 
 app.on('window-all-closed', function () {
+  require('./models/util/terminal.coffee').killPty(); // terminate lose pty instance
   app.quit();
 });
 

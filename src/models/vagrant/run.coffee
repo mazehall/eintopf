@@ -26,9 +26,7 @@ model.getVagrantMachine = (callback) ->
 
 model.getStatus = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
-  machine.status (err, result) ->
-    return callback new Error err if err
-    return callback(null, i.status) for own d, i of result
+  return virtualboxModel.getGuestStatus callback
 
 model.getSshConfig = (callback) ->
   return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
@@ -83,9 +81,9 @@ model.run = (callback) ->
     , 1
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
-      model.getStatus (err, status) ->
+      model.getStatus (err, running) ->
         return cb new Error err if err
-        return cb runningMessage if status == 'running'
+        return cb runningMessage if running
         cb null, true
   .flatMap () ->
     _r.fromNodeCallback (cb) ->

@@ -58,9 +58,10 @@ beat.throttle 10000
 .flatMap ->
   _r.fromNodeCallback (cb) ->
     vagrantRunModel.getStatus cb
+.onError ->
+  ks.setChildProperty 'states:live', 'vagrant', false
 .onValue (val) ->
-  ks.setChildProperty 'states:live', 'vagrant', if val == 'running' then true else false
-
+  ks.setChildProperty 'states:live', 'vagrant', val
 
 ###########
 # update internet state
