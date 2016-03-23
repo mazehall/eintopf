@@ -7,6 +7,7 @@ crypto = require "crypto"
 ks = require 'kefir-storage'
 
 utilModel = require '../util/'
+customModel = require './customization.coffee'
 
 projectHashes = []
 
@@ -93,6 +94,17 @@ model.patternPostInstall = (project, callback) ->
   .onValue ->
     callback null, true
 
+model.customizeProject = (project, callback) ->
+  return callback new Error 'Invalid description data' if ! project?.id
+
+  _r.fromNodeCallback (cb) ->
+    customModel.saveCustomization project, cb
+  .flatMap ->
+    _r.fromNodeCallback model.loadProjects
+  .onError callback
+  .onValue (val) ->
+    callback null, val
+
 model.loadProject = (projectPath, callback) ->
   return callback new Error 'invalid project dir given' if ! projectPath?
   projectDir = jetpack.cwd projectPath
@@ -107,8 +119,12 @@ model.loadProject = (projectPath, callback) ->
     utilModel.loadCertFiles projectDir.path("certs"), (err, result) ->
       return cb null, [] if err
       cb null, result
+  customStream = _r.fromNodeCallback (cb) ->
+    customModel.getProject path.basename(projectPath), (err, result) ->
+      return cb null, {} if err
+      cb null, result
 
-  _r.zip [packageStream, readMeStream, certsStream]
+  _r.zip [packageStream, readMeStream, certsStream, customStream]
   .endOnError()
   .onError callback
   .onValue (result) ->
@@ -121,7 +137,14 @@ model.loadProject = (projectPath, callback) ->
     project['id'] = path.basename(projectPath)
     project['composeId'] = project.id.replace(/[^a-zA-Z0-9]/ig, "")
     project['readme'] = result[1] || ''
-    project['hash'] = crypto.createHash("md5").update(JSON.stringify(config)).digest "hex"
+
+    # use customizations
+    project['name'] = result[3].name if result[3]?.name?
+    project['description'] = result[3].description if result[3]?.description?
+    project['mediabg'] = result[3].mediabg if result[3]?.mediabg?
+    project['src'] = result[3].src if result[3]?.src?
+
+    project['hash'] = crypto.createHash("md5").update(JSON.stringify(project)).digest "hex"
 
     # reuse projects for installed recipes list
     project['local'] = true

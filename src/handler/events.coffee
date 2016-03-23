@@ -187,6 +187,12 @@ handleEvents = (webContents) ->
 
     val.event.sender.send 'project:completeLog:' + val.value, enumeratedLog
 
+  ipcToKefir 'project:customize'
+  .filter (val) -> val if val.value?.id
+  .onValue (val) ->
+    projectsModel.customizeProject val.value, (err, result) ->
+      val.event.sender.send 'project:customize:' + val.value.id, {err: err?.message || null, result: result}
+
   ipcToKefir 'container:start'
   .filter (x) -> typeof x.value == "string"
   .onValue (x) ->

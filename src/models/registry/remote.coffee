@@ -2,10 +2,6 @@ _r = require 'kefir'
 https = require "https"
 http = require "http"
 url = require 'url'
-ks = require 'kefir-storage'
-
-utilsModel = require '../util/index'
-
 
 model = {}
 

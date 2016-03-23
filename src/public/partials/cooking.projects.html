@@ -15,7 +15,7 @@
 
         <li ng-repeat="(key, project) in projects" class="m0 grd-row txt--left" id="{{project.id}}">
           <a class="grd-row-col-6 py2 btn--link txt--left"
-             ui-sref="cooking.projects.recipe({id: '{{project.id}}'})" ui-sref-active='active'>
+             ui-sref="cooking.projects.recipe({id: project.id})" ui-sref-active='active'>
             <div class="media">
 
               <div class="media-body txt--left">

@@ -3,13 +3,14 @@
     <h4 class=" m0 py1">
         <span class="muted">Edit project details:</span> <strong class="bold fnt-eintopf-darkgreen">{{project.name}}</strong>
     </h4>
+
     <div class="grd p0 my1" ng-if="errorMessage">
         <div class="p0 m0">
             <div class="grd-row-col-6--lg p1 m0 bg--red">
-                <a href="" class="fnt--white flt--right " ng-click="result.errorMessage = null">
+                <a href="" class="fnt--white flt--right " ng-click="resetError()">
                     <i class="fnt--white fa fa-times"></i>
                 </a>
-                <p class="fnt--white">{{result.errorMessage}}</p>
+                <p class="fnt--white">{{errorMessage}}</p>
             </div>
         </div>
     </div>
@@ -43,7 +44,7 @@
                             <span class="m0 py05 small">Please enter project-id. The id must be unique. This is also the folder name in your scripts.</span>
                         </label>
                         <div class=" m0 media-content-input">
-                            <input name="id" type="text" placeholder="your project-id" ng-model="project.id" />
+                            <input name="id" type="text" placeholder="your project-id" ng-model="project.id" readonly="readonly"/>
                         </div>
                         <label class="grd-row p0">
                             <span class="m0 py05 small">Please enter the name of your project. This is displayed on the left side in "your projects"</span>
@@ -58,11 +59,12 @@
                             <textarea name="description" ng-model="project.description"></textarea>
                         </div>
 
-
-
                         <div class="grd-row media-footer my1 txt--right">
-                            <button class="mx05 btn" type="button">Cancel</button>
-                            <button class="btn" type="button" autofocus >Save</button>
+                            <button class="mx05 btn" type="button" ng-click="goBack()">Cancel</button>
+                            <button class="btn" type="button" autofocus ng-click="updateCustomization()" ng-disabled="loading">
+                                <i ng-show="loading" class="fa fa-spinner fa-pulse"></i>
+                                Save
+                            </button>
                         </div>
                     </div>
                 </div>

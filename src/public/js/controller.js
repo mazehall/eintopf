@@ -273,7 +273,31 @@
     ]
   );
 
-  controllerModule.controller('cookingProjectsEditCtrl', ['$scope', function($scope) {
-  }]);
+  controllerModule.controller('cookingProjectsEditCtrl', ['$scope', '$state', '$stateParams', 'projectFactory',
+    function($scope, $state, $stateParams, projectFactory) {
+      projectFactory.assignFromProject($stateParams.id, $scope, 'project');
+
+      $scope.resetError = function() {
+        $scope.errorMessage = null;
+      };
+
+      $scope.goBack = function () {
+        $state.go("cooking.projects.recipe", {id: $stateParams.id});
+      };
+
+      $scope.updateCustomization = function() {
+        $scope.errorMessage = null;
+        $scope.loading = true;
+
+        projectFactory.customizeProject($scope.project, function(err, result) {
+          $scope.loading = false;
+          console.log(err, result);
+          if (err && err) $scope.errorMessage = err;
+          $scope.$apply();
+        });
+
+      };
+    }
+  ]);
 
 })(angular);

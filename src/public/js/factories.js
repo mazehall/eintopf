@@ -38,7 +38,6 @@
     return model;
   }]);
 
-  // @todo simplify logging
   factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectList', 'reqProjectStart', 'reqProjectStop', 'reqProjectDetail', 'reqProjectUpdate', 'resProjectUpdate', 'resProjectsInstall','reqProjectsInstall',
     function(ipc, resProjectsList, reqProjectList, reqProjectStart, reqProjectStop, reqProjectDetail, reqProjectUpdate, resProjectUpdate, resProjectsInstall, reqProjectsInstall) {
       var model = {};
@@ -61,7 +60,7 @@
       };
 
       model.installProject = function (project, callback) {
-        if (typeof project != 'object' || ! project.id) return false;
+        if (typeof project != 'object' || ! project.id) return callback(new Error('invalid project description'));
 
         resProjectsInstall.fromProject(project.id)
         .take(1)
@@ -83,6 +82,19 @@
         .scan(function(prev, next) {
           return prev + next;
         })
+      };
+
+      model.customizeProject = function (project, callback) {
+        if (typeof project != 'object' || ! project.id) return callback(new Error('invalid project description'));
+
+        ipc.toKefir('project:customize:' + project.id)
+        .take(1)
+        .onError(callback)
+        .onValue(function (result) {
+          callback.call(null, result.err, result.result);
+        });
+
+        ipc.emit('project:customize', project);
       };
 
       model.registerProject = function (url) {
