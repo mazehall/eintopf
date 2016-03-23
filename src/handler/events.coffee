@@ -53,6 +53,10 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send val.name, val.last
 
+  ks.fromRegex /^res:project:delete:/
+  .onValue (val) ->
+    webContents.send val.name, val.value
+
   # emit apps changes
   ks.fromProperty 'apps:list'
   .onValue (val) ->
