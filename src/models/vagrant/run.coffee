@@ -9,16 +9,12 @@ virtualboxModel = require './virtualbox.coffee'
 sshModel = require './ssh.coffee'
 fsModel = require './fs.coffee'
 
-isVagrantInstalled = (callback) ->
-  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
-
-  child = machine._run ['version']
-  child.on 'close', () ->
-    callback null, true
-  child.on 'error', (err) ->
-    callback new Error 'vagrant is apparently not installed'
-
 model = {}
+
+model.isVagrantInstalled = (callback) ->
+  utilModel.runCmd 'which vagrant', null, null, null, (err, result) ->
+    return callback new Error 'vagrant is apparently not installed' if err
+    callback null, true
 
 model.getVagrantMachine = (callback) ->
   return callback new Error '' if ! (configModulePath = utilModel.getConfigModulePath())?
@@ -75,10 +71,7 @@ model.up = (callback) ->
 model.run = (callback) ->
   runningMessage = 'is_runnning'
 
-  _r.fromNodeCallback (cb) ->
-    setTimeout () ->
-      isVagrantInstalled cb
-    , 1
+  _r.fromNodeCallback model.isVagrantInstalled
   .flatMap () ->
     _r.fromNodeCallback (cb) ->
       model.getStatus (err, running) ->
@@ -86,8 +79,7 @@ model.run = (callback) ->
         return cb runningMessage if running
         cb null, true
   .flatMap () ->
-    _r.fromNodeCallback (cb) ->
-        model.up cb
+    _r.fromNodeCallback model.up
   .onValue (val) ->
     callback null, val
   .onError (err) ->
