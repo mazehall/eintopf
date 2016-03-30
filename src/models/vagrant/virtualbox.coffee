@@ -34,7 +34,7 @@ model.getMachine = (machineId, callback) ->
   .map (resultString) ->
     result = {}
     return result if ! resultString
-    for line in resultString.split(/\r?\n/)
+    for line in (resultString.split(/\r?\n/) || [])
       val = line.split("=")
       result[val[0]] = if typeof val[1] == "string" then val[1].replace(/^"/g, '').replace(/"$/g, '') else null
     result
@@ -111,7 +111,7 @@ model.getGuestIps = (callback) ->
     ips = []
     return ips if !(matched = config.match (/\/([0-9]*?)\/V4\/IP, value: (.*?),/g))
 
-    for match in matched
+    for match in (matched || [])
       ips[1] = ip[2] if (ip = match.match (/\/([0-9]*?)\/V4\/IP, value: (.*?),/)) && ip[1] && ip[2]
     ips
   .onError callback

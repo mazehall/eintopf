@@ -187,7 +187,7 @@ handleEvents = (webContents) ->
   .filter (val) -> val if val.value
   .onValue (val) ->
     enumeratedLog = ''
-    enumeratedLog = enumeratedLog + entry for entry in ks.get('project:log:' + val.value) || []
+    enumeratedLog = enumeratedLog + entry for entry in (ks.get('project:log:' + val.value) || [])
 
     val.event.sender.send 'project:completeLog:' + val.value, enumeratedLog
 

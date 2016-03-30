@@ -28,7 +28,7 @@ dirEmitter = (path) ->
 model = {};
 
 model.getProject = (id) ->
-  for own d, i of ks.get 'projects:list'
+  for own d, i of (ks.get('projects:list') || [])
     return i if i.id == id
   return null
 
@@ -151,11 +151,10 @@ model.loadProject = (projectPath, callback) ->
     project['installed'] = true
 
     # keep existing checked states
-    if (projectCache = ks.get 'projects:list')
-      (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in projectCache
+    (project['state'] = cachedProject.state if cachedProject.name == project.name) for cachedProject in (ks.get('projects:list') || [])
 
     if result[2]
-      for file in result[2]
+      for file in (result[2] || [])
         file.host = file.name.slice(0, -4)
     project['certs'] = result[2] if result[2]
 

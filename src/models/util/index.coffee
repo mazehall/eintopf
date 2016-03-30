@@ -160,7 +160,7 @@ model.syncCerts = (path, files, callback) ->
   purgeStream = _r.fromNodeCallback (cb) ->
     model.loadCertFiles path, cb
   .flatten().filter (file) ->
-    (return false if file.name == certFile.name) for certFile in files
+    (return false if file.name == certFile.name) for certFile in (files || [])
     return true
   .flatMap (file) ->
     _r.fromPromise jetpack.removeAsync jetpack.cwd(path).path(file.name)

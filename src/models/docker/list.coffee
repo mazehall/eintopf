@@ -17,7 +17,7 @@ model.mapInspectData = (container) ->
     projectToContainerMapping[container.id] = container.project = labels["com.docker.compose.project"]
 
   if (utilModel.typeIsArray container.inspect.Config.Env)
-    for env in container.inspect.Config.Env
+    for env in (container.inspect.Config.Env || [])
       container.virtualHost = match[1] if (match = env.match /^VIRTUAL_HOST=(.*)/)?
       container.certName = match[1] if (match = env.match /^CERT_NAME=(.*)/)?
   return container
@@ -81,7 +81,7 @@ model.loadContainers = ->
   _r.fromNodeCallback (cb) ->
     DockerModel.docker.listContainers {"all": true}, cb
   .map (containers) ->
-    for container in containers
+    for container in (containers || [])
       container.id = container.Id
       container.status = container.Status
       container.name = container.Names[0].replace(/\//g, '') if container.Names?[0]? # strip docker-compose slashes

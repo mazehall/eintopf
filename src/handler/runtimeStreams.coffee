@@ -88,22 +88,19 @@ _r.merge [ks.fromProperty('projects:certs'), ks.fromProperty('proxy:certs')]
 # set registry:private which is combined from registry:private:remote and projects:list
 _r.combine [ks.fromProperty('registry:private:remote'), ks.fromProperty('projects:list')]
 .map (combined) ->
-  combined[0] = [] if ! combined[0]
-  combined[1] = [] if ! combined[1]
-
   result = []
   creatable = []
   pattern = []
   installed = []
   ids = {}
 
-  for privateEntry in combined[0].value
+  for privateEntry in (combined[0].value || [])
     ids[privateEntry.dirName] = true
     installed.push privateEntry if privateEntry.installed
     pattern.push privateEntry if privateEntry.pattern
     creatable.push privateEntry if ! privateEntry.installed && ! privateEntry.pattern
 
-  for installedEntry in combined[1].value
+  for installedEntry in (combined[1].value || [])
     installed.push installedEntry if ! ids[installedEntry.id] # add entry if it does not already exist
 
   for registry in [creatable, pattern, installed]
@@ -143,7 +140,7 @@ beat.throttle 5000
     utilModel.loadCertFiles proxyCertsPath, cb
 .map (certFiles) ->
   certs = {}
-  for file in certFiles
+  for file in (certFiles || [])
     file.host = file.name.slice(0, -4)
     certs[file.host] = {files: []} if ! certs[file.host]
     certs[file.host]['files'].push file
@@ -177,13 +174,13 @@ ks.fromProperty 'containers:inspect'
 .throttle 2000
 .map (containers) ->
   runningProjects = {}
-  for id, container of containers.value
+  for id, container of (containers.value || [])
     runningProjects[container.project] = true if container?.running && container.project
   runningProjects
 .onValue (runningProjects) ->
   projects = ks.get "projects:list"
 
-  for project in projects
+  for project in (projects || [])
     project.state = if runningProjects[project.composeId] then 'running' else null
 
   ks.set "projects:list", projects

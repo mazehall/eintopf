@@ -16,7 +16,7 @@ model = {}
 
 model.getRecipe = (id) ->
   for type in ['public', 'private']
-    for i in ks.get 'registry:' + type
+    for i in (ks.get('registry:' + type) || [])
       return i if i.id == id
   return null
 
@@ -63,7 +63,7 @@ model.remapRegistries = ->
 model.map = (registryData) ->
   return registryData if ! utils.typeIsArray registryData
 
-  for entry in registryData
+  for entry in (registryData || [])
     entry.id = crypto.createHash("md5").update(entry.url + entry.registryUrl).digest "hex" if entry?.url && entry.registryUrl
     entry.dirName = utils.getProjectNameFromGitUrl entry.url if entry?.url
     entry.installed = utils.isProjectInstalled entry.dirName if entry?.dirName && ! entry.pattern
