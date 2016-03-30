@@ -3,6 +3,58 @@
 rewire = require "rewire"
 
 model = null
+ks = null
+
+defaultRegistry = [
+  {
+    "name": "PHP dev",
+    "pattern": true,
+    "description": "PHP development example with the micro framework slim. Contains all extensions compiled and ready, popular external extensions redis and mongo, composer, sendmail client and xdebug.",
+    "mediabg": "#6779b5",
+    "src": "",
+    "url": "https://github.com/mazehall/eintopf-php-dev",
+    "registryUrl": "default"
+  }
+]
+
+
+init = () ->
+  model = rewire "../../../../src/models/registry/index.coffee"
+  spyOn(model, 'map').andCallThrough()
+
+  ks = rewire "kefir-storage"
+  spyOn(ks, 'set').andCallThrough()
+  spyOn(ks, 'get').andCallThrough()
+
+  process.env.REGISTRY_URL = null
+  model.__set__ 'defaultRegistry', defaultRegistry
+  model.__set__ 'registryConfig', {}
+  model.__set__ 'ks', ks
+
+
+describe 'map', ->
+
+  beforeEach init
+
+  it 'should add id property', ->
+    result = model.map defaultRegistry
+
+    expect(result[0].id).toBeTruthy()
+
+
+describe 'init public', ->
+
+  beforeEach init
+
+  it 'should set default registry with ids', (done) ->
+    model.initPublic()
+    .onEnd ->
+      expect(model.__get__('ks').set).toHaveBeenCalledWith('registry:public', defaultRegistry)
+      expect(model.__get__('ks').set.calls[0].args[1][0].id).toBeTruthy()
+      done()
+
+
+#@todo reevaluate + improve tests
 samples =
   watcherId: 'recommendations:list'
   recommendationsList:
@@ -15,8 +67,6 @@ samples =
       {"name": "Sample private_22", "description": "desc Sample private_22"}
     ]
   recommendationsListEmpty: public: [], private: []
-
-
 describe "updateRegistryInstallFlags", ->
 
   beforeEach ->
@@ -48,8 +98,6 @@ describe "updateRegistryInstallFlags", ->
     model.updateRegistryInstallFlags()
     expect(model.__get__('ks').set).toHaveBeenCalledWith(samples.watcherId, samples.recommendationsListEmpty)
 
-
-#@todo improve tests
 #describe "registry", ->
 #
 #  model = null
