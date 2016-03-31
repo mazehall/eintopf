@@ -134,7 +134,7 @@ model.loadProject = (projectPath, callback) ->
     project = config.eintopf
     project['path'] = projectPath
     project['scripts'] = config.scripts if config.scripts
-    project['id'] = path.basename(projectPath)
+    project['id'] = path.basename(projectPath).toLowerCase()
     project['composeId'] = project.id.replace(/[^a-zA-Z0-9]/ig, "")
     project['readme'] = result[1] || ''
 
