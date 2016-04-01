@@ -139,12 +139,17 @@
 
   //@todo seperate tabs into states
   controllerModule.controller('recipeCtrl',
-    ['$scope', '$stateParams', '$state', 'storage', 'resProjectStart','resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'containerFactory', 'lockFactory', 'appFactory', 'projectFactory',
-      function ($scope, $stateParams, $state, storage, resProjectStart, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, containerFactory, lockFactory, appFactory, projectFactory) {
-        projectFactory.streamLog($stateParams.id).$assignProperty($scope, 'protocol')
-        .onValue(function() {
-          $scope.$broadcast('scrollLog');
-        });
+    ['$scope', '$stateParams', '$state', '$timeout', 'storage', 'resProjectStart','resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'containerFactory', 'lockFactory', 'appFactory', 'projectFactory',
+      function ($scope, $stateParams, $state, $timeout, storage, resProjectStart, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, containerFactory, lockFactory, appFactory, projectFactory) {
+        projectFactory.streamLog($stateParams.id)
+        .map(function(val) {
+          $timeout(function() { //trigger scrolling after dom change
+            $scope.$broadcast('scrollLog');
+          });
+          return val;
+        })
+        .$assignProperty($scope, 'protocol');
+
         projectFactory.assignFromProject($stateParams.id, $scope, 'project');
         lockFactory.assignFromProject($stateParams.id, $scope, 'locked');
         currentProject.setProjectId($stateParams.id);
