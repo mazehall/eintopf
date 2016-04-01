@@ -8,7 +8,12 @@ model = {}
 model.loadUrl = (registryUrl, callback) ->
   opts = url.parse registryUrl
   opts["headers"] = "accept": "application/json"
-  server = if opts.protocol == "https:" then https else http
+
+  server = switch
+    when opts.protocol == "https:" then https
+    when opts.protocol == "http:" then http
+    else null
+  return callback new Error 'invalid url' if ! server
 
   req = server.request opts, (res) ->
     res.chunk = ""

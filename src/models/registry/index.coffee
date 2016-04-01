@@ -24,31 +24,38 @@ model.init = () ->
   model.initPublic()
   model.initPrivates()
 
-model.initPublic = () ->
+model.streamFromPublic = ->
   if ! (publicUrl = process.env.REGISTRY_URL || registryConfig.public) || typeof publicUrl != "string"
     return _r.constantError new Error 'Unconfigured public registry'
 
-  _r.fromNodeCallback (cb) ->
+  return _r.fromNodeCallback (cb) ->
     remote.loadFromUrls publicUrl, cb
-  .map (data) ->
-    if ! data?.length
-      data = if (oldData = ks.get propertyPublic) && oldData?.length then oldData else defaultRegistry
-    data
-  .map (data) ->
-    model.map data
-  .onValue (data) ->
-    ks.set propertyPublic, data
 
-model.initPrivates = () ->
+model.streamFromPrivates = ->
   if ! registryConfig.private || (typeof registryConfig.private != "string" && ! utils.typeIsArray registryConfig.private)
     return _r.constantError new Error 'Unconfigured private registry'
 
-  _r.fromNodeCallback (cb) ->
+  return _r.fromNodeCallback (cb) ->
     remote.loadFromUrls registryConfig.private, cb
-  .map (data) ->
-    model.map data
+
+model.initPublic = ->
+  stream = model.streamFromPublic()
+  .flatMapErrors -> _r.constant []
+  .filter (data) ->
+    ! (! data?.length && ks.get(propertyPublic)?) # skip when empty and something was set before
+  .map (data) -> return if data?.length then data else defaultRegistry # use default registry when empty
+  .map model.map
   .onValue (data) ->
-    ks.set propertyPrivate, data || []
+    ks.set propertyPublic, data
+
+model.initPrivates = ->
+  model.streamFromPrivates()
+  .flatMapErrors -> _r.constant []
+  .filter (data) ->
+    ! (! data?.length && ks.get(propertyPrivate)?) # skip when empty and something was set before
+  .map model.map
+  .onValue (data) ->
+    ks.set propertyPrivate, data
 
 # update and set registry install flags
 model.remapRegistries = ->
@@ -61,7 +68,7 @@ model.remapRegistries = ->
     ks.set registry.name, registry.data
 
 model.map = (registryData) ->
-  return registryData if ! utils.typeIsArray registryData
+  return null if ! utils.typeIsArray registryData
 
   for entry in (registryData || [])
     entry.id = crypto.createHash("md5").update(entry.url + entry.registryUrl).digest "hex" if entry?.url && entry.registryUrl
