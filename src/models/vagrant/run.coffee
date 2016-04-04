@@ -1,6 +1,5 @@
 _r = require 'kefir'
 ks = require 'kefir-storage'
-vagrant = require 'node-vagrant'
 jetpack = require "fs-jetpack"
 
 utilModel = require '../util/'
@@ -18,17 +17,9 @@ model.isVagrantInstalled = (callback) ->
     return callback new Error 'vagrant is apparently not installed' if err
     callback null, true
 
-model.getVagrantMachine = (callback) ->
-  return callback new Error '' if ! (configModulePath = utilModel.getConfigModulePath())?
-  return machine = vagrant.create {cwd: configModulePath}
-
-model.getStatus = (callback) ->
-  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
-  return virtualboxModel.getGuestStatus callback
+model.getStatus = virtualboxModel.getGuestStatus
 
 model.getSshConfig = (callback) ->
-  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
-
   fsModel.getSSHConfig (error, config) ->
     return callback? error if error
 
@@ -47,19 +38,19 @@ model.reloadWithNewSsh = (callback) ->
     callback null, val
 
 model.reload = (callback) ->
-  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
+  return callback new Error 'failed to fetch config path' if ! (configModulePath = utilModel.getConfigModulePath())?
 
-  terminalModel.createPTYStream 'vagrant reload', {cwd: machine.opts.cwd, env: machine.opts.env}, (err) ->
+  terminalModel.createPTYStream 'vagrant reload', {cwd: configModulePath, env: process.env}, (err) ->
     return callback err if err
     return callback null, true
 
 model.up = (callback) ->
-  return callback new Error 'failed to initialize vagrant' if ! (machine = model.getVagrantMachine())?
+  return callback new Error 'failed to fetch config path' if ! (configModulePath = utilModel.getConfigModulePath())?
   failedSsh = false
 
-  ks.log 'terminal:output', {text: 'starts vagrant from ' + machine.opts.cwd}
+  ks.log 'terminal:output', {text: 'starts vagrant from ' + configModulePath}
 
-  proc = terminalModel.createPTYStream 'vagrant up', {cwd: machine.opts.cwd, env: machine.opts.env}, (err) ->
+  proc = terminalModel.createPTYStream 'vagrant up', {cwd: configModulePath, env: process.env}, (err) ->
     return callback new Error 'SSH connection failed' if failedSsh #@todo better implementation???
     return callback err if err
     return callback null, true

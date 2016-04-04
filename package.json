@@ -30,7 +30,6 @@
     "kefir-storage": "^1.1.2",
     "node-forge": "^0.6.39",
     "node-rsa": "^0.3.2",
-    "node-vagrant": "^1.0.6",
     "strip-ansi": "^3.0.0"
   },
   "devDependencies": {
