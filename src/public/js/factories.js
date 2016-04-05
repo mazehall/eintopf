@@ -97,11 +97,17 @@
         ipc.emit('project:customize', project);
       };
 
-      model.registerProject = function (url) {
-        console.log('@todo should add a local registry entry ');
-        return false;
-        //if (typeof url != 'string') return false;
-        //reqProjectsInstall.emit(url);
+      model.registerProject = function (projectUrl, callback) {
+        if (projectUrl && typeof projectUrl !== 'string') return callback('invalid project url');
+
+        ipc.toKefir('project:register:' + projectUrl)
+        .take(1)
+        .onError(callback)
+        .onValue(function (result) {
+          callback.call(null, result.err, result.result);
+        });
+
+        ipc.emit('project:register', projectUrl);
       };
 
       return model;

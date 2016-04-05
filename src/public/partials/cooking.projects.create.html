@@ -18,10 +18,10 @@
                             <div class="mx1 py1 px05 grd-row-col-4-6">
                                 <input class="m0 p05"
                                        placeholder="Please enter the URL of your project recipe (Git Repo) to create a new project"
-                                       type="text" name="projectName" id="projectName" ng-model="newProject">
+                                       type="text" name="projectName" id="projectName" ng-model="projectUrl">
                             </div>
                             <div class="cssListBtn mx2 py1 grd-row-col-1-6 txt--right">
-                                <button href="" class="btn" ng-click="install(newProject)" ng-disabled="loading"
+                                <button href="" class="btn" ng-click="registerProject(projectUrl)" ng-disabled="loading"
                                         title="Create new project">
                                     <i ng-show="loading" class="fa fa-spinner fa-pulse"></i>
                                     <span>Create</span>
@@ -128,11 +128,11 @@
         </div>
     </div>
 
-    <div class="grd px2 m0" ng-show="result.errorMessage">
+    <div class="grd px2 m0" ng-show="errorMessage">
         <p class="fnt--red m0 py05">Error:</p>
-        <pre class="bg--dark-gray m0 p1 fnt--off-white ">{{result.errorMessage}}</pre>
+        <pre class="bg--dark-gray m0 p1 fnt--off-white ">{{errorMessage}}</pre>
     </div>
-    <div class="grd px2 m0" ng-show="result.status == 'success'">
+    <div class="grd px2 m0" ng-show="registrationSuccess">
         <p class="muted m0 py05">Success</p>
     </div>
 </div>

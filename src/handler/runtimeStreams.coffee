@@ -86,7 +86,7 @@ _r.merge [ks.fromProperty('projects:certs'), ks.fromProperty('proxy:certs')]
 
 ###########
 # set registry:private which is combined from registry:private:remote and projects:list
-_r.combine [ks.fromProperty('registry:private:remote'), ks.fromProperty('projects:list')]
+_r.combine [ks.fromProperty('registry:private:remote'), ks.fromProperty('registry:private:local'), ks.fromProperty('projects:list')]
 .map (combined) ->
   result = []
   creatable = []
@@ -100,7 +100,13 @@ _r.combine [ks.fromProperty('registry:private:remote'), ks.fromProperty('project
     pattern.push privateEntry if privateEntry.pattern
     creatable.push privateEntry if ! privateEntry.installed && ! privateEntry.pattern
 
-  for installedEntry in (combined[1].value || [])
+  for privateEntry in (combined[1].value || [])
+    ids[privateEntry.dirName] = true
+    installed.push privateEntry if privateEntry.installed
+    pattern.push privateEntry if privateEntry.pattern
+    creatable.push privateEntry if ! privateEntry.installed && ! privateEntry.pattern
+
+  for installedEntry in (combined[2].value || [])
     installed.push installedEntry if ! ids[installedEntry.id] # add entry if it does not already exist
 
   for registry in [creatable, pattern, installed]

@@ -224,16 +224,18 @@
         registryFactory.assignPublicRegistry($scope, 'public');
         registryFactory.assignPrivateRegistry($scope, 'private');
 
-        $scope.registerProject = function (url) {
-          if (typeof url != 'string') return false;
+        $scope.registerProject = function (projectUrl) {
+          if (!projectUrl || typeof projectUrl !== 'string') return false;
+          $scope.errorMessage = $scope.registrationSuccess = null;
+          $scope.loading = true;
 
-          //val = val || $scope.newProject;
-          //if (!val) return false;
-          //$scope.result = {};
-          //$scope.loading = true;
+          projectFactory.registerProject(projectUrl, function(err, result) {
+            $scope.loading = false;
+            if (err) $scope.errorMessage = err;
+            if (!err) $scope.registrationSuccess = true;
 
-          return false;
-          projectFactory.registerProject(url);
+            $scope.$apply();
+          });
         };
 
         $scope.installProject = function(project) {
@@ -242,7 +244,7 @@
 
           projectFactory.installProject(project, function(err, result) {
             if (result && result.id) return $state.go("cooking.projects.recipe", {id: result.id});
-            if (err && err) $scope.errorMessage = err;
+            if (err) $scope.errorMessage = err;
 
             $scope.$apply();
           });
