@@ -86,38 +86,11 @@ model.map = (registryData) ->
     entry.installed = utils.isProjectInstalled entry.dirName if entry?.dirName && ! entry.pattern
   registryData
 
-#@todo move to local model
-tmp = require 'tmp'
-git = require 'gift'
-
-model.addLocalEntry = (projectUrl, callback) ->
-  return callback new Error 'Invalid project url' if ! (projectId = utils.getProjectNameFromGitUrl(projectUrl))
-
-  tmpDir = _r.fromNodeCallback (cb) ->
-    tmp.dir { mode: '0750', prefix: 'eintopf_'}, cb
-  .flatMap (dirName) ->
-    _r.fromNodeCallback (cb) ->
-      git.clone projectUrl, dirName, cb
-  .flatMap (repo) ->
-    _r.fromNodeCallback (cb) ->
-      utils.loadJsonAsync repo.path + '/package.json', cb
-  .map (projectInfo) ->
-    projectInfo.eintopf = {} if ! projectInfo.eintopf
-
-    recipe =
-      name: projectInfo.eintopf.name
-      description: projectInfo.eintopf.description
-      mediabg: projectInfo.eintopf.mediabg
-      src: projectInfo.eintopf.src
-      url: projectUrl
-    recipe
-  .flatMap (recipe) ->
-    _r.fromNodeCallback (cb) ->
-      local.saveEntry recipe, cb
-  .onError (err) ->
-    return callback err
+model.addLocalEntryFromUrl = (projectUrl, callback) ->
+  local.streamAddEntryFromUrl projectUrl
+  .onError callback
   .onValue (val) ->
     model.initPrivatesLocal()
-    return callback null, true
+    return callback null, val
 
 module.exports = model

@@ -35,6 +35,14 @@
         </form>
     </div>
 
+    <div class="grd px2 m0" ng-show="errorMessage">
+        <p class="fnt--red m0 py05">Error:</p>
+        <pre class="bg--dark-gray m0 p1 fnt--off-white ">{{errorMessage}}</pre>
+    </div>
+    <div class="grd px2 m0" ng-show="registrationSuccess">
+        <p class="muted m0 py05">Success</p>
+    </div>
+
     <div class="grd-row">
         <div class="grd-row-col-6 px1 cssPatterns" ng-if="private && private.length > 0">
             <h4 class="muted m0 p1">
@@ -128,11 +136,4 @@
         </div>
     </div>
 
-    <div class="grd px2 m0" ng-show="errorMessage">
-        <p class="fnt--red m0 py05">Error:</p>
-        <pre class="bg--dark-gray m0 p1 fnt--off-white ">{{errorMessage}}</pre>
-    </div>
-    <div class="grd px2 m0" ng-show="registrationSuccess">
-        <p class="muted m0 py05">Success</p>
-    </div>
 </div>

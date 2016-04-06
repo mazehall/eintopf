@@ -158,7 +158,7 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     projectUrl = val.value
 
-    registry.addLocalEntry projectUrl, (err, result) ->
+    registry.addLocalEntryFromUrl projectUrl, (err, result) ->
       val.event.sender.send 'project:register:' + projectUrl, {err: err?.message || null, result: result}
 
   ipcToKefir 'project:detail'

@@ -1,6 +1,8 @@
 _r = require 'kefir'
+tmp = require 'tmp'
+git = require 'gift'
 
-utilModel = require '../util/index.coffee'
+utils = require '../util/index.coffee'
 
 registryData = null
 fileName = 'registry.json'
@@ -10,9 +12,9 @@ model = {}
 
 model.getRegistry = (callback) ->
   return callback null, registryData if registryData
-  return callbacknew Error 'failed to get config dir' if !(configDir = utilModel.getConfigModulePath())
+  return callback new Error 'failed to get config dir' if !(configDir = utils.getConfigModulePath())
 
-  utilModel.loadJsonAsync configDir + '/' + fileName, (err, result) ->
+  utils.loadJsonAsync configDir + '/' + fileName, (err, result) ->
     registryData = result if !err
     callback err, result
 
@@ -28,9 +30,9 @@ model.getRegistryAsArray = (callback) ->
     return callback null, resultAsArray
 
 model.saveRegistry = (content, callback) ->
-  return setTimeout(callback(new Error 'failed to get config dir'), 0) if !(configDir = utilModel.getConfigModulePath())
+  return setTimeout(callback(new Error 'failed to get config dir'), 0) if !(configDir = utils.getConfigModulePath())
 
-  utilModel.writeJsonAsync configDir + '/' + fileName, content, (err, result) ->
+  utils.writeJsonAsync configDir + '/' + fileName, content, (err, result) ->
     return callback err if err
     registryData = content
     callback null, result
@@ -54,5 +56,31 @@ model.saveEntry = (recipe, callback) ->
   .onError callback
   .onValue ->
     callback null, true
+
+model.streamAddEntryFromUrl = (projectUrl) ->
+  return _r.constantError new Error 'Invalid project url' if ! (projectId = utils.getProjectNameFromGitUrl(projectUrl))
+
+  _r.fromNodeCallback (cb) ->
+    tmp.dir { mode: '0750', prefix: 'eintopf_'}, cb
+  .flatMap (dirName) ->
+    _r.fromNodeCallback (cb) ->
+      git.clone projectUrl, dirName, cb
+  .flatMap (repo) ->
+    _r.fromNodeCallback (cb) ->
+      utils.loadJsonAsync repo.path + '/package.json', cb
+  .map (projectInfo) ->
+    projectInfo = {} if ! projectInfo
+    projectInfo.eintopf = {} if ! projectInfo.eintopf
+
+    recipe =
+      name: projectInfo.eintopf.name || projectId
+      description: projectInfo.eintopf.description
+      mediabg: projectInfo.eintopf.mediabg
+      src: projectInfo.eintopf.src
+      url: projectUrl
+    recipe
+  .flatMap (recipe) ->
+    _r.fromNodeCallback (cb) ->
+      model.saveEntry recipe, cb
 
 module.exports = model
