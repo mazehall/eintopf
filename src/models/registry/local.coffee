@@ -7,6 +7,7 @@ utils = require '../util/index.coffee'
 registryData = null
 fileName = 'registry.json'
 
+tmp.setGracefulCleanup();
 
 model = {}
 
@@ -61,7 +62,7 @@ model.streamAddEntryFromUrl = (projectUrl) ->
   return _r.constantError new Error 'Invalid project url' if ! (projectId = utils.getProjectNameFromGitUrl(projectUrl))
 
   _r.fromNodeCallback (cb) ->
-    tmp.dir { mode: '0750', prefix: 'eintopf_'}, cb
+    tmp.dir { mode: '0750', prefix: 'eintopf_', unsafeCleanup: true}, cb
   .flatMap (dirName) ->
     _r.fromNodeCallback (cb) ->
       git.clone projectUrl, dirName, cb
