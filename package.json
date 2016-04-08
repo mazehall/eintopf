@@ -34,9 +34,7 @@
     "tmp": "0.0.28"
   },
   "devDependencies": {
-    "electron-prebuilt": "0.36.9",
-    "jasmine-node": "^1.14.5",
-    "rewire": "^2.3.4",
+    "electron-prebuilt": "^0.37.5",
     "gulp": "^3.9.0",
     "gulp-clean": "^0.3.1",
     "gulp-concat": "^2.5.2",
@@ -47,7 +45,9 @@
     "gulp-uglify": "^1.2.0",
     "gulp-usemin": "^0.3.11",
     "gulp-util": "^3.0.6",
-    "q": "^1.4.1"
+    "jasmine-node": "^1.14.5",
+    "q": "^1.4.1",
+    "rewire": "^2.3.4"
   },
   "optionalDependencies": {
     "appdmg": "^0.3.2",
