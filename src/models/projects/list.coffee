@@ -50,9 +50,9 @@ model.installProject = (project, callback) ->
     _r.fromNodeCallback (cb) ->
       git.clone projectUrl, project.path, cb
   .flatMap -> # do additional pattern stuff if pattern
-    return _r.constant true if ! pattern
     _r.fromNodeCallback (cb) ->
-      model.patternPostInstall project, cb
+      return model.patternPostInstall project, cb if pattern
+      model.projectPostInstall project, cb
   .flatMap -> # reload projects to enforce view update
     _r.fromNodeCallback (cb) ->
       model.loadProjects cb
@@ -61,6 +61,13 @@ model.installProject = (project, callback) ->
   .onError (err) ->
     model.deleteProject project, () ->
       return callback new Error err?.message || 'Error: failed to clone git repository'
+
+model.projectPostInstall = (project, callback) ->
+  _r.fromNodeCallback (cb) ->
+    customModel.saveCustomization project, cb
+  .onError callback
+  .onValue ->
+    callback null, true
 
 model.patternPostInstall = (project, callback) ->
   return callback new Error 'Invalid description data' if ! project?.path
