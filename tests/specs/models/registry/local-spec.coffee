@@ -234,7 +234,7 @@ describe 'local registry', ->
         done()
 
     it 'should call tmp.dir() with correct parameters', (done) ->
-      expected = { mode: '0750', prefix: 'eintopf_'}
+      expected = { mode: '0750', prefix: 'eintopf_', unsafeCleanup: true}
 
       model.streamAddEntryFromUrl 'http://foo'
       .onEnd ->
@@ -273,20 +273,14 @@ describe 'local registry', ->
         expect(model.saveEntry).toHaveBeenCalledWith(expected, jasmine.any(Function))
         done()
 
-    it 'should call saveEntry with mapped recipe even when package.json is empty', (done) ->
-      model.__get__('utils').loadJsonAsync.andCallFake (path, callback) -> return callback null, null
-      projectUrl = 'http://foo'
+    it 'should fail when package.json does not have eintopf.name property', (done) ->
+      expected = jasmine.createSpy('onError').andCallFake (err) ->
+      model.__get__('utils').loadJsonAsync.andCallFake (path, callback) -> return callback null, {eintopf: {description: 'test'}}
 
-      expected =
-        name: 'something'
-        description: undefined
-        mediabg: undefined
-        src: undefined
-        url: projectUrl
-
-      model.streamAddEntryFromUrl projectUrl
+      model.streamAddEntryFromUrl  'http://foo'
+      .onError expected
       .onEnd ->
-        expect(model.saveEntry).toHaveBeenCalledWith(expected, jasmine.any(Function))
+        expect(expected).toHaveBeenCalled()
         done()
 
     it 'should fail when getProjectNameFromGitUrl fails', (done) ->

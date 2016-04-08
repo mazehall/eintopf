@@ -68,16 +68,16 @@ model.streamAddEntryFromUrl = (projectUrl) ->
       git.clone projectUrl, dirName, cb
   .flatMap (repo) ->
     _r.fromNodeCallback (cb) ->
-      utils.loadJsonAsync repo.path + '/package.json', cb
-  .map (projectInfo) ->
-    projectInfo = {} if ! projectInfo
-    projectInfo.eintopf = {} if ! projectInfo.eintopf
-
+      utils.loadJsonAsync repo.path + '/package.json', (err, result) ->
+        return cb new Error err if err
+        return cb new Error 'Project has invalid package.json' if ! result?.eintopf?.name
+        cb null, result
+  .map (project) ->
     recipe =
-      name: projectInfo.eintopf.name || projectId
-      description: projectInfo.eintopf.description
-      mediabg: projectInfo.eintopf.mediabg
-      src: projectInfo.eintopf.src
+      name: project.eintopf.name
+      description: project.eintopf.description
+      mediabg: project.eintopf.mediabg
+      src: project.eintopf.src
       url: projectUrl
     recipe
   .flatMap (recipe) ->
