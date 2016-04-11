@@ -37,7 +37,7 @@ model.saveCustomization = (project, callback) ->
     setTimeout ->
       model.getCustomData cb
     , 0
-  .map (fileContent) ->
+  .map (content) ->
     content = {} if ! content
     content.projects = {} if ! content.projects
     content.projects[project.id] = custom

@@ -153,6 +153,14 @@ handleEvents = (webContents) ->
       ks.setChildProperty 'locks', 'project:install:' + id, false
       val.event.sender.send 'project:install:' + id, {err: err?.message || null, result: result}
 
+  ipcToKefir 'project:register'
+  .filter (val) -> val.value?
+  .onValue (val) ->
+    projectUrl = val.value
+
+    registry.addLocalEntryFromUrl projectUrl, (err, result) ->
+      val.event.sender.send 'project:register:' + projectUrl, {err: err?.message || null, result: result}
+
   ipcToKefir 'project:detail'
   .filter (x) -> x.value?
   .onValue (x) ->

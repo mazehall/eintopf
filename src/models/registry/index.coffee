@@ -5,11 +5,13 @@ crypto = require "crypto"
 config = require '../stores/config.coffee'
 utils = require '../util/index.coffee'
 remote = require './remote.coffee'
+local = require './local.coffee'
 
 defaultRegistry = require '../../../config/default.registry.json'
 registryConfig = config.get 'registry'
 propertyPublic = 'registry:public'
 propertyPrivate = 'registry:private:remote'
+propertyLocal = 'registry:private:local'
 
 
 model = {}
@@ -22,7 +24,8 @@ model.getRecipe = (id) ->
 
 model.init = () ->
   model.initPublic()
-  model.initPrivates()
+  model.initPrivatesRemote()
+  model.initPrivatesLocal()
 
 model.streamFromPublic = ->
   if ! (publicUrl = process.env.REGISTRY_URL || registryConfig.public) || typeof publicUrl != "string"
@@ -48,7 +51,7 @@ model.initPublic = ->
   .onValue (data) ->
     ks.set propertyPublic, data
 
-model.initPrivates = ->
+model.initPrivatesRemote = ->
   model.streamFromPrivates()
   .flatMapErrors -> _r.constant []
   .filter (data) ->
@@ -57,9 +60,16 @@ model.initPrivates = ->
   .onValue (data) ->
     ks.set propertyPrivate, data
 
+model.initPrivatesLocal = ->
+  _r.fromNodeCallback local.getRegistryAsArray
+  .flatMapErrors -> _r.constant []
+  .map model.map
+  .onValue (data) ->
+    ks.set propertyLocal, data
+
 # update and set registry install flags
 model.remapRegistries = ->
-  _r.later 0, ['public', 'private:remote']
+  _r.later 0, ['public', 'private:remote', 'private:local']
   .flatten()
   .map (type) ->
     property = 'registry:' + type
@@ -75,5 +85,12 @@ model.map = (registryData) ->
     entry.dirName = utils.getProjectNameFromGitUrl entry.url if entry?.url
     entry.installed = utils.isProjectInstalled entry.dirName if entry?.dirName && ! entry.pattern
   registryData
+
+model.addLocalEntryFromUrl = (projectUrl, callback) ->
+  local.streamAddEntryFromUrl projectUrl
+  .onError callback
+  .onValue (val) ->
+    model.initPrivatesLocal()
+    return callback null, val
 
 module.exports = model

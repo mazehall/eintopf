@@ -36,13 +36,15 @@ describe 'registry', ->
 
     beforeEach ->
       spyOn(model, 'initPublic').andCallFake
-      spyOn(model, 'initPrivates').andCallFake
+      spyOn(model, 'initPrivatesRemote').andCallFake
+      spyOn(model, 'initPrivatesLocal').andCallFake
 
     it 'should call initPublic and init privates', ->
       model.init();
 
       expect(model.initPublic).toHaveBeenCalled()
-      expect(model.initPrivates).toHaveBeenCalled()
+      expect(model.initPrivatesRemote).toHaveBeenCalled()
+      expect(model.initPrivatesLocal).toHaveBeenCalled()
 
 
   describe 'initPublic()', ->
@@ -95,7 +97,7 @@ describe 'registry', ->
         done()
 
 
-  describe 'initPrivates()', ->
+  describe 'initPrivatesRemote()', ->
 
     beforeEach ->
       ks.set 'registry:private:remote', null
@@ -104,7 +106,7 @@ describe 'registry', ->
       spyOn(model, 'streamFromPrivates').andCallFake -> return _r.constant remoteRegistry
 
     it 'should call map and set remote result', (done) ->
-      model.initPrivates()
+      model.initPrivatesRemote()
       .onEnd ->
         expect(model.map).toHaveBeenCalledWith(remoteRegistry)
         expect(ks.get('registry:private:remote')).toEqual(remoteRegistry)
@@ -113,7 +115,7 @@ describe 'registry', ->
     it 'should set empty array on remote error', (done) ->
       model.streamFromPrivates.andCallFake -> return _r.constantError new Error 'something'
 
-      model.initPrivates()
+      model.initPrivatesRemote()
       .onEnd ->
         expect(ks.get('registry:private:remote')).toEqual([])
         done()
@@ -122,7 +124,7 @@ describe 'registry', ->
       ks.set 'registry:private:remote', defaultRegistry
       model.streamFromPrivates.andCallFake -> return _r.constant []
 
-      model.initPrivates()
+      model.initPrivatesRemote()
       .onEnd ->
         expect(model.map).not.toHaveBeenCalled();
         done()
@@ -131,11 +133,66 @@ describe 'registry', ->
       ks.set 'registry:private:remote', defaultRegistry
       model.streamFromPrivates.andCallFake -> return _r.constantError new Error 'bad error'
 
-      model.initPrivates()
+      model.initPrivatesRemote()
       .onEnd ->
         expect(model.map).not.toHaveBeenCalled();
         done()
 
+
+  describe 'initPrivatesLocal()', ->
+
+    beforeEach ->
+      ks.set 'registry:private:local', null
+
+      spyOn(model, 'map').andCallFake (val) -> return val
+
+      local = model.__get__ 'local'
+      spyOn(local, 'getRegistryAsArray').andCallFake (callback) ->
+        setTimeout ->
+          callback null, remoteRegistry
+        , 0
+
+    it 'should call map and set remote result', (done) ->
+      model.initPrivatesLocal()
+      .onEnd ->
+        expect(model.map).toHaveBeenCalledWith(remoteRegistry)
+        expect(ks.get('registry:private:local')).toEqual(remoteRegistry)
+        done()
+
+    it 'should set empty array on error', (done) ->
+      local = model.__get__('local').getRegistryAsArray.andCallFake (callback) ->
+        setTimeout ->
+          callback new Error 'something happened'
+        , 0
+
+      model.initPrivatesLocal()
+      .onEnd ->
+        expect(ks.get('registry:private:local')).toEqual([])
+        done()
+
+
+  describe 'addLocalEntryFromUrl()', ->
+
+    beforeEach ->
+      spyOn(model, 'initPrivatesLocal').andCallFake ->
+
+      local = model.__get__ 'local'
+      spyOn(local, 'streamAddEntryFromUrl').andCallFake -> _r.constant true
+
+
+    it 'should call streamAddEntryFromUrl, initPrivatesLocal and return true in callback', (done) ->
+      model.addLocalEntryFromUrl 'http://foo', (err, result) ->
+        expect(model.__get__('local').streamAddEntryFromUrl).toHaveBeenCalled()
+        expect(model.initPrivatesLocal).toHaveBeenCalled()
+        expect(result).toBeTruthy()
+        done()
+
+    it 'should fail on error', (done) ->
+      model.__get__('local').streamAddEntryFromUrl.andCallFake -> _r.constantError new Error 'test error'
+
+      model.addLocalEntryFromUrl 'http://foo', (err) ->
+        expect(err).toBeTruthy()
+        done()
 
   describe 'map()', ->
 
