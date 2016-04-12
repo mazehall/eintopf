@@ -43,7 +43,7 @@
                             <span class="m0 py05 small">Please enter project-id. The id must be unique. This is also the folder name in your scripts.</span>
                         </label>
                         <div class=" m0 media-content-input">
-                            <input name="id" type="text" placeholder="your project-id" ng-model="project.id" />
+                            <input name="id" id="projectId" type="text" placeholder="your project-id" ng-model="project.id" />
                         </div>
                         <label class="grd-row p0">
                             <span class="m0 py05 small">Please enter the name of your project. This is displayed on the left side in "your projects"</span>
@@ -55,12 +55,12 @@
                             <span class="m0 py05 small">Please enter the description of your project. </span>
                         </label>
                         <div class=" m0 media-content-textarea">
-                            <textarea name="description" ng-model="project.description"></textarea>
+                            <textarea id="projectDescription" name="description" ng-model="project.description"></textarea>
                         </div>
 
                         <div class="grd-row media-footer my1 txt--right">
-                            <button class="btn mx05" type="button" ui-sref='cooking.projects.create'>Cancel</button>
-                            <button type="button" autofocus class="btn"  ng-click="clone()" ng-disabled="loading">
+                            <button id="buttonCancelClone" class="btn mx05" type="button" ui-sref='cooking.projects.create'>Cancel</button>
+                            <button id="buttonCloneProject" type="button" autofocus class="btn"  ng-click="clone()" ng-disabled="loading">
                                 <i ng-show="loading" class="fa fa-spinner fa-pulse"></i>
                                 Create
                             </button>

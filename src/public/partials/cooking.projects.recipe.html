@@ -1,4 +1,4 @@
-<div class="grd px2 my1 cssContainer">
+<div id="containerProjectDetail" class="grd px2 my1 cssContainer">
 
     <div class="grd-row">
         <div class="grd-row-col-6--lg cssBox p1 cssPatternBig">
@@ -9,10 +9,10 @@
                         <img ng-src="{{project.src}}" ng-if="project.src" width="35px"/>
                     </div>
                     <div class="media-body p05 mx1">
-                        <button ns-popover class="cssIcon flt--right"
+                        <button id="buttonProjectPopup"
+                                ns-popover class="cssIcon flt--right"
                                 ns-popover-trigger="click"
                                 ns-popover-placement="left|top"
-
                                 ns-popover-active-class="active"
                                 ns-popover-template="partials/cooking.projects.recipe_menu.html">
                             <i class=" fa fa-chevron-circle-down fa-lg fnt--light-gray"></i>
@@ -40,25 +40,27 @@
     <div class="grd-row py2 m0">
         <div class="grd-row-col-6 p2">
             <ul class="grd-row cssTab  list--unstyled p0 m0">
-                <li class="grd-row-col-1-6 " ng-click="onClickTab('protocol')" ng-class="{cssActive: currentTab == 'protocol'}">
+                <li id="tabLabelLog" class="grd-row-col-1-6 " ng-click="onClickTab('protocol')"
+                    ng-class="{cssActive: currentTab == 'protocol'}">
                     <p class="txt--center m0 cssNowrap">Logs</p>
                     <i class="py05 txt--center fa fa-terminal"></i>
                 </li>
-                <li class="grd-row-col-1-6 tab_readme" ng-click="onClickTab('readme')" ng-class="{cssActive: currentTab =='readme'}" ng-if="project.readme">
+                <li id="tabLabelReadme" class="grd-row-col-1-6 tab_readme" ng-click="onClickTab('readme')"
+                    ng-class="{cssActive: currentTab =='readme'}" ng-if="project.readme">
                     <p class="txt--center m0">Readme</p>
                     <i class="py05 txt--center fa fa-file-text-o"></i>
                 </li>
-                <li class="grd-row-col-1-6 tab_actions" ng-click="onClickTab('actions')"
+                <li id="tabLabelActions" class="grd-row-col-1-6 tab_actions" ng-click="onClickTab('actions')"
                     ng-class="{cssActive: currentTab =='actions'}" ng-if="project.actions && project.actions.length">
                     <p class="txt--center m0 cssNowrap">Actions</p>
                     <i class="py05 txt--center fa fa-play-circle"></i>
                 </li>
-                <li class="grd-row-col-1-6 tab_containers" ng-click="onClickTab('containers')"
+                <li id="tabLabelContainers" class="grd-row-col-1-6 tab_containers" ng-click="onClickTab('containers')"
                     ng-class="{cssActive: currentTab =='containers'}" ng-if="containers && containers.length">
                     <p class="txt--center m0 cssNowrap">Containers <sup class="small">({{containers.length}})</sup></p>
                     <i class="py05 txt--center fa fa-cube"><sup class="small">({{containers.length}})</sup></i>
                 </li>
-                <li class="grd-row-col-1-6 tab_running_apps" ng-click="onClickTab('apps')"
+                <li id="tabLabelApps" class="grd-row-col-1-6 tab_running_apps" ng-click="onClickTab('apps')"
                     ng-class="{cssActive: currentTab =='apps'}" ng-if="apps && apps.length">
                     <p class="txt--center m0 cssNowrap">Running Apps <sup class="small">({{apps.length}})</sup></p>
                     <i class="py05 txt--center fa fa-puzzle-piece"><sup class="small">({{apps.length}})</sup></i>
@@ -66,15 +68,15 @@
             </ul>
 
             <div class="grd-row p0 m0 cssBorderWhitoutTop">
-                <div class="grd-row-col-6 scroll bg--dark-gray p1" scroll-on-event="scrollLog" ng-show="currentTab == 'protocol'">
+                <div id="tabContentLog" class="grd-row-col-6 scroll bg--dark-gray p1" scroll-on-event="scrollLog" ng-show="currentTab == 'protocol'">
                     <div class="fnt--off-white" ng-bind-html="protocol | trustAsHtml"></div>
                 </div>
 
-                <div class="grd-row-col-6  p1 " ng-if="project.readme" ng-show="currentTab == 'readme'">
+                <div id="tabContentReadme" class="grd-row-col-6  p1 " ng-if="project.readme" ng-show="currentTab == 'readme'">
                     <div class="cssReadme" marked="project.readme"></div>
                 </div>
 
-                <div class="grd-row-col-6  py1 " ng-show="currentTab == 'actions'">
+                <div id="tabContentActions" class="grd-row-col-6  py1 " ng-show="currentTab == 'actions'">
                     <ul class="grd list--unstyled p0 m0 cssContainer">
                         <li class="grd-row muted">
                           <span class="mx1 grd-row-col-5-6">
@@ -93,11 +95,11 @@
                     </ul>
                 </div>
 
-                <div class="grd-row-col-6 py1" ng-show="currentTab == 'containers'">
+                <div id="tabContentContainers" class="grd-row-col-6 py1" ng-show="currentTab == 'containers'">
                     <div ng-include="'./partials/cooking.containers.html'"></div>
                 </div>
 
-                <div class="grd-row-col-6 py1" ng-show="currentTab == 'apps'">
+                <div id="tabContentApps" class="grd-row-col-6 py1" ng-show="currentTab == 'apps'">
                     <div ng-include="'./partials/cooking.apps.html'"></div>
                 </div>
             </div>

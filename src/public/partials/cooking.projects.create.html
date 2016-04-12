@@ -21,8 +21,8 @@
                                        type="text" name="projectName" id="projectName" ng-model="projectUrl">
                             </div>
                             <div class="cssListBtn mx2 py1 grd-row-col-1-6 txt--right">
-                                <button href="" class="btn" ng-click="registerProject(projectUrl)" ng-disabled="loading"
-                                        title="Create new project">
+                                <button id="buttonRegisterUrl" href="" class="btn" ng-click="registerProject(projectUrl)"
+                                        ng-disabled="loading" title="Create new project">
                                     <i ng-show="loading" class="fa fa-spinner fa-pulse"></i>
                                     <span>Create</span>
                                 </button>

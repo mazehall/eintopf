@@ -1,67 +1,72 @@
+var testProject = 'e2e-test';
+
+//@todo improve id naming
 module.exports = {
-    "@tags": ["docker"],
+  "@tags": ["docker"],
 
-    "should switch to the 'logs' tab when project starts": function (browser){
-        browser.waitForEintopfStart();
-        browser.expect.element(".cssMenu li#eintopfphpdev > a.btn--link").to.be.visible;
-        browser.click(".cssMenu li#eintopfphpdev > a.btn--link");
-        browser.waitForElementPresent(".cssToolbar", 1000);
+  beforeEach: function(browser, done) {
+    browser.waitForElementPresent("img[alt='einTOPF']", 10000, done);
+  },
 
-        browser.expect.element(".cssToolbar li.run > a").to.be.present;
-        browser.click(".cssToolbar li.run > a");
-        browser.assert.containsText("ul.cssTab > li.cssActive", "Logs");
-        browser.expect.element("[marked=\"protocol\"]").to.be.visible;
-        browser.endSession();
-    },
+  afterEach: function(browser, done) {
+    browser.closeWindow().end(done);
+  },
 
-    "should switch to the 'logs' tab when description update starts": function (browser){
-        browser.waitForEintopfStart();
-        browser.expect.element(".cssMenu li#eintopfphpdev > a.btn--link").to.be.visible;
-        browser.click(".cssMenu li#eintopfphpdev > a.btn--link");
-        browser.waitForElementPresent(".cssToolbar", 1000);
+  "should switch to the 'logs' tab when project starts": function (browser){
+    browser.pause(5000); // wait for runtime stream info
+    browser.expect.element(".cssMenu li#" + testProject + " button").to.be.visible;
+    browser.assert.cssClassPresent(".cssMenu li#" + testProject + " i", "fa-pause");
+    browser.click(".cssMenu li#" + testProject + " button");
 
-        browser.expect.element(".cssToolbar li.update > a").to.be.present;
-        browser.click(".cssToolbar li.update > a");
-        browser.assert.containsText("ul.cssTab > li.cssActive", "Logs");
-        browser.expect.element("[marked=\"protocol\"]").to.be.visible;
-        browser.endSession();
-    },
+    browser.pause(500);
 
-    "should remove the 'running' css class and switch to the 'logs' tab by stopping a project": function (browser){
-        browser.waitForEintopfStart();
-        browser.expect.element(".cssMenu li#eintopfphpdev > a.btn--link").to.be.visible;
-        browser.click(".cssMenu li#eintopfphpdev > a.btn--link");
-        browser.waitForElementPresent(".cssToolbar", 1000);
+    browser.assert.containsText("#tabLabelLog", "Logs");
+    browser.expect.element("#tabContentLog").to.be.visible;
+  },
 
-        browser.expect.element(".cssToolbar li.stop > a").to.be.present;
-        browser.click(".cssToolbar li.stop > a");
-        browser.waitForElementNotPresent(".cssMenu li#eintopfphpdev i.fa-cog", 30000);
-        browser.assert.cssClassPresent(".cssMenu li#eintopfphpdev i", "fa-power-off", "Project is not running");
+  "should switch to the 'logs' tab when description update starts": function (browser){
+    browser.pause(5000); // wait for runtime stream info
 
-        browser.assert.containsText("ul.cssTab > li.cssActive", "Logs");
-        browser.expect.element("[marked=\"protocol\"]").to.be.visible;
-        browser.endSession();
-    },
+    browser.expect.element(".cssMenu li#" + testProject).to.be.visible;
+    browser.click(".cssMenu li#" + testProject);
+    browser.pause(500);
 
-    "should be removed from the sidebar when deleted a project": function (browser){
-        browser.waitForEintopfStart();
-        browser.expect.element(".cssMenu li#eintopfphpdev > a.btn--link").to.be.visible;
-        browser.click(".cssMenu li#eintopfphpdev > a.btn--link");
-        browser.waitForElementPresent(".cssToolbar", 1000);
-        browser.expect.element(".cssToolbar li.delete > a").to.be.present;
-        browser.click(".cssToolbar li.delete > a");
+    browser.click("#buttonProjectPopup");
+    browser.pause(500);
 
-        browser.waitForElementNotPresent(".cssToolbar", 10000);
-        browser.expect.element(".cssMenu li#eintopfphpdev").to.not.be.present.after(1000);
-        browser.endSession();
-    },
+    browser.click("#update");
+    browser.pause(500);
 
-    before: function(browser) {
-        browser.waitForEintopfStart = function(){
-            return browser.waitForElementPresent("img[alt='einTOPF']", 35000).pause(1000);
-        };
-        browser.endSession = function(){
-            return browser.closeWindow().end();
-        };
-    }
+    browser.assert.containsText("#tabLabelLog", "Logs");
+    browser.expect.element("#tabContentLog").to.be.visible;
+  },
+
+  "should switch to the 'logs' tab when stopping a project": function (browser){
+    browser.pause(5000); // wait for runtime stream info
+    browser.expect.element(".cssMenu li#" + testProject + " button").to.be.visible;
+    browser.assert.cssClassPresent(".cssMenu li#" + testProject + " i", "fa-play");
+    browser.click(".cssMenu li#" + testProject + " button");
+
+    browser.pause(500);
+
+    browser.assert.containsText("#tabLabelLog", "Logs");
+    browser.expect.element("#tabContentLog").to.be.visible;
+  },
+
+  "should be removed from the sidebar when deleted a project": function (browser){
+    browser.pause(5000); // wait for runtime stream info
+
+    browser.expect.element(".cssMenu li#" + testProject).to.be.visible;
+    browser.click(".cssMenu li#" + testProject);
+    browser.pause(500);
+
+    browser.click("#buttonProjectPopup");
+    browser.pause(500);
+
+    browser.click("#hide");
+    browser.pause(500);
+
+    browser.expect.element(".cssMenu li#" + testProject).to.not.be.present.after(1000);
+  }
+
 };
