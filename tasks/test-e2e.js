@@ -2,6 +2,8 @@
 
 var spawn = require("child_process").spawn;
 var fs = require("fs");
+var path = require('path');
+
 try {
     fs.statSync("./node_modules/nightwatch");
     fs.statSync("./node_modules/chromedriver");
@@ -14,11 +16,24 @@ try {
     });
 }
 
+var nightWatchConfigPath = "tests/e2e/nightwatch.json";
 if (process.platform === "darwin") {
     console.log("*** Selenium need Java v1.7! Install JDK 1.7 and set the Environment variable: JAVA_HOME=\"`/usr/libexec/java_home -v '1.7*'`\" ***");
 }
 
-spawn("node", ["node_modules/nightwatch/bin/nightwatch", "--config", "tests/e2e/nightwatch.json"], {
+// windows - write custom nightwatch_win.json
+if (process.platform === "win32") {
+    var nightWatchConfigPath = "tests/e2e/nightwatch_win.json";
+    var config = require("../tests/e2e/nightwatch.json");
+
+    config["selenium"]["cli_args"]["webdriver.chrome.driver"] = "./node_modules/chromedriver/lib/chromedriver/chromedriver.exe";
+    config["test_settings"]["default"]["desiredCapabilities"]["chromeOptions"]["binary"] = path.join(process.cwd(), 'tests/e2e/launcher_eintopf.cmd');
+    config["test_settings"]["default"]["disable_colors"] = true;
+
+    fs.writeFileSync(path.join(process.cwd(), nightWatchConfigPath), JSON.stringify(config));
+}
+
+spawn("node", ["node_modules/nightwatch/bin/nightwatch", "--config", nightWatchConfigPath], {
     env: process.env,
     stdio: "inherit"
 });
