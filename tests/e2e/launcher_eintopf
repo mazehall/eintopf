@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var spawn   = require("child_process").spawn;
-var binPath = require("../node_modules/electron-prebuilt");
+var binPath = require("electron-prebuilt");
 var options = process.argv.slice(2);
 
 var appExec = spawn(binPath, options.unshift(".") && options);

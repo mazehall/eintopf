@@ -58,6 +58,6 @@
     "postinstall": "node ./tasks/postinstall",
     "release": "./node_modules/.bin/gulp release --env=production",
     "test": "node_modules/.bin/jasmine-node --coffee tests/specs",
-    "test-e2e": "node tests/e2e.js"
+    "test-e2e": "node tasks/test-e2e.js"
   }
 }
