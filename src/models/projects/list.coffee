@@ -37,7 +37,7 @@ model.installProject = (project, callback) ->
 
   pattern = if project.pattern then true else false
   projectUrl = if pattern then project.patternUrl else project.url
-  project.id = project.dirName if ! pattern
+  project.id = if pattern then project.id.toLowerCase() else project.dirName
 
   return callback new Error 'Invalid description data' if ! project.id || ! projectUrl
   return callback new Error 'Could not resolve config path' if ! (projectsPath = utilModel.getProjectsPath())?
