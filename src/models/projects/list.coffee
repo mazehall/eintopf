@@ -181,6 +181,8 @@ model.loadProjects = (callback) ->
     ks.set 'projects:list', foundProjects
   .filter (project) ->
     project if project.path?
+  .skipDuplicates (a, b) -> # keep ids unique
+    a.path.toLowerCase() == b.path.toLowerCase()
   .flatMap (project) ->
     _r.fromNodeCallback (cb) ->
       model.loadProject project.path, cb

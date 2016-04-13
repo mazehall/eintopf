@@ -90,7 +90,7 @@ module.exports = {
     browser.expect.element(".cssMenu li#" + testProject + " button").to.be.visible;
     browser.assert.cssClassPresent(".cssMenu li#" + testProject + " i", "fa-pause");
     browser.click(".cssMenu li#" + testProject + " button");
-    browser.waitForElementPresent(".cssMenu li#" + testProject + " i.fa-play", 10000);
+    browser.waitForElementPresent(".cssMenu li#" + testProject + " i.fa-play", 20000);
   },
 
   "Should display app in apps tab of project detail page": function (browser){
@@ -134,7 +134,7 @@ module.exports = {
     browser.expect.element(".cssMenu li#" + testProject + " button").to.be.visible;
     browser.assert.cssClassPresent(".cssMenu li#" + testProject + " i", "fa-play");
     browser.click(".cssMenu li#" + testProject + " button");
-    browser.waitForElementPresent(".cssMenu li#" + testProject + " i.fa-pause", 10000);
+    browser.waitForElementPresent(".cssMenu li#" + testProject + " i.fa-pause", 20000);
   }
 
 };
