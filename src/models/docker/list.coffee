@@ -59,7 +59,7 @@ model.initApps = (container) ->
       https: true if certs
       project: container.project
 
-    ks.setChildProperty 'apps:list', virtualHost, app
+    ks.setChildProperty 'apps:list', container.project  + '_' + virtualHost, app
 
 model.inspectContainers = (containers) ->
   return false if ! utilModel.typeIsArray containers

@@ -116,6 +116,18 @@ module.exports = {
     browser.expect.element("[ng-show=\"currentTab == 'containers'\"] .cssSwitchBg").text.to.equal("ON");
   },
 
+  "should have a active 'running app' container": function (browser){
+    browser.click("a[ui-sref=\"panel.main\"]");
+    browser.pause(500);
+
+    browser.click("a[ui-sref=\"panel.apps\"]");
+    browser.pause(500);
+
+    browser.waitForElementPresent("[ng-repeat=\"app in apps\"]", 1000);
+    browser.assert.containsText(".cssPanelHead", "Running apps");
+    browser.expect.element(".cssPanelBox").text.to.match(/php.dev:/ig).after(1000);
+  },
+
   //@todo initial environment
   "Should stop project": function (browser){
     browser.pause(5000); // wait for runtime stream info
