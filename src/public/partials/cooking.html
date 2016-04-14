@@ -1,0 +1,46 @@
+<div class="grd cssBgGreen cssHeader">
+  <div class="grd-row ">
+    <div class="grd-row-col-1-6--lg  grd-row-col-2-6--sm cssLogo">
+      <img class="py05 cssLogoImg" src="img/logo.png" alt="einTOPF"/>
+    </div>
+    <div class="grd-row-col-5-6--lg grd-row-col-4-6--sm cssNav">
+
+      <ul class="list--unstyled flt--right m0 p0">
+        <li class="flt--left" ng-class="states.vagrant? 'on' : 'off'">
+          <button ns-popover="false" class="cssIcon"
+                  ns-popover-active-class="active"
+                  ns-popover-template="partials/pop.vm.html"
+                  title="VM status">
+            <i class="fa fa-cube"></i>
+          </button>
+
+        </li>
+        <li class="flt--left" ng-class="states.proxy? 'on' : 'off'">
+          <button ns-popover="false" class="cssIcon"
+                  ns-popover-active-class="active"
+                  ns-popover-template="partials/pop.proxy.html"
+                  title="Proxy status">
+            <i class="fa fa-sitemap"></i>
+          </button>
+          </a>
+        </li>
+        <li class="flt--left" ng-class="states.internet? 'on' : 'off'">
+          <button ns-popover="false" class="cssIcon"
+                  ns-popover-active-class="active"
+                  ns-popover-template="partials/pop.net.html"
+                  title="Internet connectivity">
+            <i class="fa fa-cloud"></i>
+          </button>
+
+        </li>
+        <li class="flt--left"  ui-sref-active='active'>
+          <a ui-sref="panel.main" class="btn--link">
+            <i class="fa fa-cog fa-lg fnt-eintopf-green"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="content" class="cssHeightFull"ui-view></div>

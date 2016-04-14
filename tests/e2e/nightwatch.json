@@ -1,6 +1,6 @@
 {
-  "src_folders": ["tests/e2e"],
-  "output_folder": "tests/e2e/reports",
+  "src_folders": ["./tests/e2e/tests"],
+  "output_folder": "./tests/e2e/reports",
 
   "selenium": {
     "start_process": true,
@@ -9,7 +9,7 @@
     "host": "127.0.0.1",
     "port": 4444,
     "cli_args": {
-      "webdriver.chrome.driver": "node_modules/chromedriver/bin/chromedriver"
+      "webdriver.chrome.driver": "./node_modules/chromedriver/bin/chromedriver"
     }
   },
 
@@ -24,17 +24,16 @@
       },
       "screenshots": {
         "enabled": true,
-        "path"   : "tests/e2e/screenshots"
+        "path"   : "./tests/e2e/screenshots"
       },
       "desiredCapabilities": {
         "browserName": "chrome",
         "javascriptEnabled": true,
         "acceptSslCerts": true,
         "chromeOptions": {
-          "binary": "tests/launcher_eintopf"
+          "binary": "./tests/e2e/launcher_eintopf"
         }
-      },
-      "exclude" : "nightwatch.json"
+      }
     }
   }
 }

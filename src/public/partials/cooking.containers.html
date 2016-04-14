@@ -1,0 +1,78 @@
+
+    <div class="grd-row my1 bg--red" ng-repeat="(key, value) in logs | filter:{read: false}">
+        <div class="grd-row-col-6 p1">
+            <a href="" class="fnt--white flt--right " ng-click="value.read = true">
+                <i class="fnt--white fa fa-times"></i>
+            </a>
+           <p class="fnt--white">{{value.message}}</p>
+        </div>
+    </div>
+
+
+<ul class="grd list--unstyled m0 p0 cssContainer">
+    <li class="grd-row fnt--mid-gray">
+        <span class="mx1 grd-row-col-4-6">
+            Container name
+        </span>
+        <span class="mx1 grd-row-col-1-6">
+            Status
+        </span>
+        <span class="mx2 grd-row-col-1-6">
+
+        </span>
+    </li>
+    <li class="grd-row py1" ng-repeat="(key, value) in containers" ng-class-even="'bg--white'" ng-class-odd="'bg--off-white'">
+        <div class="mx1 grd-row-col-4-6">
+            <p class="m0 p0"> {{value.name}}</p>
+        </div>
+        <div class="mx1 grd-row-col-1-6">
+            <p class="m0 p0"> {{value.status}}</p>
+        </div>
+
+        <div class="mx2 txt--right grd-row-col-1-6">
+
+            <div class="grd">
+            <div class="grd-row">
+                <div class="cssSwitchBg grd-row-col-3-6 " ng-if="!locks['containers:' + value.id]">
+                    <span class="flt--right" ng-class="value.running? 'on' : 'off'">
+                        <div class="cssSwitchLabel small" ng-click="toggleStartStop(value)">
+                          {{ value.running? 'ON' : 'OFF' }}
+                        </div>
+                        <div class="cssSwitch"></div>
+                    </span>
+                </div>
+                <div class="cssSwitchBg grd-row-col-6 " ng-if="locks['containers:' + value.id]">
+                    <span class="flt--right refresh">
+                        <div class="cssSwitchLabel small">
+                            <div class="">
+                                <i class="fa fa-spinner fa-spin fa-lg"></i>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+                <div class="grd-row-col-3-6 cssRemoveButton" ng-if="!locks['containers:remove:' + value.id]" ng-click="removeContainer(value)">
+                    <button  class="cssRemoveBtn">
+                        <span class="fa-stack fa-lg">
+                          <i class="fa fa-circle fa-stack-2x"></i>
+                          <i class="fa fa-minus fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="remove grd-row-col-3-6 cssRemoveButton" ng-if="locks['containers:remove:' + value.id]" ng-click="removeContainer(value)">
+                    <button  class="cssRemoveBtn on">
+                        <span class="fa-stack fa-lg">
+                          <i class="fa fa-circle fa-stack-2x"></i>
+                          <small><i class="fa fa-spinner fa-spin fa-stack-1x fa-inverse"></i></small>
+                        </span>
+                    </button>
+                </div>
+
+            </div>
+            </div>
+      </div>
+    </li>
+</ul>
+
+
+

@@ -1,10 +1,35 @@
-## 1.2.2
+## 1.3
+
+Added:
+
+- projects can now be cloned
+- installed projects can be partially edited
+- loading animations for async actions
+- minimal height for the browser window
 
 Changed:
 
-- upgraded eintopf proxy to version 1.0.2
+- installing through a project url now creates a local registry entry
+- replaced vagrant backup with logic that repairs the broken vagrant
+- removed Express Server Layer, so now native electron
+- replaced most vagrant shell calls with a more durable solution
+- improved Eintopf start time
+- design
 
-## 1.2.1
+Fixed:
+
+- issue when starting multiple Eintopf instances
+- incorrect vagrant ssh config values
+- issues when having projects with the same dir name but different upper case letters
+
+
+## 1.2.2 (08.03.2016)
+
+Changed:
+
+- upgrade eintopf proxy to version 1.0.2
+
+## 1.2.1 (10.02.2016)
 
 Fixed:
 
