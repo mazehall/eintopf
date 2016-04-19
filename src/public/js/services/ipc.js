@@ -269,8 +269,7 @@
   }]);
 
   ipcModule.service('resAppsList', ['ipc', 'reqAppsList', function (ipc, reqAppsList) {
-    reqAppsList.emit();
-    return ipc.toKefir('res:apps:list')
+    var stream = ipc.toKefir('res:apps:list')
     .map(function (apps) { // only running apps
       for (var key in apps) {
         if (apps.hasOwnProperty(key) && !apps[key].running) delete apps[key];
@@ -278,6 +277,12 @@
       return apps;
     })
     .toProperty();
+
+    //initial emit - service stream should never stop listening and trigger emit on initialization
+    stream.onEnd(function() {});
+    reqAppsList.emit();
+
+    return stream;
   }]);
 
   ipcModule.service('reqContainerActions', ['ipc', function (ipc) {

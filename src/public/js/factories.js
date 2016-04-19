@@ -32,9 +32,6 @@
       .$assignProperty(scope, property);
     };
 
-    // initial emit
-    model.emit();
-
     return model;
   }]);
 
@@ -135,6 +132,8 @@
           return mappedApps;
         })
         .$assignProperty(scope, property);
+
+        reqAppsList.emit();
       };
 
       return model;
