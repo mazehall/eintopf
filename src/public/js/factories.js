@@ -203,7 +203,7 @@
               }
 
               return containers;
-            }).log();
+            });
 
             return Kefir.combine([resContainersList, resContainersInspect])
             .throttle(2000)
@@ -229,7 +229,7 @@
               }
 
               return mappedContainers;
-            }).log();
+            });
           },
           listApps: function (project) {
             return resAppsList.map(function (apps) {

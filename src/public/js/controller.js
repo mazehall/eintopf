@@ -298,7 +298,6 @@
 
         projectFactory.customizeProject($scope.project, function(err, result) {
           $scope.loading = false;
-          console.log(err, result);
           if (err && err) $scope.errorMessage = err;
           $scope.$apply();
         });
