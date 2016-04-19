@@ -67,8 +67,14 @@ beat.throttle 10000
 # update internet state
 beat.throttle 10000
 .flatMap ->
-  _r.fromNodeCallback (cb) ->
+  checked = 0
+  check = (cb) ->
+    checked++
     isOnline cb
+
+  _r.concat [ _r.fromNodeCallback(check), _r.fromNodeCallback(check), _r.fromNodeCallback(check)]
+  .skipWhile (x) -> x != true && checked != 3
+  .take 1
 .onValue (value) ->
   ks.setChildProperty 'states:live', 'internet', value
 
