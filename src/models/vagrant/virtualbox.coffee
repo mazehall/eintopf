@@ -36,6 +36,13 @@ model.streamStats = ->
 
     if result['Host/RAM/Usage/Used:avg'] && result['Host/RAM/Usage/Total:avg']
       result['Host/RAM/Usage/Load:avg'] = ((result['Host/RAM/Usage/Used:avg'] / result['Host/RAM/Usage/Total:avg']) * 100) + '%'
+
+    if result['Host/CPU/Load/Idle:avg']
+      result['Host/CPU/Load:avg'] = (100 - (result['Host/CPU/Load/Idle:avg'].replace('%', '') - 0)) + '%'
+
+    if result['VM/CPU/Load/User:avg'] && result['VM/CPU/Load/Kernel:avg']
+      result['VM/CPU/Load:avg'] = (result['VM/CPU/Load/User:avg'].replace('%', '') - 0) + (result['VM/CPU/Load/Kernel:avg'].replace('%', '') - 0) + '%'
+
     result
 
 # wrapper for VBoxManage execution.

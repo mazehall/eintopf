@@ -11,22 +11,11 @@
 
         <div class="grd-row my1">
             <div class="grd-row-col-1-6">
-                <h5 class="m0 p0 fnt--dark-gray thin">CPU - Kernel</h5>
+                <h5 class="m0 p0 fnt--dark-gray thin">CPU</h5>
             </div>
             <div class="grd-row-col-5-6">
                 <div class="brdr--light-gray bg--white cssProgressbar">
-                    <div class="bg--green cssProgress CPU" style="width:{{vbStats['VM/CPU/Load/Kernel:avg'] || '0%'}}">&nbsp;</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="grd-row my1">
-            <div class="grd-row-col-1-6">
-                <h5 class="m0 p0 fnt--dark-gray thin">CPU - User</h5>
-            </div>
-            <div class="grd-row-col-5-6">
-                <div class="brdr--light-gray bg--white cssProgressbar">
-                    <div class="bg--green cssProgress CPU" style="width:{{vbStats['VM/CPU/Load/User:avg'] || '0%'}}">&nbsp;</div>
+                    <div class="bg--green cssProgress CPU" style="width:{{vbStats['VM/CPU/Load:avg'] || '0%'}}">&nbsp;</div>
                 </div>
             </div>
         </div>
@@ -64,22 +53,11 @@
 
         <div class="grd-row my1">
             <div class="grd-row-col-1-6">
-                <h5 class="m0 p0 fnt--dark-gray thin">CPU - Kernel</h5>
+                <h5 class="m0 p0 fnt--dark-gray thin">CPU</h5>
             </div>
             <div class="grd-row-col-5-6">
                 <div class="brdr--light-gray bg--white cssProgressbar">
-                    <div class="bg--green cssProgress CPU" style="width:{{vbStats['Host/CPU/Load/Kernel:avg'] || '0%'}}">&nbsp;</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="grd-row my1">
-            <div class="grd-row-col-1-6">
-                <h5 class="m0 p0 fnt--dark-gray thin">CPU - User</h5>
-            </div>
-            <div class="grd-row-col-5-6">
-                <div class="brdr--light-gray bg--white cssProgressbar">
-                    <div class="bg--green cssProgress CPU" style="width:{{vbStats['Host/CPU/Load/User:avg'] || '0%'}}">&nbsp;</div>
+                    <div class="bg--green cssProgress CPU" style="width:{{vbStats['Host/CPU/Load:avg'] || '0%'}}">&nbsp;</div>
                 </div>
             </div>
         </div>
@@ -97,7 +75,7 @@
 
         <div class="grd-row my1">
             <div class="grd-row-col-1-6">
-                <h5 class="m0 p0 fnt--dark-gray thin">I/O</h5>
+                <h5 class="m0 p0 fnt--dark-gray thin">I/O (only Unix)</h5>
             </div>
             <div class="grd-row-col-5-6">
                 <div class="brdr--light-gray bg--white cssProgressbar">
