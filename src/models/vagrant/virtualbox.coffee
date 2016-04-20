@@ -1,11 +1,42 @@
 _r = require 'kefir'
 jetpack = require "fs-jetpack"
+moment = require 'moment'
 
 utilModel = require "../util/index.coffee"
 
 winVBoxManagePath = 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' # keep slashes
 
 model = {}
+
+# requires metrics setup after vm start
+model.streamStats = ->
+  result = {}
+  vmName = null
+
+  _r.fromNodeCallback (cb) ->
+    model.getOnlyVirtualBoxDir cb
+  .flatMap (dir) ->
+    vmName = dir.name
+    _r.fromNodeCallback (cb) ->
+      model.runVBoxCmd 'metrics query', cb
+  .flatten (rawData) -> (rawData.split(/\r?\n/) || [])
+  .map (rawLine) -> rawLine.split /[ ]+/
+  .filter (lineSplit) -> lineSplit[0] == vmName || lineSplit[0] == 'host'
+  .map (lineSplit) ->
+    id = if lineSplit[0] == 'host' then 'Host/' + lineSplit[1] else 'VM/' + lineSplit[1]
+    result[id] = lineSplit[2]
+    result
+  .last()
+  .map (result) ->
+    result.date = moment().format('YYYY-MM-DD')
+    result.time = moment().format('HH:mm:ss')
+
+    if result['VM/RAM/Usage/Used:avg'] && result['VM/Guest/RAM/Usage/Total:avg']
+      result['VM/RAM/Usage/Load:avg'] = ((result['VM/RAM/Usage/Used:avg'] / result['VM/Guest/RAM/Usage/Total:avg']) * 100) + '%'
+
+    if result['Host/RAM/Usage/Used:avg'] && result['Host/RAM/Usage/Total:avg']
+      result['Host/RAM/Usage/Load:avg'] = ((result['Host/RAM/Usage/Used:avg'] / result['Host/RAM/Usage/Total:avg']) * 100) + '%'
+    result
 
 # wrapper for VBoxManage execution.
 model.runVBoxCmd = (cmd, callback) ->

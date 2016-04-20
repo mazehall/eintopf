@@ -88,6 +88,10 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send 'registry:private', val.value
 
+  ks.fromProperty 'stats:vb'
+  .onValue (val) ->
+    webContents.send 'stats:vb', val.value
+
   ###############
   # listener
   ###############
@@ -99,6 +103,10 @@ handleEvents = (webContents) ->
   ipcToKefir 'req:states'
   .onValue (val) ->
     val.event.sender.send 'states', ks.get 'states:live'
+
+  ipcToKefir 'req:stats:vb'
+  .onValue (val) ->
+    val.event.sender.send 'stats:vb', ks.get 'stats:vb'
 
   ipcToKefir 'projects:list'
   .onValue (val) ->

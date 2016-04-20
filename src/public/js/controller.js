@@ -62,13 +62,16 @@
   );
 
   controllerModule.controller('panelCtrl',
-    ['$scope', '$state', '$rootScope', '$previousState', 'resContainersList', 'resAppsList',
-      function ($scope, $state, $rootScope, $previousState, resContainersList, resAppsList) {
+    ['$scope', '$state', '$rootScope', '$previousState', 'resContainersList', 'resAppsList', 'streamVBStats',
+      function ($scope, $state, $rootScope, $previousState, resContainersList, resAppsList, streamVBStats) {
         var panelLabels = {
           'panel.containers': 'Containers',
           'panel.apps': 'Running apps',
           'panel.settings': 'Manage vagrant'
         };
+
+        // stream virtual box stats
+        streamVBStats.$assignProperty($scope, 'vbStats');
 
         resContainersList
         .map(function (x) {

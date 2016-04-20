@@ -35,6 +35,16 @@
     return ipc;
   }]);
 
+  ipcModule.service('streamVBStats', ['ipc', function (ipc) {
+    var stream = ipc.toKefir('stats:vb').toProperty();
+
+    //initial emit - service stream should never stop listening and trigger emit on initialization
+    stream.onEnd(function() {});
+    ipc.emit('req:stats:vb');
+
+    return stream;
+  }]);
+
   ipcModule.service('lockService', ['ipc', function (ipc) {
     var model = {};
 

@@ -78,6 +78,10 @@ beat.throttle 10000
 .onValue (value) ->
   ks.setChildProperty 'states:live', 'internet', value
 
+beat.throttle 1000
+.flatMap vagrantRunModel.streamVbStats
+.onValue (val) ->
+  ks.set 'stats:vb', val
 
 ###########
 # monitor certificate changes and sync them accordingly
