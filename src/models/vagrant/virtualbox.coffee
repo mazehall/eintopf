@@ -8,13 +8,26 @@ winVBoxManagePath = 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' # ke
 
 model = {}
 
+#@todo setup only for used stats
+model.setupMetricsForEntity = (name) ->
+  _r.fromNodeCallback (cb) ->
+    model.runVBoxCmd 'metrics setup ' + name, cb
+
+model.initMetrics = (cb) ->
+  _r.fromNodeCallback model.getOnlyVirtualBoxDir
+  .flatMap (dir) ->
+    model.setupMetricsForEntity dir.name
+  .flatMap ->
+    model.setupMetricsForEntity 'host'
+  .onEnd ->
+    cb? null, true
+
 # requires metrics setup after vm start
 model.streamStats = ->
   result = {}
   vmName = null
 
-  _r.fromNodeCallback (cb) ->
-    model.getOnlyVirtualBoxDir cb
+  _r.fromNodeCallback model.getOnlyVirtualBoxDir
   .flatMap (dir) ->
     vmName = dir.name
     _r.fromNodeCallback (cb) ->

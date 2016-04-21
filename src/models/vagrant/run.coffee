@@ -19,6 +19,7 @@ model.isVagrantInstalled = (callback) ->
 
 model.getStatus = virtualboxModel.getGuestStatus
 model.streamVbStats = virtualboxModel.streamStats
+model.initVbMetrics = virtualboxModel.initMetrics
 
 model.getSshConfig = (callback) ->
   fsModel.getSSHConfig (error, config) ->

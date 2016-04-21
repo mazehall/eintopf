@@ -56,11 +56,11 @@ dockerEventStream
 # monitor vm state
 beat.throttle 10000
 .flatMap ->
-  _r.fromNodeCallback (cb) ->
-    vagrantRunModel.getStatus cb
+  _r.fromNodeCallback vagrantRunModel.getStatus
 .onError ->
   ks.setChildProperty 'states:live', 'vagrant', false
 .onValue (val) ->
+  vagrantRunModel.initVbMetrics() if val && ! ks.getChildProperty 'states:live', 'vagrant'
   ks.setChildProperty 'states:live', 'vagrant', val
 
 ###########
