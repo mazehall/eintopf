@@ -35,6 +35,10 @@ button{
 .cssBgRedAlpha{
     background-color: rgba(242, 105, 94, 0.3);
 }
+.cssWordWrap{
+    word-wrap:break-word;
+    overflow:hidden;
+}
 .fnt-eintopf-green{
     color:rgba(180,199,186,1.0);
 }
@@ -691,6 +695,10 @@ ul.cssContainer li .btn-without-design:hover:after{
     max-height:6rem;
     overflow:hidden;
 }
+.media-content-input div{
+    line-height:normal;
+    margin-bottom:.5rem;
+}
 /*--------------tooltip per css--------------*/
 .cssTooltip {
     outline:none;
@@ -972,6 +980,7 @@ li.cssPanelBox:hover{
     .cssTab p{
         display:none;
     }
+
 }
 /* -------------- screen mobile min 512px max 767px----------------- */
 @media screen and (min-width: 32rem) and (max-width: 47.9rem){

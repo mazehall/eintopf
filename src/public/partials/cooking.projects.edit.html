@@ -41,10 +41,11 @@
                 <div class="media-body p1">
                     <div  class="grd-row-col-6 py5 m0">
                         <label class="grd-row p0">
-                            <span class="m0 py05 small">Please enter project-id. The id must be unique. This is also the folder name in your scripts.</span>
+                            <span class="m0 py05 small">Project-id (can not be changed):</span>
                         </label>
                         <div class=" m0 media-content-input">
-                            <input name="id" type="text" placeholder="your project-id" ng-model="project.id" readonly="readonly"/>
+                            <div class="p05 fnt--mid-gray m0  brdr--light-gray">{{project.id}}</div>
+
                         </div>
                         <label class="grd-row p0">
                             <span class="m0 py05 small">Please enter the name of your project. This is displayed on the left side in "your projects"</span>
