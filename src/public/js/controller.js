@@ -298,7 +298,8 @@
 
         projectFactory.customizeProject($scope.project, function(err, result) {
           $scope.loading = false;
-          if (err && err) $scope.errorMessage = err;
+          if (! err && result) return $scope.goBack();
+          if (err) $scope.errorMessage = err;
           $scope.$apply();
         });
 
