@@ -1,11 +1,18 @@
 Dockerrode = require 'dockerode'
 _r = require 'kefir'
 ks = require 'kefir-storage'
-
+fs = require 'fs'
 
 model = {}
 
-model.docker = new Dockerrode {host: '127.0.0.1', port: "2375"}
+#@todo make dockerrode configurable
+model.initDocker = () ->
+  socket = process.env.DOCKER_SOCKET || '/var/run/docker.sock'
+  isSocket = if fs.existsSync(socket) then fs.statSync(socket).isSocket() else false
+
+  dockerConfig = if isSocket then { socketPath: socket } else {host: '127.0.0.1', port: "2375"}
+
+  model.docker = new Dockerrode dockerConfig
 
 model.getContainer = (name) ->
   model.docker.getContainer name
@@ -71,5 +78,5 @@ model.pull = (image, config, callback) ->
     return callback err if err
     model.docker.modem.followProgress stream, callback
 
-
+model.initDocker()
 module.exports = model

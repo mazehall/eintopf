@@ -17,6 +17,8 @@ model.getProxyContainer = () ->
 model.getProxyImage = () ->
   dockerModel.getImage proxyConfig.Image
 
+#@todo show port mapping errors
+
 model.monitorProxy = (callback) ->
   container = null
   inspect = null

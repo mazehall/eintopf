@@ -25,6 +25,18 @@ model.getVagrantSshConfigAndSetIt = (callback) ->
     callback? null, val
 
 model.run = () ->
+  #@todo optional boot up
+
+  _r.later 0, 1
+  .onValue ->
+    states = JSON.parse(JSON.stringify(defaultStates));
+    states.state = 'cooking'
+    states.setupVagrantFile = false
+    states.setupVagrantVM = false
+    ks.set 'states:live', states
+
+  return false
+
   return false if inSetup
   inSetup = true
   states = JSON.parse(JSON.stringify(defaultStates));
