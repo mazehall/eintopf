@@ -49,6 +49,27 @@ model.saveCustomization = (project, callback) ->
   .onValue ->
     callback null, true
 
+model.clearCustomization = (projectId, callback) ->
+  return callback new Error 'Invalid project id' if ! projectId
+  update = false
+
+  _r.fromNodeCallback (cb) ->
+    setTimeout ->
+      model.getCustomData cb
+    , 0
+  .map (content) ->
+    if content.projects?[projectId]?
+      delete content.projects[projectId]
+      update = true
+    content
+  .flatMap (content) ->
+    return _r.constant true if ! update
+    _r.fromNodeCallback (cb) ->
+      model.saveCustomData content, cb
+  .onError callback
+  .onValue ->
+    callback null, true
+
 model.getProject = (projectId, callback) ->
   return callback new Error 'Invalid project id' if ! projectId
 

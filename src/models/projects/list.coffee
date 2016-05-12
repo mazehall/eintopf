@@ -53,6 +53,9 @@ model.installProject = (project, callback) ->
     _r.fromNodeCallback (cb) ->
       return model.patternPostInstall project, cb if pattern
       model.projectPostInstall project, cb
+  .flatMap ->
+    _r.fromNodeCallback (cb) ->
+      customModel.clearCustomization project.id, cb
   .flatMap -> # reload projects to enforce view update
     _r.fromNodeCallback (cb) ->
       model.loadProjects cb
@@ -210,12 +213,20 @@ model.deleteProject = (project, callback) ->
     ks.log logName, error
     return callback? new Error error
 
-  jetpack.removeAsync project.path
-  .fail (error) ->
-    callback error
-  .then ->
+  _r.fromPromise jetpack.removeAsync project.path
+  .flatMap ->
+    _r.fromNodeCallback (cb) ->
+      customModel.clearCustomization project.id, cb
+    .flatMapErrors -> _r.constant true # ignore errors
+  .flatMap ->
+    _r.fromNodeCallback (cb) ->
+      model.loadProjects cb
+    .flatMapErrors -> _r.constant true # ignore errors
+  .onError (err) ->
+    ks.log logName, err.message
+    callback err
+  .onValue ->
     ks.log logName
-    model.loadProjects()
     callback null, true
 
 model.updateProject = (project, callback) ->
