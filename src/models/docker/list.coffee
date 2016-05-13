@@ -15,6 +15,7 @@ model.mapInspectData = (container) ->
 
   if (labels = container.inspect.Config.Labels) and labels["com.docker.compose.project"]
     projectToContainerMapping[container.id] = container.project = labels["com.docker.compose.project"]
+    (container.projectId = project.id if project.composeId == container.project) for project in (ks.get("projects:list") || [])
 
   if (utilModel.typeIsArray container.inspect.Config.Env)
     for env in (container.inspect.Config.Env || [])

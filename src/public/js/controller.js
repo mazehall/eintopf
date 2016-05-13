@@ -49,7 +49,7 @@
   controllerModule.controller('cookingProjectsCtrl',
     ['$scope', '$state', 'storage', 'projectFactory', 'lockFactory',
       function ($scope, $state, storage, projectFactory, lockFactory) {
-        projectFactory.stream.$assignProperty($scope, 'projects');
+        projectFactory.streamList.$assignProperty($scope, 'projects');
         lockFactory.stream.$assignProperty($scope, 'locks');
 
         $scope.toggleStartStop = function (project) {
@@ -141,6 +141,7 @@
   controllerModule.controller('recipeCtrl',
     ['$scope', '$stateParams', '$state', '$timeout', 'storage', 'resProjectStart','resProjectStop', 'reqProjectDelete', 'resProjectDelete', 'reqProjectUpdate', 'resProjectUpdate', 'currentProject', 'resProjectAction', 'reqProjectAction', 'containerFactory', 'lockFactory', 'appFactory', 'projectFactory',
       function ($scope, $stateParams, $state, $timeout, storage, resProjectStart, resProjectStop, reqProjectDelete, resProjectDelete, reqProjectUpdate, resProjectUpdate, currentProject, resProjectAction, reqProjectAction, containerFactory, lockFactory, appFactory, projectFactory) {
+        projectFactory.streamProjectState($stateParams.id).$assignProperty($scope, 'state');
         projectFactory.streamLog($stateParams.id)
         .map(function(val) {
           $timeout(function() { //trigger scrolling after dom change

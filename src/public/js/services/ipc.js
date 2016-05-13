@@ -35,6 +35,16 @@
     return ipc;
   }]);
 
+  ipcModule.service('ipcRunningProjects', ['ipc', function (ipc) {
+    var stream = ipc.toKefir('projects:running').toProperty();
+
+    // initial emit
+    stream.onValue(function() {});
+    ipc.emit('projects:running');
+
+    return stream;
+  }]);
+
   ipcModule.service('lockService', ['ipc', function (ipc) {
     var model = {};
 

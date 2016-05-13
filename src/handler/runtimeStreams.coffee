@@ -186,13 +186,7 @@ ks.fromProperty 'containers:inspect'
 .throttle 2000
 .map (containers) ->
   runningProjects = {}
-  for id, container of (containers.value || [])
-    runningProjects[container.project] = true if container?.running && container.project
+  (runningProjects[container.projectId] = true if container?.running && container.project) for id, container of (containers.value || [])
   runningProjects
 .onValue (runningProjects) ->
-  projects = ks.get "projects:list"
-
-  for project in (projects || [])
-    project.state = if runningProjects[project.composeId] then 'running' else null
-
-  ks.set "projects:list", projects
+  ks.set "projects:running", runningProjects
