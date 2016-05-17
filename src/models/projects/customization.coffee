@@ -10,7 +10,7 @@ model = {}
 
 model.getCustomData = (callback) ->
   return callback null, customData if customData
-  return callbacknew Error 'failed to get config dir' if !(configDir = utilModel.getConfigModulePath())
+  return callback new Error 'failed to get config dir' if !(configDir = utilModel.getConfigModulePath())
 
   utilModel.loadJsonAsync configDir + '/' + fileName, (err, result) ->
     customData = result if !err
@@ -58,7 +58,7 @@ model.clearCustomization = (projectId, callback) ->
       model.getCustomData cb
     , 0
   .map (content) ->
-    if content.projects?[projectId]?
+    if content?.projects?[projectId]?
       delete content.projects[projectId]
       update = true
     content
