@@ -26,6 +26,10 @@ handleEvents = (webContents) ->
   .onValue (val) ->
     webContents.send 'res:projects:list', val.value
 
+  ks.fromProperty 'projects:running'
+  .onValue (val) ->
+    webContents.send 'projects:running', val.value
+
   ks.fromRegex /^project:detail:/
   .onValue (prop) ->
     project = prop.value
@@ -103,6 +107,10 @@ handleEvents = (webContents) ->
   ipcToKefir 'projects:list'
   .onValue (val) ->
     val.event.sender.send 'res:projects:list', ks.get 'projects:list'
+
+  ipcToKefir 'projects:running'
+  .onValue (val) ->
+    val.event.sender.send 'projects:running', ks.get 'projects:running'
 
   ipcToKefir 'states:restart'
   .onValue () ->

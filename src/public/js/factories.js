@@ -32,17 +32,34 @@
       .$assignProperty(scope, property);
     };
 
-    // initial emit
-    model.emit();
-
     return model;
   }]);
 
-  factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectList', 'reqProjectStart', 'reqProjectStop', 'reqProjectDetail', 'reqProjectUpdate', 'resProjectUpdate', 'resProjectsInstall','reqProjectsInstall',
-    function(ipc, resProjectsList, reqProjectList, reqProjectStart, reqProjectStop, reqProjectDetail, reqProjectUpdate, resProjectUpdate, resProjectsInstall, reqProjectsInstall) {
+  factoryModule.factory('projectFactory', ['ipc', 'resProjectsList', 'reqProjectList', 'reqProjectStart', 'reqProjectStop', 'reqProjectDetail', 'reqProjectUpdate', 'resProjectUpdate', 'resProjectsInstall','reqProjectsInstall', 'ipcRunningProjects',
+    function(ipc, resProjectsList, reqProjectList, reqProjectStart, reqProjectStop, reqProjectDetail, reqProjectUpdate, resProjectUpdate, resProjectsInstall, reqProjectsInstall, ipcRunningProjects) {
       var model = {};
 
-      model.stream = resProjectsList;
+      model.streamList = resProjectsList
+      .combine(ipcRunningProjects)
+      .map(function(values) {
+        var list = values[0] || [];
+        var states = values[1] || [];
+
+        if (!list.length || !states) return list;
+        list.forEach(function(val, key) {
+          val.state = states.hasOwnProperty(val.id) && states[val.id]? true : false;
+        });
+
+        return list;
+      });
+
+      model.streamProjectState = function(projectId) {
+        return ipcRunningProjects
+        .map(function(runningProjects) {
+          return runningProjects.hasOwnProperty(projectId) && runningProjects[projectId]? true : false;
+        })
+      };
+
       model.emit = reqProjectList.emit;
       model.emitProject = reqProjectDetail.emit;
       model.startProject = reqProjectStart.emit;
@@ -135,6 +152,8 @@
           return mappedApps;
         })
         .$assignProperty(scope, property);
+
+        reqAppsList.emit();
       };
 
       return model;
@@ -203,7 +222,7 @@
               }
 
               return containers;
-            }).log();
+            });
 
             return Kefir.combine([resContainersList, resContainersInspect])
             .throttle(2000)
@@ -229,7 +248,7 @@
               }
 
               return mappedContainers;
-            }).log();
+            });
           },
           listApps: function (project) {
             return resAppsList.map(function (apps) {

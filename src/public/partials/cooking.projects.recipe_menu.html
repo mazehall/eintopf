@@ -23,7 +23,7 @@
                     </li>
                     <li class="grd-row">
                         <button id="update" class="btn grd-row-col-6 py0 px1 txt--left fnt-eintopf-darkgreen"
-                                ng-click="updateProject(project); onClickTab('protocol')" ng-disabled="locked">
+                                ng-click="hidePopover();updateProject(project); onClickTab('protocol')" ng-disabled="locked">
                               Update project
                         </button>
                     </li>
@@ -32,7 +32,7 @@
                     <!--</li>-->
                     <li class="grd-row">
                         <button id="hide" class="btn grd-row-col-6 py0 px1 txt--left fnt-eintopf-darkgreen"
-                                ng-click="deleteProject(project)" ng-disabled="locked">
+                                ng-click="hidePopover();deleteProject(project)" ng-disabled="locked">
                             Remove project recipe
                         </button>
                     </li>
