@@ -1,3 +1,18 @@
+## 1.3.1
+
+Changed:
+
+- closes project detail popup when clicking an action
+- redirects to project page after successful project edit save
+- Improved online check to try 3 times before actually setting offline state
+
+Fixed:
+
+- project cloning/installation and removing not finishing when custom.json does not exist
+- removing and reinstalling a running project shows wrong state in project listing
+- not showing configured design after clone when there was already a customization with that id
+- redundancy in apps frontend stream initialization
+
 ## 1.3
 
 Added:
