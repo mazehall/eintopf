@@ -1,6 +1,6 @@
 _r = require 'kefir'
+config = require 'config'
 
-config = require '../stores/config.coffee'
 dockerModel = require '.'
 
 proxyConfig = config.get 'proxy'

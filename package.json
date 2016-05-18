@@ -20,7 +20,7 @@
     "ansi-to-html-umd": "^0.4.2",
     "asar": "^0.8.0",
     "coffee-script": "1.9.3",
-    "config": "^1.15.0",
+    "config": "^1.20.2",
     "docker-events": "0.0.2",
     "dockerode": "^2.2.9",
     "fs-jetpack": "^0.7.0",
@@ -34,7 +34,7 @@
     "tmp": "0.0.28"
   },
   "devDependencies": {
-    "electron-prebuilt": "^0.37.5",
+    "electron-prebuilt": "^0.37.8",
     "gulp": "^3.9.0",
     "gulp-clean": "^0.3.1",
     "gulp-concat": "^2.5.2",

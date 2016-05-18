@@ -1,7 +1,7 @@
 _r = require 'kefir'
 jetpack = require 'fs-jetpack'
+config = require 'config'
 
-config = require '../stores/config'
 utilModel = require '../util/'
 
 appConfig = config.get 'app'

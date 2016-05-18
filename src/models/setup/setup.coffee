@@ -1,7 +1,7 @@
 _r = require 'kefir'
 ks = require 'kefir-storage'
+config = require 'config'
 
-config = require '../stores/config'
 vagrantFsModel = require '../vagrant/fs.coffee'
 vagrantRunModel = require '../vagrant/run.coffee'
 virtualBoxModel = require '../vagrant/virtualbox.coffee'

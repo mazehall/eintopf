@@ -8,6 +8,7 @@ Changed:
 
 Fixed:
 
+- fixed config issues -> replaced custom config implementation with a more native solution 
 - project cloning/installation and removing not finishing when custom.json does not exist
 - removing and reinstalling a running project shows wrong state in project listing
 - not showing configured design after clone when there was already a customization with that id

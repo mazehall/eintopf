@@ -1,8 +1,8 @@
 _r = require 'kefir'
 ks = require 'kefir-storage'
 crypto = require "crypto"
+config = require 'config'
 
-config = require '../stores/config.coffee'
 utils = require '../util/index.coffee'
 remote = require './remote.coffee'
 local = require './local.coffee'

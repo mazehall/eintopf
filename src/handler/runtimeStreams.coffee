@@ -2,7 +2,7 @@ _r = require 'kefir'
 ks = require 'kefir-storage'
 isOnline = require 'is-online'
 
-config = require '../models/stores/config'
+config = require 'config'
 utilModel = require '../models/util'
 dockerProxyModel = require '../models/docker/proxy.coffee'
 dockerListModel = require '../models/docker/list.coffee'

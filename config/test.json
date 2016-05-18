@@ -1,9 +1,7 @@
 {
   "registry": {
-    "url": "",
+    "public": "",
+    "private": [],
     "refreshInterval": "900000"
-  },
-  "test": {
-    "key": "value"
   }
 }

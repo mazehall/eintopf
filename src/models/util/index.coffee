@@ -9,11 +9,20 @@ convert = new Convert();
 
 model = {}
 
-# use original config first and let it overwrite later with the custom config
-model.setConfig = (newConfig) ->
-  return false if ! newConfig || typeof newConfig != "object"
-  config = newConfig
-  return true
+# sync - extends default config with user config.
+# Changes to require('config') can only be made before the first .get call. After that it gets immutable
+model.initConfig = () ->
+  return false if ! (configModulePath = @getConfigModulePath())
+  configPath = jetpack.cwd(configModulePath).path('config.json')
+
+  #@todo improve error handling -> show config errors on eintopf startup
+  try
+    userConfig = jetpack.read configPath, 'json'
+    config.util.extendDeep config, userConfig
+  catch err
+    if process.env.NODE_ENV == 'development'
+      console.log 'Failed to load user config in ' + configPath
+      console.log 'Error message: ' + err.message
 
 # resolves relative paths
 model.resolvePath = (path) ->
@@ -45,20 +54,6 @@ model.getConfigPath = () ->
 model.getConfigModulePath = () ->
   return null if ! (configPath = @getConfigPath())? || ! config?.app?.defaultNamespace
   return jetpack.cwd(configPath).path config.app.defaultNamespace
-
-model.loadUserConfig = (callback) ->
-  return callback new Error 'Failed to get config module path' if ! (configModulePath = @getConfigModulePath())
-  @loadJson  jetpack.cwd(configModulePath).path('config.json'), callback
-
-model.loadJson = (path, callback) ->
-  return callback new Error 'Invalid path' if ! path
-
-  try
-    userConfig = jetpack.read path, 'json'
-  catch err
-    return callback err
-
-  return callback null, userConfig
 
 model.loadJsonAsync = (path, callback) ->
   return callback new Error 'Invalid path' if ! path
