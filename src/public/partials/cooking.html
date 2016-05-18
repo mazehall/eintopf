@@ -7,28 +7,26 @@
 
       <ul class="list--unstyled flt--right m0 p0">
         <li class="flt--left" ng-class="states.vagrant? 'on' : 'off'">
-          <button ns-popover="false" class="cssIcon"
+          <button ns-popover class="cssIcon"
                   ns-popover-active-class="active"
-                  ns-popover-template="partials/pop.vm.html"
-                  title="VM status">
+                  ns-popover-template="partials/pop.vm.html">
             <i class="fa fa-cube"></i>
           </button>
 
         </li>
         <li class="flt--left" ng-class="states.proxy? 'on' : 'off'">
-          <button ns-popover="false" class="cssIcon"
+          <button ns-popover class="cssIcon"
                   ns-popover-active-class="active"
-                  ns-popover-template="partials/pop.proxy.html"
-                  title="Proxy status">
+                  ns-popover-template="partials/pop.proxy.html">
+
             <i class="fa fa-sitemap"></i>
           </button>
           </a>
         </li>
         <li class="flt--left" ng-class="states.internet? 'on' : 'off'">
-          <button ns-popover="false" class="cssIcon"
+          <button ns-popover class="cssIcon"
                   ns-popover-active-class="active"
-                  ns-popover-template="partials/pop.net.html"
-                  title="Internet connectivity">
+                  ns-popover-template="partials/pop.net.html">
             <i class="fa fa-cloud"></i>
           </button>
 

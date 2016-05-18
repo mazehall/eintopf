@@ -32,6 +32,9 @@ button{
 .cssBgGreenAlpha{
     background-color: rgba(228, 240, 232, 0.3);
 }
+.cssBgRed{
+    background-color: rgba(242, 105, 94, 1.0);
+}
 .cssBgRedAlpha{
     background-color: rgba(242, 105, 94, 0.3);
 }
@@ -250,6 +253,9 @@ button{
 .cssSidebar .media .media-figure{
     margin-left:1em;
     margin-right:0;
+}
+.cssSidebar .media .media-body{
+    line-height:1.8rem;
 }
 .btn-round{
     border-radius: 50%;
@@ -767,20 +773,21 @@ li.cssPanelBox:hover{
 /* -------------- popover ----------------- */
 .ns-popover-list-theme.ns-popover-left-placement.ns-popover-top-align{
     max-width:6rem;
+    min-width:20rem;
 }
 .ns-popover-list-theme {
     z-index:1040;
-    min-width:20rem;
+
 }
 .cssPopover{
     box-sizing: border-box;
-    border: solid 1px #d8d8d8;
-    border-radius: 5px;
-    background-color: #fff;
+
     margin-top:20px;
-    -webkit-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
-    box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
+
+    color:#fff;
+}
+.cssPopover .grd-row{
+    border-radius: 2px;
 }
 .cssPopover.recipe{
     box-sizing: border-box;
@@ -788,6 +795,7 @@ li.cssPanelBox:hover{
     border-radius: 5px;
     background-color: #fff;
     margin-top:0px;
+    padding-top:10px;
     margin-right:-30px;
     -webkit-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
@@ -811,26 +819,25 @@ li.cssPanelBox:hover{
     border-color: transparent;
     position: absolute;
 }
-.ns-popover-bottom-placement .triangle{
-    border-bottom-color:#e1e1e1;
+.ns-popover-bottom-placement .triangle.on{
+    border-bottom-color:rgba(19, 103, 112, 1.0);
+    left:50%;
+    top: -21px;
+    margin-left: -10px;
+}
+.ns-popover-bottom-placement .triangle.off{
+    border-bottom-color:rgba(242, 105, 94, 1.0);
     left:50%;
     top: -21px;
     margin-left: -10px;
 }
 .cssPopoverHead{
-    border-bottom:1px solid #ccc;
-    -moz-border-radius: 5px 5px 0px 0px / 5px 5px;
-    border-radius: 5px 5px 0px 0px / 5px 5px;
-    background-color:#e1e1e1;
-}
-.cssPopoverHeaderTitle{
-   position:relative;
-    border-bottom:1px solid #ccc;
+
 }
 .cssPopoverHeaderCloseBtn{
     position:absolute;
-    top:0;
-    right:0;
+    top:5px;
+    right:-20px;
 }
 .cssPopoverFooter{
     border-top:1px solid #ccc;
