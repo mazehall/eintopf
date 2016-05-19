@@ -1,7 +1,9 @@
 require('coffee-script/register');
-var app = require('app');
-var shell = require('shell');
-var BrowserWindow = require('browser-window');
+const electron = require('electron');
+
+const app = electron.app;
+const shell = electron.shell;
+const BrowserWindow = electron.BrowserWindow;
 var windowStateKeeper = require('./utils/window_state');
 var windowMenu = require('./utils/window_menu');
 

@@ -4,7 +4,8 @@ Changed:
 
 - closes project detail popup when clicking an action
 - redirects to project page after successful project edit save
-- Improved online check to try 3 times before actually setting offline state
+- improved online check to try 3 times before actually setting offline state
+- electron version 0.36.12
 
 Fixed:
 
@@ -13,6 +14,7 @@ Fixed:
 - removing and reinstalling a running project shows wrong state in project listing
 - not showing configured design after clone when there was already a customization with that id
 - redundancy in apps frontend stream initialization
+- fixed deprecated electron initialization
 
 ## 1.3
 

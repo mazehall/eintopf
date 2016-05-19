@@ -1,7 +1,7 @@
-var app  = require('app');
-var Menu = require('menu');
-var shell = require('shell');
-
+var electron = require('electron');
+var app  = electron.app;
+var Menu = electron.Menu;
+var shell = electron.shell;
 
 var template = [
   {
