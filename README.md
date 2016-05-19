@@ -272,7 +272,7 @@ npm start
 ```
 ### Npm package building
 
-All npm packages are build against the electron node version. This is configured in the .npmrc file.
+All npm packages are build against the electron node version. This is configured in the .npmrc file. If you use a newer electron version change it in .npmrc (target = ... ) as well.
 Look [(here)](https://github.com/atom/electron/blob/master/docs/tutorial/using-native-node-modules.md) for more info.
 
 ### Making a release

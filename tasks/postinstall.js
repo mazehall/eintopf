@@ -19,6 +19,7 @@ if (process.platform === 'win32') {
 var params = ['install', 'pty.js'];
 
 var install = childProcess.spawn(installCommand, params, {
+    cwd: process.cwd(),
     env: process.env,
     stdio: 'inherit'
 });

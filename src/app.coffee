@@ -1,3 +1,6 @@
+utilsModel = require './models/util'
+utilsModel.initConfig()
+
 eventHandler = require './handler/events.coffee'
 setupModel = require './models/setup/setup.coffee'
 projectsModel = require './models/projects/list.coffee'
