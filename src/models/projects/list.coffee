@@ -53,9 +53,6 @@ model.installProject = (project, callback) ->
     _r.fromNodeCallback (cb) ->
       return model.patternPostInstall project, cb if pattern
       model.projectPostInstall project, cb
-  .flatMap ->
-    _r.fromNodeCallback (cb) ->
-      customModel.clearCustomization project.id, cb
   .flatMap -> # reload projects to enforce view update
     _r.fromNodeCallback (cb) ->
       model.loadProjects cb
@@ -100,6 +97,9 @@ model.patternPostInstall = (project, callback) ->
   .flatMap -> # remove .git folder
     _r.fromNodeCallback (cb) ->
       utilModel.removeFileAsync projectDir.path('.git'), cb
+  .flatMap ->
+    _r.fromNodeCallback (cb) ->
+      customModel.clearCustomization project.id, cb
   .onError callback
   .onValue ->
     callback null, true
