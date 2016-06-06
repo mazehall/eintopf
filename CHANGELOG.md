@@ -1,3 +1,10 @@
+## 1.3.2
+
+Fixed:
+
+- fixed startup error when no .eintopf folder exists
+- fixed not using decorators of created recipe
+
 ## 1.3.1
 
 Changed:
