@@ -5,6 +5,8 @@ utilModel = require "../util/index.coffee"
 
 winVBoxManagePath = 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' # keep slashes
 
+messageNoMachinesFound = 'Vagrant machines not found'
+
 model = {}
 
 # wrapper for VBoxManage execution.
@@ -66,6 +68,7 @@ model.getOnlyVirtualBoxDir = (callback) ->
 
   _r.fromPromise jetpack.findAsync configDir.path(), {matching: ["./.vagrant/machines/*"]}, "inspect"
   .flatMap (folders) ->
+    return _r.constantError new Error messageNoMachinesFound if folders.length == 0
     _r.fromNodeCallback (cb) ->
       return cb new Error "can't maintain integrity with multiple machine folders" if folders.length != 1
       cb null, folders[0]
@@ -126,7 +129,9 @@ model.getGuestStatus = (callback) ->
     .map (dir) ->
       regEx = new RegExp('"' + dir.name + '"')
       return regEx.test runningVms
-  .onError callback
+  .onError (err) ->
+    return callback null, false if err.message == messageNoMachinesFound
+    callback err
   .onValue (val) ->
     callback null, val
 
