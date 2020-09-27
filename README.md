@@ -1,6 +1,8 @@
+# ARCHIVED!
+
 [![Build Status](https://travis-ci.org/mazehall/eintopf.svg?branch=master)](https://travis-ci.org/mazehall/eintopf)
 
-#[Eintopf](https://www.eintopf.io/)
+# Eintopf
 
 A pot with the mixture of the smart development tools Docker, Vagrant and VirtualBox. Made to ease the chore of the
 daily project works.
@@ -19,7 +21,7 @@ daily project works.
 ## Installation
 
 MacOS, Windows and Linux Version available:
-[Download the latest version of eintopf] (https://eintopf.io/download/)
+[Download the latest version of eintopf] (https://github.com/mazehall/eintopf/releases)
 
 For MacOS homebrewer:
 
